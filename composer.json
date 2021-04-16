@@ -1,10 +1,9 @@
 {
-    "name": "laravel/laravel",
+    "name": "pwdsafe/pwdsafe",
     "type": "project",
-    "description": "The Laravel Framework.",
+    "description": "Self-hosted web-based password manager with LDAP/active directory support.",
     "keywords": [
-        "framework",
-        "laravel"
+        "password manager"
     ],
     "license": "MIT",
     "require": {
