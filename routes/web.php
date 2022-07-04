@@ -1,5 +1,14 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ChangePasswordController;
+use App\Http\Controllers\GroupChangeNameController;
+use App\Http\Controllers\GroupController;
+use App\Http\Controllers\GroupDeleteController;
+use App\Http\Controllers\GroupShareController;
+use App\Http\Controllers\SearchController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -10,13 +19,6 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-use App\Http\Controllers\ChangePasswordController;
-use App\Http\Controllers\GroupChangeNameController;
-use App\Http\Controllers\GroupController;
-use App\Http\Controllers\GroupDeleteController;
-use App\Http\Controllers\GroupShareController;
-use App\Http\Controllers\SearchController;
 
 Route::group(['middleware' => 'auth'], function() {
     Route::get('/', ['uses' => 'PreLogonFirstPageCallback@index']);
