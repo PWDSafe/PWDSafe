@@ -4,13 +4,13 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
+import {createApp} from "vue";
+import { VueClipboard } from '@soerenmartius/vue3-clipboard'
+
 require('./bootstrap');
 
-window.Vue = require('vue');
-
-import Clipboard from 'v-clipboard';
-Vue.use(Clipboard);
-
+const app = createApp({ data() { return { mobileMenuOpen: false }}});
+app.use(VueClipboard);
 
 /**
  * The following block of code may be used to automatically register your
@@ -23,16 +23,16 @@ Vue.use(Clipboard);
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('dropdown-menu', require('./components/DropdownMenu.vue').default);
-Vue.component('dropdown-link', require('./components/DropdownLink.vue').default);
-Vue.component('pwdsafe-button', require('./components/Button.vue').default);
-Vue.component('pwdsafe-alert', require('./components/Alert.vue').default);
-Vue.component('pwdsafe-label', require('./components/Label.vue').default);
-Vue.component('pwdsafe-input', require('./components/Input.vue').default);
-Vue.component('pwdsafe-textarea', require('./components/Textarea.vue').default);
-Vue.component('pwdsafe-select', require('./components/Select.vue').default);
-Vue.component('credential-card', require('./components/CredentialCard.vue').default);
-Vue.component('pwdsafe-modal', require('./components/Modal.vue').default);
+app.component('dropdown-menu', require('./components/DropdownMenu.vue').default);
+app.component('dropdown-link', require('./components/DropdownLink.vue').default);
+app.component('pwdsafe-button', require('./components/Button.vue').default);
+app.component('pwdsafe-alert', require('./components/Alert.vue').default);
+app.component('pwdsafe-label', require('./components/Label.vue').default);
+app.component('pwdsafe-input', require('./components/Input.vue').default);
+app.component('pwdsafe-textarea', require('./components/Textarea.vue').default);
+app.component('pwdsafe-select', require('./components/Select.vue').default);
+app.component('credential-card', require('./components/CredentialCard.vue').default);
+app.component('pwdsafe-modal', require('./components/Modal.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -40,11 +40,4 @@ Vue.component('pwdsafe-modal', require('./components/Modal.vue').default);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-const app = new Vue({
-    el: '#app',
-    data() {
-        return {
-            mobileMenuOpen: false
-        }
-    }
-});
+app.mount('#app');

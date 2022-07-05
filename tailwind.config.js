@@ -1,25 +1,16 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
 
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-  future: {
-    removeDeprecatedGapUtilities: true,
-    purgeLayersByDefault: true,
-  },
+    content: [
+        'resources/**/*.{php,vue,js}',
+    ],
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Inter var', ...defaultTheme.fontFamily.sans],
-            },
+                sans: ['Inter var', ...defaultTheme.fontFamily.sans]
+            }
         },
     },
-  variants: {},
-  plugins: [],
-  purge: {
-      mode: 'all',
-      content: [
-          './resources/**/*.php',
-          './resources/**/*.js',
-          './resources/**/*.vue',
-      ],
-  }
+    plugins: [],
 }

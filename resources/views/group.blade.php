@@ -35,12 +35,12 @@
                 </pwdsafe-modal>
                 @if (auth()->user()->primarygroup != $group->id)
                     <dropdown-menu>
-                        <template slot="trigger">
+                        <template #trigger>
                             <span class="h-full flex items-center border text-gray-600 border-gray-600 hover:bg-gray-600 hover:text-gray-100 px-4 py-1 rounded transition duration-200 ml-2">
                                 <i class="fas fa-cog"></i>
                             </span>
                         </template>
-                        <template v-slot:default>
+                        <template #default>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 <dropdown-link href="/groups/{{ $group->id }}/name">Change name</dropdown-link>
                                 <dropdown-link href="/groups/{{ $group->id }}/share">Share</dropdown-link>

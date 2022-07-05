@@ -25,7 +25,7 @@ class Group extends Eloquent
 
     public function deleteGroup()
     {
-        $credentialids = \App\Credential::where('groupid', $this->id)->get();
+        $credentialids = \App\Credential::where('groupid', $this->id)->pluck('id');
         \App\Encryptedcredential::whereIn('credentialid', $credentialids)->delete();
         \App\Credential::where('groupid', $this->id)->delete();
         $this->users()->detach();

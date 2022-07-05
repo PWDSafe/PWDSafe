@@ -2,7 +2,7 @@
 @section('content')
 <div class="container">
     <div class="clearfix">
-        <div class="float-left" style="margin-bottom: 20px">
+        <div class="" style="margin-bottom: 20px">
             <h3 class="text-2xl">Search</h3>
         </div>
     </div>

@@ -30,32 +30,29 @@
         </transition>
     </div>
 </template>
-<script>
-export default {
-    data() {
-        return {
-            open: false
-        }
-    },
-    watch: {
-        open: function(value) {
-            if (value) {
-                this.$emit('modal-open');
-            } else {
-                this.$emit('modal-close');
-            }
-        }
-    },
-    created() {
-        const onEscape = (e) => {
-            if (this.open && e.keyCode === 27) {
-                this.open = false;
-            }
-        }
-        document.addEventListener('keydown', onEscape)
-        this.$once('hook:destroyed', () => {
-            document.removeEventListener('keydown', onEscape)
-        })
-    },
+<script setup>
+import { ref, onUnmounted, watch, defineEmits } from "vue";
+
+const open = ref(false)
+const emit = defineEmits()
+
+const onEscape = (e) => {
+    if (open.value && e.keyCode === 27) {
+        open.value = false;
+    }
 }
+
+document.addEventListener('keydown', onEscape)
+
+onUnmounted(() => {
+    document.removeEventListener('keydown', onEscape)
+})
+
+watch(open, (value) => {
+    if (value) {
+        emit('modal-open');
+    } else {
+        emit('modal-close');
+    }
+})
 </script>

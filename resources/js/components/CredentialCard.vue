@@ -62,56 +62,52 @@
         </div>
     </div>
 </template>
-<script>
-export default {
-    props: {
-        credential: {
-            type: Object
-        },
-        groups: {
-            type: Array
-        },
-        showgroupname: {
-            type: Boolean,
-            default: false
-        },
-        groupname: {
-            type: String,
-            default: ''
-        }
+<script setup>
+import { ref, reactive } from 'vue'
+import { toClipboard } from '@soerenmartius/vue3-clipboard'
+
+const props = defineProps({
+    credential: {
+        type: Object
     },
-    data() {
-        return {
-            password: '',
-            credentialint: this.credential
-        }
+    groups: {
+        type: Array
     },
-    methods: {
-        getPassword: function () {
-            axios.get('/pwdfor/' + this.credential.id).then((response) => {
-                this.password = response.data.pwd
-            });
-        },
-        copyPwd: function () {
-            axios.get('/pwdfor/' + this.credential.id)
-                .then((response) => {
-                    this.$clipboard(response.data.pwd);
-                });
-        },
-        resetData: function () {
-            this.password = '';
-        },
-        saveCredentials: function() {
-            axios.put('/credential/' + this.credential.id, {
-                creds: this.credentialint.site,
-                credu: this.credentialint.username,
-                credp: this.password,
-                credn: this.credentialint.notes,
-                currentgroupid: this.credentialint.groupid
-            }).then(() => {
-                window.location.reload();
-            })
-        }
+    showgroupname: {
+        type: Boolean,
+        default: false
+    },
+    groupname: {
+        type: String,
+        default: ''
     }
+})
+const password = ref('')
+const credentialint = reactive(props.credential)
+
+const getPassword = function () {
+    axios.get('/pwdfor/' + props.credential.id).then((response) => {
+        password.value = response.data.pwd
+    });
+}
+const copyPwd = function () {
+    axios.get('/pwdfor/' + props.credential.id)
+        .then((response) => {
+            toClipboard(response.data.pwd);
+        });
+}
+const resetData = function () {
+            password.value = '';
+        }
+const saveCredentials = function() {
+    axios.put('/credential/' + props.credential.id, {
+        creds: credentialint.site,
+        credu: credentialint.username,
+        credp: password.value,
+        credn: credentialint.notes,
+        currentgroupid: credentialint.groupid
+    }).then(() => {
+        window.location.reload();
+    })
 }
 </script>

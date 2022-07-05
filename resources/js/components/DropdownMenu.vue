@@ -22,23 +22,20 @@
             </transition>
         </div>
 </template>
-<script>
-export default {
-    data() {
-        return {
-            open: false
-        }
-    },
-    created() {
-        const onEscape = (e) => {
-            if (this.open && e.keyCode === 27) {
-                this.open = false;
-            }
-        }
-        document.addEventListener('keydown', onEscape)
-        this.$once('hook:destroyed', () => {
-            document.removeEventListener('keydown', onEscape)
-        })
-    },
+<script setup>
+import {ref, onUnmounted} from 'vue'
+
+const open = ref(false)
+
+const onEscape = (e) => {
+    if (open.value && e.keyCode === 27) {
+        open.value = false;
+    }
 }
+
+document.addEventListener('keydown', onEscape)
+
+onUnmounted(() => {
+    document.removeEventListener('keydown', onEscape)
+})
 </script>
