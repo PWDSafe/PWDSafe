@@ -19,16 +19,6 @@ test:
     - composer install --no-suggest --no-progress
     - php artisan key:generate
     - php artisan test --parallel --coverage-text --log-junit junit-report.xml --coverage-cobertura cobertura-report.xml
-    - ~/.composer/vendor/bin/pdepend --jdepend-xml=build/logs/jdepend.xml --jdepend-chart=build/dependencies.svg --overview-pyramid=build/overview-pyramid.svg app
-    - ~/.composer/vendor/bin/phpcs --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 --report=checkstyle --report-file=build/logs/checkstyle.xml --standard=ruleset.xml --ignore=provider --extensions=php app tests
-    - curl --max-time 5 -X POST -d 'project_id='"$CI_PROJECT_ID"'' -d 'project_namespace='"$CI_PROJECT_NAMESPACE"'' -d 'project_name='"$CI_PROJECT_NAME"'' -d 'metric=checkstyle_violations' -d 'value='"$(cat build/logs/checkstyle.xml |grep "<error"|wc -l)"'' $BUILDMETRICS_URL
-    - ~/.composer/vendor/bin/phpmd app xml unusedcode,codesize --reportfile build/logs/pmd.xml --exclude provider --ignore-violations-on-exit
-    - ~/.composer/vendor/bin/phploc --count-tests --exclude provider --log-csv build/logs/phploc.csv --log-xml build/logs/phploc.xml app/ tests/
-    - curl --max-time 5 -X POST -d 'project_id='"$CI_PROJECT_ID"'' -d 'project_namespace='"$CI_PROJECT_NAMESPACE"'' -d 'project_name='"$CI_PROJECT_NAME"'' -d 'metric=lines_of_code' -d 'value='"$(grep "<loc>" build/logs/phploc.xml |cut -f2 -d">"|cut -f1 -d"<")"'' $BUILDMETRICS_URL
-    - ~/.composer/vendor/bin/phpcpd --log-pmd build/logs/pmd-cpd.xml --exclude provider app/ public/ || true
-    - curl --max-time 5 -X POST -d 'project_id='"$CI_PROJECT_ID"'' -d 'project_namespace='"$CI_PROJECT_NAMESPACE"'' -d 'project_name='"$CI_PROJECT_NAME"'' -d 'metric=phpcpd_blocks' -d 'value='"$(grep "<duplication" build/logs/pmd-cpd.xml |wc -l)"'' $BUILDMETRICS_URL
-    - ~/.composer/vendor/bin/phan -o build/phan.txt || true
-    - curl --max-time 5 -X POST -d 'project_id='"$CI_PROJECT_ID"'' -d 'project_namespace='"$CI_PROJECT_NAMESPACE"'' -d 'project_name='"$CI_PROJECT_NAME"'' -d 'metric=phanissues' -d 'value='"$(cat build/phan.txt|wc -l)"'' $BUILDMETRICS_URL
   artifacts:
     when: always
     expire_in: 1month
