@@ -15,3 +15,5 @@ Homestead.yaml
 npm-debug.log
 yarn-error.log
 .idea
+cobertura-report.xml
+junit-report.xml
