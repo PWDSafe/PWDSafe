@@ -5,6 +5,7 @@ stages:
 cache:
   paths:
     - vendor/
+
 test:
   image: $BUILDIMAGE
 
@@ -32,33 +33,8 @@ test:
         coverage_format: cobertura
         path: cobertura-report.xml
 
-sonarqube:
-  stage: analysis
-  image: ciricihq/gitlab-sonar-scanner
-  variables:
-    SONAR_URL: $SONARHOST
-    SONAR_ANALYSIS_MODE: publish
-  script:
-    - /usr/bin/sonar-scanner-run.sh
-
 security-check:
   image: $BUILDIMAGE
   stage: analysis
   script:
-    - composer global require sensiolabs/security-checker
-    - ~/.composer/vendor/bin/security-checker security:check
-
-
-phpmetrics:
-  image: $BUILDIMAGE
-  stage: analysis
-  dependencies:
-    - test
-  script:
-    - composer global require phpmetrics/phpmetrics
-    - ~/.composer/vendor/bin/phpmetrics --report-html=phpmetrics/html --report-xml=phpmetrics/xml --violations-xml=phpmetrics/violations.xml --chart-bubbles=phpmetrics/chart.svg --extensions=php --offline app
-  artifacts:
-    when: on_success
-    expire_in: 1month
-    paths:
-      - phpmetrics
+    - local-php-security-checker
