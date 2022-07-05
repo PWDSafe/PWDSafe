@@ -26,6 +26,11 @@ test:
       - build
       - coverage
       - clover.xml
+    reports:
+      junit: junit-report.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: cobertura-report.xml
 
 sonarqube:
   stage: analysis
