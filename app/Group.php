@@ -2,10 +2,13 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
 class Group extends Eloquent
 {
+    use HasFactory;
+
     public $timestamps = false;
 
     public function credentials()

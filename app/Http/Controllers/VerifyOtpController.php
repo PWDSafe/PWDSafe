@@ -25,7 +25,7 @@ class VerifyOtpController extends Controller
             $request->has('twofacode')
         ) {
             $user = User::where('email', session()->get('username'))->first();
-            if ($google2fa->verify($request->get('twofacode'), $user->two_factor_secret)) {
+            if ($google2fa->verify($request->get('twofacode'), decrypt($user->two_factor_secret))) {
                 auth()->loginUsingId($user->id);
 
                 if ($request->hasSession()) {

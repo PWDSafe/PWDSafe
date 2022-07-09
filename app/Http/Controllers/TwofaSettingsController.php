@@ -63,7 +63,7 @@ class TwofaSettingsController extends Controller
             return redirect()->back()->withErrors(['currentpassword' => 'Does not match your current password']);
         }
 
-        if (!$google2fa->verify($params['otpcode'], session()->get('2fa_secret'))) {
+        if (!$google2fa->verify($params['otpcode'], decrypt(auth()->user()->two_factor_secret))) {
             return redirect()->back()->withErrors(['otpcode' => 'One time code not valid']);
         }
 
