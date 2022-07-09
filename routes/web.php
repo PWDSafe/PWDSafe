@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\TwofaSettingsController;
+use App\Http\Controllers\VerifyOtpController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChangePasswordController;
@@ -40,6 +42,10 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('/changepwd', [ChangePasswordController::class, 'index'])->name('changepassword');
     Route::post('/changepwd', [ChangePasswordController::class, 'store']);
 
+    Route::get('/settings/twofa', [TwofaSettingsController::class, 'index'])->name('settings.twofa');
+    Route::post('/settings/twofa', [TwofaSettingsController::class, 'store']);
+    Route::delete('/settings/twofa', [TwofaSettingsController::class, 'destroy']);
+
     Route::post('/cred/{credential}', ['uses' => 'CredentialsController@update']);
     Route::get('/credential/{credential}', ['uses' => 'CredentialsController@index'])->name('credential');
     Route::delete('/credential/{credential}', ['uses' => 'CredentialsController@delete']);
@@ -48,6 +54,9 @@ Route::group(['middleware' => 'auth'], function() {
 
     Route::post('/import', ['uses' => 'ImportController@store']);
 });
+
+Route::get('/verifyotp', [VerifyOtpController::class, 'index'])->name('verifyotp');
+Route::post('/verifyotp', [VerifyOtpController::class, 'store']);
 
 Auth::routes([
     'reset' => false,

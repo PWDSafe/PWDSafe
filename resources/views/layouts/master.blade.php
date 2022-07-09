@@ -101,8 +101,9 @@
                             <template v-slot:default>
                                 @if (!config('ldap.enabled'))
                                     <dropdown-link href="{{ route('changepassword') }}">Change password</dropdown-link>
-                                    <div class="my-1 border-b"></div>
                                 @endif
+                                <dropdown-link href="{{ route('settings.twofa') }}">Two factor authentication</dropdown-link>
+                                <div class="my-1 border-b"></div>
                                 <form method="post" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit"
