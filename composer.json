@@ -12,6 +12,7 @@
         "ext-ldap": "*",
         "ext-openssl": "*",
         "bacon/bacon-qr-code": "^2.0",
+        "doctrine/dbal": "^3.3",
         "laravel/framework": "^v9.19.0",
         "laravel/tinker": "^2.7",
         "laravel/ui": "^3.0",
