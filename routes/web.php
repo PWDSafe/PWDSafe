@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\TwofaSettingsController;
 use App\Http\Controllers\VerifyOtpController;
 use Illuminate\Support\Facades\Auth;
@@ -27,6 +28,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('/groups/create', [GroupController::class, 'create'])->name('groupCreate');
     Route::post('/groups/create', ['uses' => 'GroupController@store']);
     Route::get('/groups/{group}', ['uses' => 'GroupController@index'])->name('group');
+    Route::post('/groups/{group}/export', [ExportController::class, 'store'])->name('export');
     Route::delete('/groups/{group}', ['uses' => 'GroupDeleteController@delete']);
     Route::get('/groups/{group}/add', [GroupController::class, 'addCredential'])->name('addCredentials');
     Route::post('/groups/{group}/add', [GroupController::class, 'storeCredential']);

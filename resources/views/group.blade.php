@@ -12,6 +12,10 @@
             </h3>
             <div class="flex">
                 <pwdsafe-button btntype="a" href="{{ route('addCredentials', $group->id) }}" classes="mr-2"><i class="fa fa-plus"></i> Add</pwdsafe-button>
+                <form method="post" action="{{ route('export', $group->id) }}">
+                    @csrf
+                    <pwdsafe-button classes="mr-2" theme="secondary"><i class="fa fa-file-export"></i> Export</pwdsafe-button>
+                </form>
                 <pwdsafe-modal>
                     <template v-slot:trigger>
                         <pwdsafe-button theme="secondary"><i class="fa fa-file-import"></i> Import</pwdsafe-button>

@@ -18,7 +18,8 @@
         "laravel/ui": "^3.0",
         "pragmarx/google2fa": "^8.0",
         "pragmarx/google2fa-qrcode": "^3.0",
-        "sentry/sentry-laravel": "^2.0"
+        "sentry/sentry-laravel": "^2.0",
+        "ext-mbstring": "*"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^v3.6.8",
