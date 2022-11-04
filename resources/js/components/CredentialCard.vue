@@ -3,7 +3,7 @@
         <div class="card-body flex-1 p-4">
             <h5 class="text-xl">{{ credential.site }}</h5>
             <h6 class="mb-2 text-gray-700">{{ credential.username }}</h6>
-            <p>{{ credential.notes }}</p>
+            <p class="line-clamp-3">{{ credential.notes }}</p>
         </div>
         <div class="card-footer bg-gray-100 p-4 border-t">
             <div class="flex justify-between">
