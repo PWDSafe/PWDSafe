@@ -54,7 +54,7 @@ class GroupController extends Controller
             $encrypted = new Encryptedcredential;
             $encrypted->credentialid = $credential->id;
             $encrypted->userid = $userid;
-            $encrypted->data = base64_encode(app(Encryption::class)->encWithPub($params['pass'], $pubkey));
+            $encrypted->data = app(Encryption::class)->encWithPub($params['pass'], $pubkey);
             $encrypted->save();
         }
 

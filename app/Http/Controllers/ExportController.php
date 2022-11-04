@@ -33,7 +33,7 @@ class ExportController extends Controller
             foreach ($credentials as $credential) {
                 $pwd = $credential->encryptedcredentials[0];
                 $pwddecoded = $encryption->decWithPriv(
-                    base64_decode($pwd->data),
+                    $pwd->data,
                     $encryption->dec(auth()->user()->privkey, session()->get('password'))
                 );
                 fputcsv($out, [

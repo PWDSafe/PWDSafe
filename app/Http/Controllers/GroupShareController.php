@@ -62,13 +62,13 @@ class GroupShareController extends Controller
 
         foreach ($result as $row) {
             $data = $encryption->decWithPriv(
-                base64_decode($row->data),
+                $row->data,
                 $encryption->dec(auth()->user()->privkey, session()->get('password'))
             );
             $encryptedcred = new Encryptedcredential;
             $encryptedcred->credentialid = $row->credentialid;
             $encryptedcred->userid = $user->id;
-            $encryptedcred->data = base64_encode($encryption->encWithPub($data, $user->pubkey));
+            $encryptedcred->data = $encryption->encWithPub($data, $user->pubkey);
             $encryptedcred->save();
         }
 

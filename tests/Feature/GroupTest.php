@@ -140,7 +140,7 @@ class GroupTest extends TestCase
         $encryption = app(Encryption::class);
 
         $decryptedcredential = $encryption->decWithPriv(
-            base64_decode($pwd->data),
+            $pwd->data,
             $encryption->dec($seconduser->privkey, 'abitlongersecret')
         );
 

@@ -16,10 +16,8 @@ class PasswordForController extends Controller
         if ($pwd) {
             $encryption = app(Encryption::class);
 
-            $pwdunbase = base64_decode($pwd->data);
-
             $pwddecoded = $encryption->decWithPriv(
-                $pwdunbase,
+                $pwd->data,
                 $encryption->dec(auth()->user()->privkey, session()->get('password'))
             );
 

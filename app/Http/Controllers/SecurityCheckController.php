@@ -22,7 +22,7 @@ class SecurityCheckController extends Eloquent
         $data = [];
         foreach ($result as $row) {
             $pwd = $encryption->decWithPriv(
-                base64_decode($row->pass),
+                $row->pass,
                 $encryption->dec(auth()->user()->privkey, session()->get('password'))
             );
             $data[$pwd][] = [

@@ -79,8 +79,8 @@ class User extends Authenticatable
     {
         $encryptedcredentials = Encryptedcredential::where('userid', $this->id)->get();
         foreach ($encryptedcredentials as $credential) {
-            $data = $enc->decWithPriv(base64_decode($credential->data), $enc->dec($this->privkey, $currentpass));
-            $newdata = base64_encode($enc->encWithPub($data, $newPubKey));
+            $data = $enc->decWithPriv($credential->data, $enc->dec($this->privkey, $currentpass));
+            $newdata = $enc->encWithPub($data, $newPubKey);
             $credential->data = $newdata;
             $credential->save();
         }

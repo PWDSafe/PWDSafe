@@ -30,7 +30,7 @@ class Credential extends Eloquent
             $encrypted = new Encryptedcredential;
             $encrypted->credentialid = $credential->id;
             $encrypted->userid = $userid;
-            $encrypted->data = base64_encode(app(Encryption::class)->encWithPub($params['credp'], $pubkey));
+            $encrypted->data = app(Encryption::class)->encWithPub($params['credp'], $pubkey);
             $encrypted->save();
         }
     }
@@ -45,7 +45,7 @@ class Credential extends Eloquent
         $allpublic = $credential->group->users()->get(['pubkey', 'userid'])->keyBy('userid')->toArray();
         $allencrypted = Encryptedcredential::where('credentialid', $credential->id)->get();
         foreach ($allencrypted as $encrypted) {
-            $encrypted->data = base64_encode(app(Encryption::class)->encWithPub($params['credp'], $allpublic[$encrypted->userid]['pubkey']));
+            $encrypted->data = app(Encryption::class)->encWithPub($params['credp'], $allpublic[$encrypted->userid]['pubkey']);
             $encrypted->save();
         }
     }

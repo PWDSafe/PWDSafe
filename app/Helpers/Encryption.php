@@ -7,6 +7,8 @@ namespace App\Helpers;
  */
 class Encryption
 {
+    // Used for encrypting data longer than encryption key
+    private const CHUNK_SIZE = 500;
     public function genNewKeys()
     {
         $config = array(
@@ -47,13 +49,39 @@ class Encryption
 
     public function encWithPub($data, $pubkey)
     {
-        openssl_public_encrypt($data, $encrypted, $pubkey);
+        $encrypted = '';
+
+        if (strlen($data) > self::CHUNK_SIZE) {
+            $parts = str_split($data, self::CHUNK_SIZE);
+            foreach ($parts as $part) {
+                openssl_public_encrypt($part, $enc, $pubkey);
+                $encrypted .= '-' . base64_encode($enc);
+                $enc = '';
+            }
+        } else {
+            openssl_public_encrypt($data, $encrypted, $pubkey);
+            $encrypted = base64_encode($encrypted);
+        }
+
         return $encrypted;
     }
 
     public function decWithPriv($data, $privkey)
     {
-        openssl_private_decrypt($data, $decrypted, $privkey);
+        $decrypted = '';
+        if (str_contains($data, '-')) {
+            $parts = explode("-", $data);
+            foreach ($parts as $part) {
+                $part = base64_decode($part);
+                openssl_private_decrypt($part, $dec, $privkey);
+                $decrypted .= $dec;
+                $dec = '';
+            }
+        } else {
+            $data = base64_decode($data);
+            openssl_private_decrypt($data, $decrypted, $privkey);
+        }
+
         return $decrypted;
     }
 }
