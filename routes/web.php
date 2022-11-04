@@ -1,6 +1,11 @@
 <?php
 
+use App\Http\Controllers\CredentialsController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\ImportController;
+use App\Http\Controllers\PasswordForController;
+use App\Http\Controllers\PreLogonFirstPageCallback;
+use App\Http\Controllers\SecurityCheckController;
 use App\Http\Controllers\TwofaSettingsController;
 use App\Http\Controllers\VerifyOtpController;
 use Illuminate\Support\Facades\Auth;
@@ -24,12 +29,12 @@ use App\Http\Controllers\SearchController;
 */
 
 Route::group(['middleware' => 'auth'], function() {
-    Route::get('/', ['uses' => 'PreLogonFirstPageCallback@index']);
+    Route::get('/', [PreLogonFirstPageCallback::class, 'index']);
     Route::get('/groups/create', [GroupController::class, 'create'])->name('groupCreate');
-    Route::post('/groups/create', ['uses' => 'GroupController@store']);
-    Route::get('/groups/{group}', ['uses' => 'GroupController@index'])->name('group');
+    Route::post('/groups/create', [GroupController::class, 'store']);
+    Route::get('/groups/{group}', [GroupController::class, 'index'])->name('group');
     Route::post('/groups/{group}/export', [ExportController::class, 'store'])->name('export');
-    Route::delete('/groups/{group}', ['uses' => 'GroupDeleteController@delete']);
+    Route::delete('/groups/{group}', [GroupDeleteController::class, 'delete']);
     Route::get('/groups/{group}/add', [GroupController::class, 'addCredential'])->name('addCredentials');
     Route::post('/groups/{group}/add', [GroupController::class, 'storeCredential']);
     Route::get('/groups/{group}/share', [GroupShareController::class, 'index'])->name('groupShare');
@@ -38,7 +43,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('/groups/{group}/delete', [GroupDeleteController::class, 'index']);
     Route::get('/groups/{group}/name', [GroupChangeNameController::class, 'index']);
     Route::post('/groups/{group}/name', [GroupChangeNameController::class,'store']);
-    Route::get('/pwdfor/{credential}', ['uses' => 'PasswordForController@index']);
+    Route::get('/pwdfor/{credential}', [PasswordForController::class, 'index']);
     Route::post('/search', [SearchController::class, 'store'])->name('search');
     Route::get('/search/{search}', [SearchController::class, 'index']);
     Route::get('/changepwd', [ChangePasswordController::class, 'index'])->name('changepassword');
@@ -48,13 +53,13 @@ Route::group(['middleware' => 'auth'], function() {
     Route::post('/settings/twofa', [TwofaSettingsController::class, 'store']);
     Route::delete('/settings/twofa', [TwofaSettingsController::class, 'destroy']);
 
-    Route::post('/cred/{credential}', ['uses' => 'CredentialsController@update']);
-    Route::get('/credential/{credential}', ['uses' => 'CredentialsController@index'])->name('credential');
-    Route::delete('/credential/{credential}', ['uses' => 'CredentialsController@delete']);
-    Route::put('/credential/{credential}', ['uses' => 'CredentialsController@update']);
-    Route::get('/securitycheck', ['uses' => 'SecurityCheckController@index'])->name('securitycheck');
+    Route::post('/cred/{credential}', [CredentialsController::class, 'update']);
+    Route::get('/credential/{credential}', [CredentialsController::class, 'index'])->name('credential');
+    Route::delete('/credential/{credential}', [CredentialsController::class, 'delete']);
+    Route::put('/credential/{credential}', [CredentialsController::class, 'update']);
+    Route::get('/securitycheck', [SecurityCheckController::class, 'index'])->name('securitycheck');
 
-    Route::post('/import', ['uses' => 'ImportController@store']);
+    Route::post('/import', [ImportController::class, 'store']);
 });
 
 Route::get('/verifyotp', [VerifyOtpController::class, 'index'])->name('verifyotp');
