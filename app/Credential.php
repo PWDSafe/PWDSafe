@@ -4,12 +4,14 @@ namespace App;
 
 use App\Helpers\Encryption;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Credential extends Eloquent
 {
     public $timestamps = false;
 
-    public function group()
+    public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class, 'groupid');
     }
@@ -24,7 +26,7 @@ class Credential extends Eloquent
         $credential->save();
 
         $group = \App\Group::where('id', $params['currentgroupid'])->first();
-        $users = $group->users()->get()->pluck('pubkey', 'id');
+        $users = $group->users()->pluck('pubkey', 'users.id');
 
         foreach ($users as $userid => $pubkey) {
             $encrypted = new Encryptedcredential;
@@ -56,7 +58,7 @@ class Credential extends Eloquent
         $this->delete();
     }
 
-    public function encryptedcredentials()
+    public function encryptedcredentials(): HasMany
     {
         return $this->hasMany(Encryptedcredential::class, 'credentialid');
     }

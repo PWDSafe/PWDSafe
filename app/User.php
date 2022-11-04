@@ -4,10 +4,14 @@ namespace App;
 
 use App\Helpers\Encryption;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * @property string $two_fa_secret
+ */
 class User extends Authenticatable
 {
     use Notifiable;
@@ -45,7 +49,8 @@ class User extends Authenticatable
 
     public $ldap = false;
 
-    public function groups() {
+    public function groups(): BelongsToMany
+    {
         return $this->belongsToMany(Group::class, 'usergroups', 'userid', 'groupid');
     }
 

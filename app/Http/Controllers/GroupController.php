@@ -51,7 +51,7 @@ class GroupController extends Controller
         $credential->notes = $params['notes'];
         $credential->save();
 
-        $users = $group->users()->get()->pluck('pubkey', 'id');
+        $users = $group->users()->pluck('pubkey', 'users.id');
 
         foreach ($users as $userid => $pubkey) {
             $encrypted = new Encryptedcredential;

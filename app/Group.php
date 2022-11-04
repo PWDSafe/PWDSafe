@@ -4,6 +4,8 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Group extends Eloquent
 {
@@ -11,17 +13,17 @@ class Group extends Eloquent
 
     public $timestamps = false;
 
-    public function credentials()
+    public function credentials(): HasMany
     {
         return $this->hasMany(Credential::class, 'groupid');
     }
 
-    public function users()
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'usergroups', 'groupid', 'userid');
     }
 
-    public function usersWithoutCurrentUser()
+    public function usersWithoutCurrentUser(): BelongsToMany
     {
         return $this->users()->where('userid', '!=', auth()->user()->id);
     }
