@@ -38,3 +38,11 @@ security-check:
   stage: analysis
   script:
     - local-php-security-checker
+
+static analysis:
+  image: $BUILDIMAGE
+  stage: analysis
+  before_script:
+    - composer install --no-suggest --no-progress
+  script:
+    - ./vendor/bin/phpstan analyse
