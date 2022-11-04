@@ -18,7 +18,13 @@ class ImportController extends Controller
 
         if (($fh = fopen($file->getRealPath(), 'r')) !== false) {
             while (($data = fgetcsv($fh)) !== false) {
+                if (count($data) !== 4) {
+                    # Seems malformed, skip this row
+                    continue;
+                }
+
                 [$site, $username, $password, $note] = $data;
+
                 if (strlen($site) === 0 || strlen($password) === 0) {
                     # Seems malformed, skip this row
                     continue;
