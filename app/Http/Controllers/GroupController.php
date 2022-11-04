@@ -14,7 +14,10 @@ class GroupController extends Controller
     {
         $this->authorize('view', $group);
 
-        $credentials = \App\Credential::with('group:id,name')->where('groupid', $group->id)->get();
+        $credentials = \App\Credential::with('group:id,name')
+            ->where('groupid', $group->id)
+            ->orderBy('site')
+            ->get();
 
         return view('group', compact('group', 'credentials'));
     }
