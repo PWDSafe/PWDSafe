@@ -10,7 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 
 /**
- * @property string $two_fa_secret
+ * @property ?string $two_fa_secret
  */
 class User extends Authenticatable
 {

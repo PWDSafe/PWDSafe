@@ -13,22 +13,20 @@ class PasswordForController extends Controller
 
         $pwd = Encryptedcredential::where('credentialid', $credential->id)->where('userid', auth()->user()->id)->firstOrFail();
 
-        if ($pwd) {
-            $encryption = app(Encryption::class);
+        $encryption = app(Encryption::class);
 
-            $pwddecoded = $encryption->decWithPriv(
-                $pwd->data,
-                $encryption->dec(auth()->user()->privkey, session()->get('password'))
-            );
+        $pwddecoded = $encryption->decWithPriv(
+            $pwd->data,
+            $encryption->dec(auth()->user()->privkey, session()->get('password'))
+        );
 
-            return response([
-                'status' => 'OK',
-                'pwd' => $pwddecoded,
-                'user' => $credential->username,
-                'site' => $credential->site,
-                'notes' => $credential->notes,
-                'groupid' => $credential->groupid
-            ]);
-        }
+        return response([
+            'status' => 'OK',
+            'pwd' => $pwddecoded,
+            'user' => $credential->username,
+            'site' => $credential->site,
+            'notes' => $credential->notes,
+            'groupid' => $credential->groupid
+        ]);
     }
 }

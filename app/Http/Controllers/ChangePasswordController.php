@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
 
 class ChangePasswordController extends Controller
 {
@@ -13,7 +14,7 @@ class ChangePasswordController extends Controller
 
     public function store(Request $request)
     {
-        abort_if(config('ldap.enabled'), '403');
+        abort_if(config('ldap.enabled'), Response::HTTP_FORBIDDEN);
 
         $validated = $request->validate([
             'oldpwd' => 'required',
