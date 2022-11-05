@@ -6,32 +6,36 @@ use App\Encryptedcredential;
 use App\Group;
 use App\Helpers\Encryption;
 use App\User;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class GroupShareController extends Controller
 {
-    public function index(Request $request, Group $group)
+    public function index(Group $group): Factory|View|Application
     {
         $this->authorize('updateExceptPrimary', $group);
 
         return view('group.share', compact('group'));
     }
 
-    public function destroy(Request $request, Group $group)
+    public function destroy(Request $request, Group $group): RedirectResponse
     {
         $this->authorize('updateExceptPrimary', $group);
         $data = $request->validate([
             'userid' => ['required', 'exists:users,id']
         ]);
 
-        \App\Encryptedcredential::whereIn('credentialid', $group->credentials()->pluck('id'))->where('userid', $data['userid'])->delete();
+        Encryptedcredential::whereIn('credentialid', $group->credentials()->pluck('id'))->where('userid', $data['userid'])->delete();
         User::find($data['userid'])->groups()->detach($group);
 
         return redirect()->back();
     }
 
-    public function store(Request $request, Group $group)
+    public function store(Request $request, Group $group): RedirectResponse
     {
         $this->authorize('updateExceptPrimary', $group);
         $params = $this->validate($request, ['username' => 'required']);

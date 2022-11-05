@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Encryption;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Facades\DB;
 
 class SecurityCheckController extends Eloquent
 {
-    public function index()
+    public function index(): Factory|View|Application
     {
         $sql = "SELECT CASE WHEN groups.id = users.primarygroup THEN 'Private' ELSE groups.name END AS groupname,
                         groups.id AS groupid, credentials.id, credentials.site, credentials.username, credentials.notes, encryptedcredentials.data AS pass FROM credentials

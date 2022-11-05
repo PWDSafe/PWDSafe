@@ -11,7 +11,7 @@ class GroupTest extends TestCase
 {
     use DatabaseMigrations;
 
-    private $user;
+    private \App\User $user;
 
     public function setUp(): void
     {
@@ -26,7 +26,7 @@ class GroupTest extends TestCase
         $this->user = \App\User::first();
     }
 
-    public function testAddingGroup()
+    public function testAddingGroup(): void
     {
         $this->assertCount(1, $this->user->groups);
         $this->post('/groups/create', [
@@ -36,12 +36,12 @@ class GroupTest extends TestCase
         $this->assertDatabaseHas('groups', ['name' => 'testgroup']);
     }
 
-    public function testVisitingCreate()
+    public function testVisitingCreate(): void
     {
-        $this->get('/groups/create')->assertStatus(200)->assertSee('Create group');
+        $this->get('/groups/create')->assertOk()->assertSee('Create group');
     }
 
-    public function testDeletingGroup()
+    public function testDeletingGroup(): void
     {
         $this->post('/groups/create', [
             'groupname' => 'testgroup',
@@ -50,7 +50,7 @@ class GroupTest extends TestCase
         $this->assertCount(2, $this->user->fresh()->groups);
 
         $response = $this->get('/groups/' . $group->id . '/delete');
-        $response->assertStatus(200);
+        $response->assertOk();
         $response->assertSee('Are you sure');
 
         $this->delete('/groups/' . $group->id);
@@ -58,7 +58,7 @@ class GroupTest extends TestCase
         $this->assertCount(1, $this->user->fresh()->groups);
     }
 
-    public function testDeletingPrimaryGroup()
+    public function testDeletingPrimaryGroup(): void
     {
         $group = \App\Group::first();
 
@@ -70,7 +70,7 @@ class GroupTest extends TestCase
         $this->assertCount(1, $this->user->fresh()->groups);
     }
 
-    public function testRenamingGroup()
+    public function testRenamingGroup(): void
     {
         $this->assertCount(1, $this->user->groups);
         $this->post('/groups/create', [
@@ -90,17 +90,17 @@ class GroupTest extends TestCase
         $this->assertDatabaseHas('groups', ['name' => 'new name']);
     }
 
-    public function testVisitingShareGroup()
+    public function testVisitingShareGroup(): void
     {
         $this->post('/groups/create', [
             'groupname' => 'testgroup',
         ]);
 
         $group = \App\Group::orderBy('id', 'desc')->first();
-        $this->get('/groups/' . $group->id . '/share')->assertStatus(200)->assertSee('Share group');
+        $this->get('/groups/' . $group->id . '/share')->assertOk()->assertSee('Share group');
     }
 
-    public function testSharingGroup()
+    public function testSharingGroup(): void
     {
         $this->post('/groups/create', [
             'groupname' => 'testgroup',
@@ -147,11 +147,19 @@ class GroupTest extends TestCase
         $this->assertEquals('The super secret password', $decryptedcredential);
         $this->assertCount(2, \App\Encryptedcredential::all());
 
-        $this->post('/groups/' . $group->id . '/share', ['username' => 'does@not.exist'])->assertRedirect()->assertSessionHasErrors();
-        $this->post('/groups/' . $group->id . '/share', ['username' => 'second@email.com'])->assertRedirect()->assertSessionDoesntHaveErrors();
+        $this->post('/groups/' . $group->id . '/share', [
+            'username' => 'does@not.exist'
+        ])
+            ->assertRedirect()
+            ->assertSessionHasErrors();
+        $this->post('/groups/' . $group->id . '/share', [
+            'username' => 'second@email.com'
+        ])
+            ->assertRedirect()
+            ->assertSessionDoesntHaveErrors();
     }
 
-    public function testUnsharingGroup()
+    public function testUnsharingGroup(): void
     {
         $this->post('/groups/create', [
             'groupname' => 'testgroup',

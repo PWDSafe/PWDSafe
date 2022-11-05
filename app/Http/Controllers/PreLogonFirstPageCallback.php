@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
 
 class PreLogonFirstPageCallback extends Controller
 {
-    public function index() {
-        return redirect()->to('/groups/' . Auth::user()->primarygroup);
+    public function index(): RedirectResponse
+    {
+        return redirect()->to('/groups/' . auth()->user()->primarygroup);
     }
 }

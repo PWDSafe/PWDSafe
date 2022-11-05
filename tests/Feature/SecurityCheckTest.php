@@ -11,7 +11,7 @@ class SecurityCheckTest extends TestCase
 {
     use DatabaseMigrations;
 
-    private $user;
+    private \App\User $user;
 
     public function setUp(): void
     {
@@ -26,12 +26,14 @@ class SecurityCheckTest extends TestCase
         $this->user = \App\User::first();
     }
 
-    public function testEmptySecurityCheck()
+    public function testEmptySecurityCheck(): void
     {
-        $this->get('/securitycheck')->assertStatus(200)->assertSee('This means that your credentials all have different passwords');
+        $this->get('/securitycheck')
+            ->assertOk()
+            ->assertSee('This means that your credentials all have different passwords');
     }
 
-    public function testTwoDifferentPasswords()
+    public function testTwoDifferentPasswords(): void
     {
         $this->json('POST', '/cred/add', [
             'creds' => 'Site2',
@@ -49,10 +51,12 @@ class SecurityCheckTest extends TestCase
             'currentgroupid' => $this->user->primarygroup,
         ]);
 
-        $this->get('/securitycheck')->assertStatus(200)->assertSee('This means that your credentials all have different passwords');
+        $this->get('/securitycheck')
+            ->assertOk()
+            ->assertSee('This means that your credentials all have different passwords');
     }
 
-    public function testTwoSamePasswords()
+    public function testTwoSamePasswords(): void
     {
         $this->post("/groups/{$this->user->primarygroup}/add", [
             'site' => 'Site2',
@@ -68,6 +72,8 @@ class SecurityCheckTest extends TestCase
             'notes' => 'No notes here',
         ]);
 
-        $this->get('/securitycheck')->assertStatus(200)->assertSee('Password group');
+        $this->get('/securitycheck')
+            ->assertOk()
+            ->assertSee('Password group');
     }
 }

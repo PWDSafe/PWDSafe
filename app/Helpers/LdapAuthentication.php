@@ -1,9 +1,10 @@
 <?php
+
 namespace App\Helpers;
 
 class LdapAuthentication
 {
-    public static function login($user, $pass)
+    public static function login(string $user, string $pass): bool
     {
         ldap_set_option(null, LDAP_OPT_X_TLS_REQUIRE_CERT, LDAP_OPT_X_TLS_NEVER);
 
@@ -14,8 +15,8 @@ class LdapAuthentication
             throw new \Exception("Could not connect to LDAP-server");
         }
 
-        ldap_set_option( $conn, LDAP_OPT_PROTOCOL_VERSION, 3 );
-        ldap_set_option( $conn, LDAP_OPT_REFERRALS, 0 );
+        ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
+        ldap_set_option($conn, LDAP_OPT_REFERRALS, 0);
 
         $bind = @ldap_bind($conn, $upn, $pass);
 
@@ -37,9 +38,9 @@ class LdapAuthentication
             }
 
             return count($info) > 0;
-        } else {
-            // Wrong username or password
-            return false;
         }
+
+        // Wrong username or password
+        return false;
     }
 }

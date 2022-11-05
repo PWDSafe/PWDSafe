@@ -10,18 +10,13 @@ class RegisterAndLoginTest extends TestCase
 {
     use DatabaseMigrations;
 
-    /**
-     * A basic test example.
-     *
-     * @return void
-     */
-    public function testRedirectToLogin()
+    public function testRedirectToLogin(): void
     {
         $response = $this->get('/');
         $response->assertRedirect('/login');
     }
 
-    public function testRegisterAndLogin()
+    public function testRegisterAndLogin(): void
     {
         $this->registerUser();
         $this->assertDatabaseHas('users', ['email' => 'some@email.com']);
@@ -35,7 +30,7 @@ class RegisterAndLoginTest extends TestCase
         $result->assertRedirect('/groups/' . \App\User::first()->primarygroup);
     }
 
-    public function testRegisterAUserThatAlreadyExists()
+    public function testRegisterAUserThatAlreadyExists(): void
     {
         $this->registerUser();
         $this->assertDatabaseHas('users', ['email' => 'some@email.com']);
@@ -49,7 +44,7 @@ class RegisterAndLoginTest extends TestCase
         $this->assertCount(1, \App\User::all());
     }
 
-    public function testRegisterUserAndChangePasswordViaApi()
+    public function testRegisterUserAndChangePasswordViaApi(): void
     {
         $this->registerUser();
         $this->loginUser();
@@ -63,16 +58,16 @@ class RegisterAndLoginTest extends TestCase
             'username' => 'some@email.com',
             'old_password' => 'password',
             'new_password' => 'SecretPassword',
-        ])->assertStatus(200);
+        ])->assertOk();
 
         $this->assertTrue(Hash::check('SecretPassword', \App\User::first()->password));
     }
 
-    public function testRegisterUserAndChangePasswordViaWeb()
+    public function testRegisterUserAndChangePasswordViaWeb(): void
     {
         $this->registerUser();
         $this->loginUser();
-        $this->get('/changepwd')->assertStatus(200)->assertSee('Old password');
+        $this->get('/changepwd')->assertOk()->assertSee('Old password');
         $result = $this->from('/changepwd')->post('/changepwd', ['oldpwd' => 'something', 'password' => 'short']);
         $result->assertRedirect('/changepwd')->assertSessionHasErrors();
 
@@ -95,7 +90,7 @@ class RegisterAndLoginTest extends TestCase
         $this->assertNotEquals($olddata, $cred->fresh()->data);
     }
 
-    public function testLogout()
+    public function testLogout(): void
     {
         $this->registerUser();
         $this->loginUser();
@@ -104,7 +99,7 @@ class RegisterAndLoginTest extends TestCase
         $this->assertGuest();
     }
 
-    public function testRedirectedToPrimaryGroup()
+    public function testRedirectedToPrimaryGroup(): void
     {
         $this->registerUser();
         $this->loginUser();
@@ -112,7 +107,7 @@ class RegisterAndLoginTest extends TestCase
         $this->get('/')->assertRedirect('/groups/' . $user->primarygroup);
     }
 
-    public function testRegisterLogYouOutWhenVisitingAnyPage()
+    public function testRegisterLogYouOutWhenVisitingAnyPage(): void
     {
         $user = [
             'email' => 'some@email.com',

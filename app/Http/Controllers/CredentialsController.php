@@ -4,21 +4,29 @@ namespace App\Http\Controllers;
 use App\Credential;
 use App\Encryptedcredential;
 use App\Helpers\Encryption;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Redirector;
 use Illuminate\Validation\ValidationException;
 
 class CredentialsController extends Controller
 {
-    public function index(Request $request, Credential $credential) {
+    public function index(Credential $credential): Factory|View|Application
+    {
         $this->authorize('delete', $credential);
 
         return view('credential.index', compact('credential'));
     }
 
-    public function update(Request $request, Credential $credential)
+    public function update(Request $request, Credential $credential): Response|Redirector|RedirectResponse|Application|ResponseFactory
     {
         $this->authorize('update', $credential);
-        $params = $this->validate($request, [
+        $params = $request->validate([
             'creds' => 'required',
             'credu' => 'required',
             'credp' => 'required',
@@ -35,12 +43,12 @@ class CredentialsController extends Controller
 
         if ($request->wantsJson()) {
             return response(['status' => 'OK']);
-        } else {
-            return redirect(route('group', $params['currentgroupid']));
         }
+
+        return redirect(route('group', $params['currentgroupid']));
     }
 
-    public function delete(Request $request, Credential $credential)
+    public function delete(Credential $credential): Redirector|Application|RedirectResponse
     {
         $this->authorize('delete', $credential);
         $group = $credential->groupid;

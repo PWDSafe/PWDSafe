@@ -47,14 +47,17 @@ class User extends Authenticatable
         'primarygroup' => 'integer',
     ];
 
-    public $ldap = false;
+    public bool $ldap = false;
 
+    /**
+     * @return BelongsToMany<Group>
+     */
     public function groups(): BelongsToMany
     {
         return $this->belongsToMany(Group::class, 'usergroups', 'userid', 'groupid');
     }
 
-    public function changePassword($newpass)
+    public function changePassword(string $newpass): void
     {
         // Generate new public and private key
         $enc = new Encryption();
@@ -76,11 +79,11 @@ class User extends Authenticatable
     }
 
     /**
-     * @param $currentpass
-     * @param $newPubKey
+     * @param string $currentpass
+     * @param string $newPubKey
      * @param Encryption $enc
      */
-    private function updateEncryptedCredentials($currentpass, $newPubKey, Encryption $enc)
+    private function updateEncryptedCredentials(string $currentpass, string $newPubKey, Encryption $enc): void
     {
         $encryptedcredentials = Encryptedcredential::where('userid', $this->id)->get();
         foreach ($encryptedcredentials as $credential) {
@@ -91,7 +94,7 @@ class User extends Authenticatable
         }
     }
 
-    public static function registerUser($username, $password)
+    public static function registerUser(string $username, string $password): void
     {
         $enc = app(Encryption::class);
         list($privKey, $pubKey) = $enc->genNewKeys();

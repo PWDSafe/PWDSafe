@@ -2,11 +2,12 @@
 namespace App\Http\Controllers;
 
 use App\Credential;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class ImportController extends Controller
 {
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $params = $this->validate($request, [
             'group' => 'required',

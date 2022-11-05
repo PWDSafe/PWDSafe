@@ -6,15 +6,22 @@ use App\Credential;
 use App\Encryptedcredential;
 use App\Group;
 use App\Helpers\Encryption;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Redirector;
 
 class GroupController extends Controller
 {
-    public function index(Request $request, Group $group)
+    public function index(Group $group): Factory|View|Application
     {
         $this->authorize('view', $group);
 
-        $credentials = \App\Credential::with('group:id,name')
+        $credentials = Credential::with('group:id,name')
             ->where('groupid', $group->id)
             ->orderBy('site')
             ->get();
@@ -22,18 +29,18 @@ class GroupController extends Controller
         return view('group', compact('group', 'credentials'));
     }
 
-    public function create()
+    public function create(): Factory|View|Application
     {
         return view('group.create');
     }
 
-    public function addCredential(Group $group)
+    public function addCredential(Group $group): Factory|View|Application
     {
         $this->authorize('update', $group);
         return view('credential.add', compact('group'));
     }
 
-    public function storeCredential(Request $request, Group $group)
+    public function storeCredential(Request $request, Group $group): Response|Redirector|RedirectResponse|Application|ResponseFactory
     {
         $this->authorize('update', $group);
 
@@ -68,9 +75,11 @@ class GroupController extends Controller
         }
     }
 
-    public function store(Request $request)
+    public function store(Request $request): Response|Redirector|RedirectResponse|Application|ResponseFactory
     {
-        $params = $this->validate($request, ['groupname' => 'required']);
+        $params = $request->validate([
+            'groupname' => 'required'
+        ]);
         $group = new Group;
         $group->name = $params['groupname'];
         $group->save();
@@ -81,8 +90,8 @@ class GroupController extends Controller
                 'status' => "OK",
                 "groupid" => $group->id
             ]);
-        } else {
-            return redirect(route('group', $group->id));
         }
+
+        return redirect()->route('group', $group->id);
     }
 }

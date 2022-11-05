@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Credential;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 
@@ -9,7 +10,7 @@ class CredentialsTest extends TestCase
 {
     use DatabaseMigrations;
 
-    private $user;
+    private \App\User $user;
 
     public function setUp(): void
     {
@@ -24,7 +25,7 @@ class CredentialsTest extends TestCase
         $this->user = \App\User::first();
     }
 
-    public function testAddingCredentials()
+    public function testAddingCredentials(): void
     {
         $this->get("/groups/{$this->user->primarygroup}/add")->assertSee('Add credential');
         $this->addTestCredential();
@@ -35,7 +36,7 @@ class CredentialsTest extends TestCase
         $this->get('/groups/' . $this->user->primarygroup)->assertSee('Some site');
     }
 
-    public function testUpdatingCredentials()
+    public function testUpdatingCredentials(): void
     {
         $this->addTestCredential();
         $this->assertDatabaseHas('credentials', ['site' => 'Some site']);
@@ -45,7 +46,7 @@ class CredentialsTest extends TestCase
         $this->put('/credential/' . $credential->id, [
             'creds' => 'New site',
             'credu' => $credential->username,
-            'credp' => $this->getPassword($credential, $this->user),
+            'credp' => $this->getPassword($credential),
             'credn' => '',
             'currentgroupid' => $credential->groupid,
         ]);
@@ -63,7 +64,7 @@ class CredentialsTest extends TestCase
             'currentgroupid' => $credential->groupid,
         ]);
 
-        $this->assertEquals($newpassword, $this->getPassword($credential, $this->user));
+        $this->assertEquals($newpassword, $this->getPassword($credential));
 
         $this->json('POST', '/groups/create', [
             'groupname' => 'testgroup',
@@ -83,7 +84,7 @@ class CredentialsTest extends TestCase
         $this->assertEquals('New site', $credential->site);
     }
 
-    public function testRemovingCredentials()
+    public function testRemovingCredentials(): void
     {
         $this->json('POST', "/groups/{$this->user->primarygroup}/add", [
             'site' => 'Some site',
@@ -101,7 +102,7 @@ class CredentialsTest extends TestCase
         $this->assertDatabaseMissing('credentials', ['site' => 'Some site']);
     }
 
-    public function testImportingCredentials()
+    public function testImportingCredentials(): void
     {
         $filename = 'credentials_to_import.csv';
         $path = base_path('tests/assets/') . $filename;
@@ -114,12 +115,12 @@ class CredentialsTest extends TestCase
         $this->assertCount(2, \App\Credential::all());
     }
 
-    private function getPassword($credential, $user, $password = 'password')
+    private function getPassword(Credential $credential): mixed
     {
         return json_decode($this->get('/pwdfor/' . $credential->id)->getContent(), true)['pwd'];
     }
 
-    private function addTestCredential()
+    private function addTestCredential(): void
     {
         $this->post('/groups/' . $this->user->primarygroup . '/add', [
             'site' => 'Some site',

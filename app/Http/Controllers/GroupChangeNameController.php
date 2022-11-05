@@ -3,18 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Group;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Redirector;
 
 class GroupChangeNameController extends Controller
 {
-    public function index(Request $request, Group $group)
+    public function index(Group $group): Factory|View|Application
     {
         $this->authorize('updateExceptPrimary', $group);
 
         return view('group.name', compact('group'));
     }
 
-    public function store(Request $request, Group $group)
+    public function store(Request $request, Group $group): Response|Redirector|RedirectResponse|Application|ResponseFactory
     {
         $this->authorize('updateExceptPrimary', $group);
         $params = $this->validate($request, [
@@ -28,6 +35,10 @@ class GroupChangeNameController extends Controller
         $group->name = $groupname;
         $group->save();
 
-        return $request->wantsJson() ? response(['status' => 'OK']) : redirect(route('group', $group->id));
+        if ($request->wantsJson()) {
+            return response(['status' => 'OK']);
+        }
+
+        return redirect()->route('group', $group->id);
     }
 }

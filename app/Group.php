@@ -13,26 +13,35 @@ class Group extends Eloquent
 
     public $timestamps = false;
 
+    /**
+     * @return HasMany<Credential>
+     */
     public function credentials(): HasMany
     {
         return $this->hasMany(Credential::class, 'groupid');
     }
 
+    /**
+     * @return BelongsToMany<User>
+     */
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'usergroups', 'groupid', 'userid');
     }
 
+    /**
+     * @return BelongsToMany<User>
+     */
     public function usersWithoutCurrentUser(): BelongsToMany
     {
         return $this->users()->where('userid', '!=', auth()->user()->id);
     }
 
-    public function deleteGroup()
+    public function deleteGroup(): void
     {
-        $credentialids = \App\Credential::where('groupid', $this->id)->pluck('id');
-        \App\Encryptedcredential::whereIn('credentialid', $credentialids)->delete();
-        \App\Credential::where('groupid', $this->id)->delete();
+        $credentialids = Credential::where('groupid', $this->id)->pluck('id');
+        Encryptedcredential::whereIn('credentialid', $credentialids)->delete();
+        Credential::where('groupid', $this->id)->delete();
         $this->users()->detach();
         $this->delete();
     }

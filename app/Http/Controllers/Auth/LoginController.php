@@ -6,10 +6,15 @@ use App\Helpers\LdapAuthentication;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use App\User;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use PragmaRX\Google2FAQRCode\Google2FA;
+use Symfony\Component\HttpFoundation\Response;
 
 class LoginController extends Controller
 {
@@ -36,7 +41,7 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
-    public function login(Request $request, Google2FA $google2fa)
+    public function login(Request $request, Google2FA $google2fa): JsonResponse|Redirector|RedirectResponse|Application|Response
     {
         $this->validateLogin($request);
 
@@ -74,7 +79,7 @@ class LoginController extends Controller
         return $this->sendFailedLoginResponse($request);
     }
 
-    protected function attemptLogin(Request $request)
+    protected function attemptLogin(Request $request): bool
     {
         $credentials = $request->only('email', 'password');
 
@@ -83,11 +88,11 @@ class LoginController extends Controller
 
             return true;
         } else if (config('ldap.enabled') && LdapAuthentication::login($credentials['email'], $credentials['password'])) {
-            $user = \App\User::where('email', $credentials['email'])->first();
+            $user = User::where('email', $credentials['email'])->first();
 
             if (!$user) {
-                \App\User::registerUser($credentials['email'], $credentials['password']);
-                $user = \App\User::where('email', $credentials['email'])->first();
+                User::registerUser($credentials['email'], $credentials['password']);
+                $user = User::where('email', $credentials['email'])->first();
             }
 
             Auth::loginUsingId($user->id);
@@ -99,8 +104,8 @@ class LoginController extends Controller
         return false;
     }
 
-    protected function authenticated(Request $request, $user)
+    protected function authenticated(Request $request, User $user): RedirectResponse
     {
-        return redirect(route('group', $user->primarygroup));
+        return redirect()->route('group', $user->primarygroup);
     }
 }

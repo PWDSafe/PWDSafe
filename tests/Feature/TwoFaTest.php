@@ -11,18 +11,18 @@ class TwoFaTest extends TestCase
 {
     use DatabaseMigrations;
 
-    public function test2FaSettingsNotReachable()
+    public function test2FaSettingsNotReachable(): void
     {
         $this->get(route('settings.twofa'))->assertStatus(302);
     }
 
-    public function test2FaEnable()
+    public function test2FaEnable(): void
     {
         $google2fa = new Google2FA();
         $user = $this->createAndLoginUser();
         $this->assertNull($user->two_factor_secret);
         $this->get('/settings/twofa')
-            ->assertStatus(200)
+            ->assertOk()
             ->assertSee('Two factor authentication')
             ->assertSee('Activate 2FA');
         $this->assertTrue(session()->has('2fa_secret'));
@@ -50,7 +50,7 @@ class TwoFaTest extends TestCase
         $this->get('/settings/twofa')->assertSee('Disable 2FA');
     }
 
-    public function testLoginWith2FaEnabled()
+    public function testLoginWith2FaEnabled(): void
     {
         $google2fa = new Google2FA();
         $user = User::factory()->create(['two_factor_secret' => encrypt($google2fa->generateSecretKey())]);
@@ -67,7 +67,7 @@ class TwoFaTest extends TestCase
         $this->get('/securitycheck')->assertOk();
     }
 
-    public function testDisable2Fa()
+    public function testDisable2Fa(): void
     {
         $google2fa = new Google2FA();
         $user = User::factory()->create(['two_factor_secret' => encrypt($google2fa->generateSecretKey())]);
@@ -75,7 +75,7 @@ class TwoFaTest extends TestCase
         session()->put('password', 'testing123');
 
         $this->get('/settings/twofa')
-            ->assertStatus(200)
+            ->assertOk()
             ->assertSee('Two factor authentication')
             ->assertSee('Disable 2FA');
 

@@ -11,12 +11,18 @@ class Credential extends Eloquent
 {
     public $timestamps = false;
 
+    /**
+     * @return BelongsTo<Group, Credential>
+     */
     public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class, 'groupid');
     }
 
-    public static function addCredentials($params)
+    /**
+     * @param array<string, string|int|null> $params
+     */
+    public static function addCredentials(array $params): void
     {
         $credential = new Credential;
         $credential->groupid = $params['currentgroupid'];
@@ -37,7 +43,10 @@ class Credential extends Eloquent
         }
     }
 
-    public static function updateCredentials(Credential $credential, $params)
+    /**
+     * @param array<string, string|int|null> $params
+     */
+    public static function updateCredentials(Credential $credential, array $params): void
     {
         $credential->site = $params['creds'];
         $credential->username = $params['credu'];
@@ -52,12 +61,15 @@ class Credential extends Eloquent
         }
     }
 
-    public function deleteCredential()
+    public function deleteCredential(): void
     {
         Encryptedcredential::where('credentialid', $this->id)->delete();
         $this->delete();
     }
 
+    /**
+     * @return HasMany<Encryptedcredential>
+     */
     public function encryptedcredentials(): HasMany
     {
         return $this->hasMany(Encryptedcredential::class, 'credentialid');

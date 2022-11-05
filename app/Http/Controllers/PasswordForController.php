@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 use App\Credential;
 use App\Encryptedcredential;
 use App\Helpers\Encryption;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Http\Response;
 
 class PasswordForController extends Controller
 {
-    public function index(Credential $credential)
+    public function index(Credential $credential): Response|Application|ResponseFactory
     {
         $this->authorize('view', $credential);
 

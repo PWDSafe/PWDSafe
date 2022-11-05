@@ -9,20 +9,22 @@ abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
 
-    protected function registerUser($user = [
-        'email' => 'some@email.com',
-        'password' => 'password',
-        'password_confirmation' => 'password'
-    ]) {
-        $this->post('/register', $user);
+    protected function registerUser(): void {
+        $this->post('/register', [
+            'email' => 'some@email.com',
+            'password' => 'password',
+            'password_confirmation' => 'password'
+        ]);
         $this->post('/logout');
     }
 
-    protected function loginUser($user = [
-        'email' => 'some@email.com',
-        'password' => 'password'
-    ]) {
-        return $this->from('/login')->post('/login', $user);
+    protected function loginUser(): \Illuminate\Testing\TestResponse
+    {
+        return $this->from('/login')
+            ->post('/login', [
+            'email' => 'some@email.com',
+            'password' => 'password'
+        ]);
     }
 
     protected function createAndLoginUser(): User

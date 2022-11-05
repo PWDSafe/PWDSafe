@@ -9,7 +9,11 @@ class Encryption
 {
     // Used for encrypting data longer than encryption key
     private const CHUNK_SIZE = 500;
-    public function genNewKeys()
+
+    /**
+     * @return array<int, string>
+     */
+    public function genNewKeys(): array
     {
         $config = array(
             "digest_alg" => "sha512",
@@ -28,7 +32,7 @@ class Encryption
      * @param $pwd string to use as key for the encryption
      * @return string
      */
-    public function enc($data, $pwd)
+    public function enc(string $data, string $pwd): string
     {
         $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length("aes256"));
         $encrypted = openssl_encrypt($data, "aes256", $pwd, 0, $iv);
@@ -40,14 +44,14 @@ class Encryption
      * @param $pwd string to use as key for the decryption
      * @return string
      */
-    public function dec($data, $pwd)
+    public function dec(string $data, string $pwd): string
     {
         list($data, $biniv) = explode(":", $data);
         $iv = hex2bin($biniv);
         return openssl_decrypt($data, "aes256", $pwd, 0, $iv);
     }
 
-    public function encWithPub($data, $pubkey)
+    public function encWithPub(string $data, string $pubkey): string
     {
         $encrypted = '';
 
@@ -66,7 +70,7 @@ class Encryption
         return $encrypted;
     }
 
-    public function decWithPriv($data, $privkey)
+    public function decWithPriv(string $data, string $privkey): string
     {
         $decrypted = '';
         if (str_contains($data, '-')) {
