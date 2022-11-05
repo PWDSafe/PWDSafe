@@ -27,7 +27,7 @@ class RegisterAndLoginTest extends TestCase
 
         $result = $this->from('/login')->post('/login', ['email' => 'some@email.com', 'password' => 'password']);
         $result->assertSessionDoesntHaveErrors();
-        $result->assertRedirect('/groups/' . \App\User::first()->primarygroup);
+        $result->assertRedirect('/groups/' . \App\User::firstOrFail()->primarygroup);
     }
 
     public function testRegisterAUserThatAlreadyExists(): void
@@ -60,7 +60,7 @@ class RegisterAndLoginTest extends TestCase
             'new_password' => 'SecretPassword',
         ])->assertOk();
 
-        $this->assertTrue(Hash::check('SecretPassword', \App\User::first()->password));
+        $this->assertTrue(Hash::check('SecretPassword', \App\User::firstOrFail()->password));
     }
 
     public function testRegisterUserAndChangePasswordViaWeb(): void
@@ -74,7 +74,7 @@ class RegisterAndLoginTest extends TestCase
         $result = $this->post('/changepwd', ['oldpwd' => 'password', 'password' => 'short', 'password_confirmation' => 'short']);
         $result->assertRedirect('/changepwd')->assertSessionHasErrors();
 
-        $user = \App\User::first();
+        $user = \App\User::firstOrFail();
         $this->post("/groups/{$user->primarygroup}/add", [
             'site' => 'Site1',
             'user' => 'The username',
@@ -82,7 +82,7 @@ class RegisterAndLoginTest extends TestCase
             'notes' => 'Some notes here',
         ]);
 
-        $cred = \App\Encryptedcredential::first();
+        $cred = \App\Encryptedcredential::firstOrFail();
         $olddata = $cred->data;
         $result = $this->post('/changepwd', ['oldpwd' => 'password', 'password' => 'longpassword', 'password_confirmation' => 'longpassword']);
         $result->assertRedirect('/changepwd')->assertSessionDoesntHaveErrors();
@@ -103,7 +103,7 @@ class RegisterAndLoginTest extends TestCase
     {
         $this->registerUser();
         $this->loginUser();
-        $user = \App\User::first();
+        $user = \App\User::firstOrFail();
         $this->get('/')->assertRedirect('/groups/' . $user->primarygroup);
     }
 

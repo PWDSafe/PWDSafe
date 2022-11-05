@@ -1,9 +1,8 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Credential;
-use App\Encryptedcredential;
-use App\Helpers\Encryption;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\View\Factory;
@@ -12,7 +11,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
-use Illuminate\Validation\ValidationException;
 
 class CredentialsController extends Controller
 {

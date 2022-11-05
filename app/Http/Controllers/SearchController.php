@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Credential;
-use App\Policies\CredentialPolicy;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;

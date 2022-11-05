@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Group;
 use App\Helpers\Encryption;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExportController extends Controller
 {
-    public function store(Group $group): \Symfony\Component\HttpFoundation\StreamedResponse
+    public function store(Group $group): StreamedResponse
     {
         abort_unless(auth()->user()->groups->contains('id', $group->id), 403);
         $credentials = $group->credentials()->withWhereHas('encryptedcredentials', function ($query) {

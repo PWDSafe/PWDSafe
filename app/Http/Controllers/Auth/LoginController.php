@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Helpers\LdapAuthentication;
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
 use App\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;

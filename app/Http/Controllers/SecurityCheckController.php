@@ -23,6 +23,7 @@ class SecurityCheckController extends Eloquent
         $result = DB::select($sql, ['userid' => auth()->user()->id]);
         $encryption = app(Encryption::class);
         $data = [];
+
         foreach ($result as $row) {
             $pwd = $encryption->decWithPriv(
                 $row->pass,
