@@ -1,6 +1,8 @@
 stages:
   - test
   - analysis
+  - docker
+  - deploy
 
 cache:
   paths:
@@ -54,3 +56,35 @@ code style:
     - composer install --no-suggest --no-progress
   script:
     - ./vendor/bin/pint --test
+
+build docker:
+  image: docker:20.10
+  stage: docker
+  needs:
+    - test
+  cache: []
+  services:
+    - docker:20.10-dind
+  variables:
+    DOCKER_TLS_CERTDIR: ''
+  script:
+    - echo $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+    - docker build -f Dockerfile -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+
+deploy docker:
+  image: docker:20.10
+  stage: docker
+  needs:
+    - build docker
+  cache: []
+  services:
+    - docker:20.10-dind
+  variables:
+    DOCKER_TLS_CERTDIR: ''
+  script:
+    - echo $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+    - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+    - echo $DOCKER_ACCESS_TOKEN | docker login -u $DOCKER_USERNAME --password-stdin
+    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA pwdsafe/pwdsafe:$CI_COMMIT_SHORT_SHA
+    - docker push pwdsafe/pwdsafe:$CI_COMMIT_SHORT_SHA
