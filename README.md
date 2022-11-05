@@ -2,6 +2,11 @@ PWDSafe
 =======
 [![Build Status](https://travis-ci.org/PWDSafe/PWDSafe.svg?branch=master)](https://travis-ci.org/PWDSafe/PWDSafe)
 
+Deploy with docker
+------------------
+You may deploy this application using docker or a container orchestrator like Kubernetes/OpenShift.
+See latest image tags and documentation on [Docker Hub](https://hub.docker.com/r/pwdsafe/pwdsafe).
+
 Prerequisite
 -----------
 * Webserver with support for PHP
