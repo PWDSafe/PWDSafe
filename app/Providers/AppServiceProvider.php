@@ -14,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        app()->singleton(Encryption::class, function() {
+        app()->singleton(Encryption::class, function () {
             return new Encryption();
         });
     }

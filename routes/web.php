@@ -28,7 +28,7 @@ use App\Http\Controllers\SearchController;
 |
 */
 
-Route::group(['middleware' => 'auth'], function() {
+Route::group(['middleware' => 'auth'], function () {
     Route::get('/', [PreLogonFirstPageCallback::class, 'index']);
     Route::get('/groups/create', [GroupController::class, 'create'])->name('groupCreate');
     Route::post('/groups/create', [GroupController::class, 'store']);

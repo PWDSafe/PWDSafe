@@ -24,7 +24,7 @@ class Credential extends Eloquent
      */
     public static function addCredentials(array $params): void
     {
-        $credential = new Credential;
+        $credential = new Credential();
         $credential->groupid = $params['currentgroupid'];
         $credential->site = $params['creds'];
         $credential->username = $params['credu'];
@@ -35,7 +35,7 @@ class Credential extends Eloquent
         $users = $group->users()->pluck('pubkey', 'users.id');
 
         foreach ($users as $userid => $pubkey) {
-            $encrypted = new Encryptedcredential;
+            $encrypted = new Encryptedcredential();
             $encrypted->credentialid = $credential->id;
             $encrypted->userid = $userid;
             $encrypted->data = app(Encryption::class)->encWithPub($params['credp'], $pubkey);

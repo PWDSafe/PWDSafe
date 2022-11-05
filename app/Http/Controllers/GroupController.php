@@ -51,7 +51,7 @@ class GroupController extends Controller
             'notes' => 'nullable'
         ]);
 
-        $credential = new Credential;
+        $credential = new Credential();
         $credential->groupid = $group->id;
         $credential->site = $params['site'];
         $credential->username = $params['user'];
@@ -61,7 +61,7 @@ class GroupController extends Controller
         $users = $group->users()->pluck('pubkey', 'users.id');
 
         foreach ($users as $userid => $pubkey) {
-            $encrypted = new Encryptedcredential;
+            $encrypted = new Encryptedcredential();
             $encrypted->credentialid = $credential->id;
             $encrypted->userid = $userid;
             $encrypted->data = app(Encryption::class)->encWithPub($params['pass'], $pubkey);
@@ -80,7 +80,7 @@ class GroupController extends Controller
         $params = $request->validate([
             'groupname' => 'required'
         ]);
-        $group = new Group;
+        $group = new Group();
         $group->name = $params['groupname'];
         $group->save();
         auth()->user()->groups()->attach($group);

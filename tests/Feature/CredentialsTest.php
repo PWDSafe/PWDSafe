@@ -106,7 +106,7 @@ class CredentialsTest extends TestCase
     {
         $filename = 'credentials_to_import.csv';
         $path = base_path('tests/assets/') . $filename;
-        $file = new \Symfony\Component\HttpFoundation\File\UploadedFile ($path, $filename, 'text/csv', null, true);
+        $file = new \Symfony\Component\HttpFoundation\File\UploadedFile($path, $filename, 'text/csv', null, true);
         $res = $this->post('/import', [
             'csvfile' => $file,
             'group' => $this->user->primarygroup,

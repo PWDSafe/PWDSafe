@@ -69,7 +69,7 @@ class GroupShareController extends Controller
                 $row->data,
                 $encryption->dec(auth()->user()->privkey, session()->get('password'))
             );
-            $encryptedcred = new Encryptedcredential;
+            $encryptedcred = new Encryptedcredential();
             $encryptedcred->credentialid = $row->credentialid;
             $encryptedcred->userid = $user->id;
             $encryptedcred->data = $encryption->encWithPub($data, $user->pubkey);

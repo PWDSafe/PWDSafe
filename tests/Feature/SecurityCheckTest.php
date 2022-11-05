@@ -2,9 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Helpers\Encryption;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Support\Facades\Session;
 use Tests\TestCase;
 
 class SecurityCheckTest extends TestCase

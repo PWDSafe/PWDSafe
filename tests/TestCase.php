@@ -9,7 +9,8 @@ abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
 
-    protected function registerUser(): void {
+    protected function registerUser(): void
+    {
         $this->post('/register', [
             'email' => 'some@email.com',
             'password' => 'password',
