@@ -38,3 +38,4 @@ COPY --from=frontend /app/public/css/ /var/www/html/public/css/
 COPY --from=frontend /app/public/js/ /var/www/html/public/js/
 COPY --from=frontend /app/public/mix-manifest.json /var/www/html/public/mix-manifest.json
 RUN chmod 777 -R storage/
+ENTRYPOINT ["/var/www/html/scripts/entrypoint.sh"]
