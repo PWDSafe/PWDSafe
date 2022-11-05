@@ -46,3 +46,11 @@ static analysis:
     - composer install --no-suggest --no-progress
   script:
     - ./vendor/bin/phpstan analyse
+
+code style:
+  image: $BUILDIMAGE
+  stage: analysis
+  before_script:
+    - composer install --no-suggest --no-progress
+  script:
+    - ./vendor/bin/pint --test
