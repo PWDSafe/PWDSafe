@@ -11,19 +11,18 @@
     },
     "dependencies": {
         "@soerenmartius/vue3-clipboard": "^0.1.2",
-        "vue": "^3.2.37"
+        "vue": "^3.2.41"
     },
     "devDependencies": {
         "@tailwindcss/line-clamp": "^0.4.2",
-        "autoprefixer": "^10.4.7",
+        "autoprefixer": "^10.4.13",
         "axios": "^0.27.2",
-        "laravel-mix": "^6.0.12",
-        "laravel-mix-tailwind": "^0.1.2",
-        "postcss": "^8.4.14",
+        "laravel-mix": "^6.0.49",
+        "postcss": "^8.4.18",
         "resolve-url-loader": "^5.0.0",
-        "sass": "^1.29.0",
-        "sass-loader": "^13.0.2",
-        "tailwindcss": "^3.1.4",
-        "vue-loader": "^17.0.0"
+        "sass": "^1.56.0",
+        "sass-loader": "^13.1.0",
+        "tailwindcss": "^3.2.2",
+        "vue-loader": "^17.0.1"
     }
 }
