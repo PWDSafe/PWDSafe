@@ -16,6 +16,7 @@ use App\Http\Controllers\GroupController;
 use App\Http\Controllers\GroupDeleteController;
 use App\Http\Controllers\GroupShareController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\HealthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,6 +65,8 @@ Route::group(['middleware' => 'auth'], function () {
 
 Route::get('/verifyotp', [VerifyOtpController::class, 'index'])->name('verifyotp');
 Route::post('/verifyotp', [VerifyOtpController::class, 'store']);
+
+Route::get('/health', [HealthController::class, 'index']);
 
 Auth::routes([
     'reset' => false,
