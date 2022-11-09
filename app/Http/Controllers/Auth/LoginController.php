@@ -67,6 +67,10 @@ class LoginController extends Controller
                 $request->session()->put('auth.password_confirmed_at', time());
             }
 
+            if (!auth()->user()->canDecryptPrivkey(session('password'))) {
+                return redirect()->route('changepassword');
+            }
+
             return $this->sendLoginResponse($request);
         }
 

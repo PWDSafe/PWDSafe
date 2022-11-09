@@ -114,4 +114,9 @@ class User extends Authenticatable
 
         $user->groups()->attach($group);
     }
+
+    public function canDecryptPrivkey(string $password): bool
+    {
+        return strlen(app(Encryption::class)->dec($this->privkey, $password)) !== 0;
+    }
 }
