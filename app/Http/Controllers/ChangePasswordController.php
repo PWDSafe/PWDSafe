@@ -32,7 +32,6 @@ class ChangePasswordController extends Controller
         return config('ldap.enabled') ?
             $this->handleLdapPasswordChange($validated) :
             $this->handleLocalPasswordChange($validated);
-
     }
 
     /**
