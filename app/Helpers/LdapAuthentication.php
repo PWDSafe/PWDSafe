@@ -8,7 +8,9 @@ class LdapAuthentication
     {
         ldap_set_option(null, LDAP_OPT_X_TLS_REQUIRE_CERT, LDAP_OPT_X_TLS_NEVER);
 
-        $upn = $user . "@" . config('ldap.domain');
+        $upn = config('ldap.openldap') ?
+            "cn=$user," . config('ldap.basedn') :
+            $user . "@" . config('ldap.domain');
 
         $conn = ldap_connect(config('ldap.server'));
         if (!$conn) {
