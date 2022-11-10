@@ -31,7 +31,7 @@
     </div>
 </template>
 <script setup>
-import { ref, onUnmounted, watch, defineEmits } from "vue";
+import { ref, onUnmounted, watch } from "vue";
 
 const open = ref(false)
 const emit = defineEmits()

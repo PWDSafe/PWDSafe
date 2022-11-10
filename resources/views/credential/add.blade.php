@@ -17,12 +17,11 @@
                 </div>
                 <div class="mb-2">
                     <pwdsafe-label class="mb-1" for="pass">Password</pwdsafe-label>
-                    <pwdsafe-input type="password" name="pass" id="pass" class="form-control"
-                                   autocomplete="off" required></pwdsafe-input>
+                    <pwdsafe-textarea name="pass" id="pass" rows="5" required></pwdsafe-textarea>
                 </div>
                 <div class="mb-2">
                     <pwdsafe-label class="mb-1" for="notes">Notes</pwdsafe-label>
-                    <pwdsafe-textarea name="notes" id="notes"></pwdsafe-textarea>
+                    <pwdsafe-textarea name="notes" id="notes" rows="5"></pwdsafe-textarea>
                 </div>
             </div>
             <div class="flex justify-between">
