@@ -55,7 +55,5 @@ This application uses
 ---------------------
 The following libraries/frameworks is used by the application:
 - Laravel - https://laravel.com/
-- Bootstrap - https://github.com/twbs/bootstrap
-- JQuery - https://github.com/jquery/jquery
-- tailwindcss - https://tailwindcss.com/
+- Tailwind CSS - https://tailwindcss.com/
 
