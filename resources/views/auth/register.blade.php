@@ -20,9 +20,14 @@
                         Username
                     </label>
                     <div class="mb-1">
-                        <input type="text" name="email" id="inputEmail"
+                        <input type="text"
+                               name="email"
+                               id="inputEmail"
                                class="block w-full rounded-md px-4 py-2 placeholder-gray-400 border appearance-none focus:outline-none focus:shadow-outline-blue focus:border-blue-500 transition duration-150 ease-in-out @if($errors->any()) border-red-500 @endif"
-                               value="{{ old('email') }}" required autofocus>
+                               value="{{ old('email') }}"
+                               required
+                               :autofocus="'autofocus'"
+                        >
                     </div>
                     <label class="block text-sm font-medium leading-5 text-gray-700 mb-1 mt-6" for="inputPassword">
                         Password
