@@ -8,7 +8,7 @@
             <div class="mb-4">
                 <div class="mb-2">
                     <pwdsafe-label class="mb-1" for="site">Site</pwdsafe-label>
-                    <pwdsafe-input type="text" name="site" id="site" autocomplete="off" required></pwdsafe-input>
+                    <pwdsafe-input type="text" name="site" id="site" autocomplete="off" required autofocus></pwdsafe-input>
                 </div>
                 <div class="mb-2">
                     <pwdsafe-label class="mb-1" for="user">Username</pwdsafe-label>
