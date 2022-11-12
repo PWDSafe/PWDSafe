@@ -33,7 +33,7 @@
                 <div class="mb-4">
                     <div class="mb-2">
                         <pwdsafe-label class="mb-1" for="oldpwd">Old password</pwdsafe-label>
-                        <pwdsafe-input type="password" name="oldpwd" id="oldpwd" autocomplete="off" required></pwdsafe-input>
+                        <pwdsafe-input type="password" name="oldpwd" id="oldpwd" autocomplete="off" required autofocus></pwdsafe-input>
                     </div>
                     <div class="mb-2">
                         <pwdsafe-label class="mb-1" for="password">New password</pwdsafe-label>
