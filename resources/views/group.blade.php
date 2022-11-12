@@ -11,14 +11,22 @@
                 @endif
             </h3>
             <div class="flex">
-                <pwdsafe-button btntype="a" href="{{ route('addCredentials', $group->id) }}" classes="mr-2"><i class="fa fa-plus"></i> Add</pwdsafe-button>
+                <pwdsafe-button btntype="a" href="{{ route('addCredentials', $group->id) }}" classes="mr-2 flex items-center">
+                    <heroicons-plus-icon class="h-5 w-5 mr-1"></heroicons-plus-icon> Add
+                </pwdsafe-button>
                 <form method="post" action="{{ route('export', $group->id) }}">
                     @csrf
-                    <pwdsafe-button classes="mr-2" theme="secondary"><i class="fa fa-file-export"></i> Export</pwdsafe-button>
+                    <pwdsafe-button classes="mr-2 flex items-center" theme="secondary">
+                        <heroicons-arrow-down-on-square-icon class="h-5 w-5 mr-1"></heroicons-arrow-down-on-square-icon>
+                        Export
+                    </pwdsafe-button>
                 </form>
                 <pwdsafe-modal>
                     <template v-slot:trigger>
-                        <pwdsafe-button theme="secondary"><i class="fa fa-file-import"></i> Import</pwdsafe-button>
+                        <pwdsafe-button theme="secondary" class="flex items-center">
+                            <heroicons-arrow-up-on-square-icon class="h-5 w-5 mr-1"></heroicons-arrow-up-on-square-icon>
+                            Import
+                        </pwdsafe-button>
                     </template>
                     <template v-slot:default>
                         <h3 class="text-2xl mb-4">Import credentials</h3>
@@ -41,7 +49,7 @@
                     <dropdown-menu>
                         <template #trigger>
                             <span class="h-full flex items-center border text-gray-600 border-gray-600 hover:bg-gray-600 hover:text-gray-100 px-4 py-1 rounded transition duration-200 ml-2">
-                                <i class="fas fa-cog"></i>
+                                <heroicons-cog-6-tooth-icon class="h-5 w-5"></heroicons-cog-6-tooth-icon>
                             </span>
                         </template>
                         <template #default>
@@ -49,7 +57,9 @@
                                 <dropdown-link href="/groups/{{ $group->id }}/name">Change name</dropdown-link>
                                 <dropdown-link href="/groups/{{ $group->id }}/share">Share</dropdown-link>
                                 <div class="my-1 border-b"></div>
-                                <dropdown-link href="/groups/{{ $group->id }}/delete"><i class="far fa-trash-alt"></i> Delete</dropdown-link>
+                                <dropdown-link href="/groups/{{ $group->id }}/delete" class="flex items-center gap-x-1">
+                                    <heroicons-trash-icon class="h-5 w-5"></heroicons-trash-icon> Delete
+                                </dropdown-link>
                             </div>
                         </template>
                     </dropdown-menu>

@@ -11,6 +11,7 @@
         "watch-poll": "mix watch -- --watch-options-poll=1000"
     },
     "dependencies": {
+        "@heroicons/vue": "^2.0.13",
         "@soerenmartius/vue3-clipboard": "^0.1.2",
         "vue": "^3.2.41"
     },

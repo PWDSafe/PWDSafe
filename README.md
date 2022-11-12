@@ -56,4 +56,5 @@ This application uses
 The following libraries/frameworks is used by the application:
 - Laravel - https://laravel.com/
 - Tailwind CSS - https://tailwindcss.com/
+- Heroicons - https://heroicons.com/
 

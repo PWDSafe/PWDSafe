@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
-    <link href="/components/fontawesome/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
     <title>PWDSafe</title>
 </head>
@@ -95,7 +94,8 @@
                             <template v-slot:trigger="{ open }">
                                 <span class="flex items-center hover:text-gray-700 focus:text-gray-700"
                                       :class="{'text-gray-500': !open, 'text-gray-700': open}">
-                                    <span class="far fa-user mr-1"></span> {{ auth()->user()->email }}
+                                    <heroicons-user-icon class="h-5 w-5 mr-1"></heroicons-user-icon>
+                                    {{ auth()->user()->email }}
                                 </span>
                             </template>
                             <template v-slot:default>

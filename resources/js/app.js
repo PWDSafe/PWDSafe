@@ -12,6 +12,21 @@ require('./bootstrap');
 const app = createApp({ data() { return { mobileMenuOpen: false }}});
 app.use(VueClipboard);
 
+import {
+    PlusIcon,
+    ArrowDownOnSquareIcon,
+    ArrowUpOnSquareIcon,
+    UserIcon,
+    Cog6ToothIcon,
+    TrashIcon
+} from '@heroicons/vue/24/outline'
+app.component('heroicons-plus-icon', PlusIcon)
+app.component('heroicons-arrow-down-on-square-icon', ArrowDownOnSquareIcon)
+app.component('heroicons-arrow-up-on-square-icon', ArrowUpOnSquareIcon)
+app.component('heroicons-user-icon', UserIcon)
+app.component('heroicons-cog-6-tooth-icon', Cog6ToothIcon)
+app.component('heroicons-trash-icon', TrashIcon)
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue

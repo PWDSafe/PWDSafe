@@ -27,7 +27,7 @@
                                                 @csrf
                                                 @method('delete')
                                                 <input type="hidden" name="userid" value="{{ $user->id }}">
-                                                <pwdsafe-button theme="danger" type="submit"><i class="far fa-trash-alt"></i> Remove</pwdsafe-button>
+                                                <pwdsafe-button theme="danger" type="submit">Remove</pwdsafe-button>
                                             </form>
                                         </td>
                                     </tr>

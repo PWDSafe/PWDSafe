@@ -14,8 +14,8 @@
                 <div class="flex">
                     <pwdsafe-modal v-on:modal-open="getPassword" v-on:modal-close="resetData">
                         <template v-slot:trigger>
-                            <pwdsafe-button theme="secondary" :data-id="credential.id" classes="mr-1">
-                                <i class="far fa-eye" title="Show"></i>
+                            <pwdsafe-button theme="secondary" :data-id="credential.id" classes="mr-1" title="Show">
+                                <EyeIcon class="h-5 w-5"></EyeIcon>
                             </pwdsafe-button>
                         </template>
                         <form method="post" :action="'/credential/' + credential.id" @submit.prevent="saveCredentials">
@@ -59,8 +59,8 @@
                             </div>
                         </form>
                     </pwdsafe-modal>
-                    <pwdsafe-button theme="secondary" classes="mr-1" @click.native="copyPwd">
-                        <i class="far fa-copy" title="Copy to clipboard"></i>
+                    <pwdsafe-button theme="secondary" classes="mr-1" @click.native="copyPwd" title="Copy to clipboard">
+                        <ClipboardDocumentListIcon class="h-5 w-5"></ClipboardDocumentListIcon>
                     </pwdsafe-button>
                 </div>
             </div>
@@ -70,6 +70,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { toClipboard } from '@soerenmartius/vue3-clipboard'
+import { EyeIcon, ClipboardDocumentListIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
     credential: {
