@@ -54,6 +54,7 @@
                            placeholder="Username"
                            value="{{ old('email') }}"
                            required
+                           :autofocus="'autofocus'"
                     >
                     @if ($errors->any())
                         <pwdsafe-alert theme="danger" classes="mt-4">
