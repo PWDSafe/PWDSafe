@@ -38,7 +38,7 @@
                     <div class="mb-4">
                         <div class="mb-2">
                             <pwdsafe-label class="mb-1" for="currentpassword">Current password</pwdsafe-label>
-                            <pwdsafe-input type="password" name="currentpassword" id="currentpassword" autocomplete="off" placeholder="Current password" required></pwdsafe-input>
+                            <pwdsafe-input type="password" name="currentpassword" id="currentpassword" autocomplete="off" placeholder="Current password" required autofocus></pwdsafe-input>
                         </div>
                         <div class="mb-2">
                             <pwdsafe-label class="mb-1" for="otpcode">One time code</pwdsafe-label>
@@ -69,7 +69,7 @@
                     <div class="my-4">
                         <div class="mb-2">
                             <pwdsafe-label class="mb-1" for="currentpassword">Current password</pwdsafe-label>
-                            <pwdsafe-input type="password" name="currentpassword" id="currentpassword" autocomplete="off" placeholder="Current password" required></pwdsafe-input>
+                            <pwdsafe-input type="password" name="currentpassword" id="currentpassword" autocomplete="off" placeholder="Current password" required autofocus></pwdsafe-input>
                         </div>
                         <div class="mb-2">
                             <pwdsafe-label class="mb-1" for="otpcode">One time code</pwdsafe-label>
