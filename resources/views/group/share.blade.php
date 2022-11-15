@@ -57,33 +57,35 @@
         <div class="mt-8 max-w-lg bg-white rounded-md shadow">
             <form method="post">
                 <div class="px-8 py-4">
-                @csrf
-                <h4 class="text-xl mb-4">Share group</h4>
-                <div class="mb-4">
-                    <label for="username" class="block text-sm font-medium leading-5 text-gray-700 mb-1">Username</label>
-                    <input type="text" id="username" name="username"
-                           class="block w-full px-3 py-2 mb-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-indigo-500 focus:shadow-outline-blue sm:text-sm transition duration-150 ease-in-out"
-                           placeholder="Username"
-                           value="{{ old('email') }}"
-                           required
-                    >
-                    <label for="permission" class="block text-sm font-medium leading-5 text-gray-700 mb-1">Permission</label>
-                    <pwdsafe-select name="permission" id="permission">
-                        <option value="read">Read</option>
-                        <option value="write" selected>Read & write</option>
-                        <option value="admin">Admin</option>
-                    </pwdsafe-select>
-                    @if ($errors->any())
-                        <pwdsafe-alert theme="danger" classes="mt-4">
-                            @foreach ($errors->all() as $error)
-                                {{ $error }}<br>
-                            @endforeach
-                        </pwdsafe-alert>
-                    @endif
-                </div>
+                    @csrf
+                    <h4 class="text-xl mb-4">Share group</h4>
+                    <div class="mb-4">
+                        <label for="username"
+                               class="block text-sm font-medium leading-5 text-gray-700 mb-1">Username</label>
+                        <input type="text" id="username" name="username"
+                               class="block w-full px-3 py-2 mb-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-indigo-500 focus:shadow-outline-blue sm:text-sm transition duration-150 ease-in-out"
+                               placeholder="Username"
+                               value="{{ old('email') }}"
+                               required
+                        >
+                        <label for="permission" class="block text-sm font-medium leading-5 text-gray-700 mb-1">Permission</label>
+                        <pwdsafe-select name="permission" id="permission">
+                            <option value="read">Read</option>
+                            <option value="write" selected>Read & write</option>
+                            <option value="admin">Admin</option>
+                        </pwdsafe-select>
+                        @if ($errors->any())
+                            <pwdsafe-alert theme="danger" classes="mt-4">
+                                @foreach ($errors->all() as $error)
+                                    {{ $error }}<br>
+                                @endforeach
+                            </pwdsafe-alert>
+                        @endif
+                    </div>
                 </div>
                 <div class="flex justify-end gap-x-2 bg-gray-50 px-8 py-4">
-                    <pwdsafe-button btntype="a" theme="secondary" href="{{ route('group', $group) }}">Back</pwdsafe-button>
+                    <pwdsafe-button btntype="a" theme="secondary" href="{{ route('group', $group) }}">Back
+                    </pwdsafe-button>
                     <pwdsafe-button type="submit">Share group</pwdsafe-button>
                 </div>
             </form>
