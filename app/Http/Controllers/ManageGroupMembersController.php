@@ -7,10 +7,12 @@ use App\Group;
 use App\Helpers\Encryption;
 use App\User;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
@@ -36,7 +38,7 @@ class ManageGroupMembersController extends Controller
         return redirect()->back();
     }
 
-    public function update(Request $request, Group $group, User $user)
+    public function update(Request $request, Group $group, User $user): Response|Application|ResponseFactory
     {
         $this->authorize('administer', $group);
         abort_if(auth()->user()->is($user), 403);

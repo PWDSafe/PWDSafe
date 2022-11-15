@@ -35,7 +35,7 @@ class CredentialPolicy
             return false;
         }
 
-        return in_array($user->groups->find($credential->groupid)->pivot->permission, ['admin', 'write']);
+        return in_array($user->groups->find($credential->groupid)->getRelationValue('pivot')->permission, ['admin', 'write']);
     }
 
     /**
@@ -51,6 +51,6 @@ class CredentialPolicy
             return false;
         }
 
-        return in_array($user->groups->find($credential->groupid)->pivot->permission, ['admin', 'write']);
+        return in_array($user->groups->find($credential->groupid)->getRelationValue('pivot')->permission, ['admin', 'write']);
     }
 }

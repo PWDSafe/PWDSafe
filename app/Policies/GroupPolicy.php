@@ -35,7 +35,7 @@ class GroupPolicy
             return false;
         }
 
-        return in_array($user->groups->find($group->id)->pivot->permission, ['admin', 'write']);
+        return in_array($user->groups->find($group->id)->getRelationValue('pivot')->permission, ['admin', 'write']);
     }
 
     /**
@@ -51,7 +51,7 @@ class GroupPolicy
             return false;
         }
 
-        return $user->groups->find($group->id)->pivot->permission === 'admin' && $group->id !== $user->primarygroup;
+        return $user->groups->find($group->id)->getRelationValue('pivot')->permission === 'admin' && $group->id !== $user->primarygroup;
     }
 
     /**
@@ -63,6 +63,6 @@ class GroupPolicy
      */
     public function administer(User $user, Group $group)
     {
-        return $user->groups->find($group->id)->pivot->permission === 'admin' && $group->id !== $user->primarygroup;
+        return $user->groups->find($group->id)->getRelationValue('pivot')->permission === 'admin' && $group->id !== $user->primarygroup;
     }
 }
