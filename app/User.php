@@ -54,7 +54,8 @@ class User extends Authenticatable
      */
     public function groups(): BelongsToMany
     {
-        return $this->belongsToMany(Group::class, 'usergroups', 'userid', 'groupid');
+        return $this->belongsToMany(Group::class, 'usergroups', 'userid', 'groupid')
+            ->withPivot('permission');
     }
 
     public function changePassword(string $newpass): void

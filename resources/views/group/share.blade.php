@@ -13,6 +13,9 @@
                                     <th class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                                         Username
                                     </th>
+                                    <th class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                        Permission
+                                    </th>
                                     <th class="px-6 py-3 bg-gray-50"></th>
                                 </tr>
                                 </thead>
@@ -21,6 +24,14 @@
                                     <tr>
                                         <td class="px-6 py-4 whitespace-no-wrap">
                                             {{ $user->email }}
+                                        </td>
+
+                                        <td class="px-6 py-4 whitespace-no-wrap">
+                                            <update-permission
+                                                :userid="{{ $user->id }}"
+                                                :groupid="{{ $group->id }}"
+                                                permission="{{ $user->pivot->permission }}"
+                                            ></update-permission>
                                         </td>
                                         <td class="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">
                                             <form method="post">
@@ -50,12 +61,17 @@
                 <div class="mb-4">
                     <label for="username" class="block text-sm font-medium leading-5 text-gray-700 mb-1">Username</label>
                     <input type="text" id="username" name="username"
-                           class="block w-full px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-indigo-500 focus:shadow-outline-blue sm:text-sm transition duration-150 ease-in-out"
+                           class="block w-full px-3 py-2 mb-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-indigo-500 focus:shadow-outline-blue sm:text-sm transition duration-150 ease-in-out"
                            placeholder="Username"
                            value="{{ old('email') }}"
                            required
-                           :autofocus="'autofocus'"
                     >
+                    <label for="permission" class="block text-sm font-medium leading-5 text-gray-700 mb-1">Permission</label>
+                    <pwdsafe-select name="permission" id="permission">
+                        <option value="read">Read</option>
+                        <option value="write" selected>Read & write</option>
+                        <option value="admin">Admin</option>
+                    </pwdsafe-select>
                     @if ($errors->any())
                         <pwdsafe-alert theme="danger" classes="mt-4">
                             @foreach ($errors->all() as $error)

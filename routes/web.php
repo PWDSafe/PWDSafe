@@ -14,7 +14,7 @@ use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\GroupChangeNameController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\GroupDeleteController;
-use App\Http\Controllers\GroupShareController;
+use App\Http\Controllers\ManageGroupMembersController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\HealthController;
 
@@ -38,9 +38,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::delete('/groups/{group}', [GroupDeleteController::class, 'delete']);
     Route::get('/groups/{group}/add', [GroupController::class, 'addCredential'])->name('addCredentials');
     Route::post('/groups/{group}/add', [GroupController::class, 'storeCredential']);
-    Route::get('/groups/{group}/share', [GroupShareController::class, 'index'])->name('groupShare');
-    Route::post('/groups/{group}/share', [GroupShareController::class, 'store']);
-    Route::delete('/groups/{group}/share', [GroupShareController::class, 'destroy']);
+    Route::get('/groups/{group}/members', [ManageGroupMembersController::class, 'index'])->name('groupManageMembers');
+    Route::post('/groups/{group}/members', [ManageGroupMembersController::class, 'store']);
+    Route::delete('/groups/{group}/members', [ManageGroupMembersController::class, 'destroy']);
+    Route::patch('/groups/{group}/members/{user}', [ManageGroupMembersController::class, 'update']);
     Route::get('/groups/{group}/delete', [GroupDeleteController::class, 'index']);
     Route::get('/groups/{group}/name', [GroupChangeNameController::class, 'index']);
     Route::post('/groups/{group}/name', [GroupChangeNameController::class,'store']);

@@ -12,19 +12,20 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
-class GroupShareController extends Controller
+class ManageGroupMembersController extends Controller
 {
     public function index(Group $group): Factory|View|Application
     {
-        $this->authorize('updateExceptPrimary', $group);
+        $this->authorize('administer', $group);
 
         return view('group.share', compact('group'));
     }
 
     public function destroy(Request $request, Group $group): RedirectResponse
     {
-        $this->authorize('updateExceptPrimary', $group);
+        $this->authorize('administer', $group);
         $data = $request->validate([
             'userid' => ['required', 'exists:users,id']
         ]);
@@ -35,10 +36,28 @@ class GroupShareController extends Controller
         return redirect()->back();
     }
 
+    public function update(Request $request, Group $group, User $user)
+    {
+        $this->authorize('administer', $group);
+        abort_if(auth()->user()->is($user), 403);
+        $params = $request->validate([
+            'permission' => [
+                'required',
+                Rule::in(['read', 'write', 'admin'])
+            ]
+        ]);
+        $group->users()->updateExistingPivot($user, ['permission' => $params['permission']]);
+
+        return response(['status' => 'OK']);
+    }
+
     public function store(Request $request, Group $group): RedirectResponse
     {
-        $this->authorize('updateExceptPrimary', $group);
-        $params = $this->validate($request, ['username' => 'required']);
+        $this->authorize('administer', $group);
+        $params = $request->validate([
+            'username' => 'required',
+            'permission' => ['required', Rule::in(['read', 'write', 'admin'])]
+        ]);
 
         $user = User::where('email', $params['username'])->first();
         if (is_null($user)) {
@@ -49,7 +68,7 @@ class GroupShareController extends Controller
             return redirect()->back();
         }
 
-        $user->groups()->attach($group);
+        $user->groups()->attach($group, ['permission' => $params['permission']]);
 
         $sql = "SELECT encryptedcredentials.data, encryptedcredentials.credentialid FROM encryptedcredentials
                         INNER JOIN credentials ON credentials.id = encryptedcredentials.credentialid

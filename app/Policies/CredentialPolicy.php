@@ -31,7 +31,11 @@ class CredentialPolicy
      */
     public function update(User $user, Credential $credential)
     {
-        return $user->groups->contains('id', $credential->groupid);
+        if (!$user->groups->contains('id', $credential->groupid)) {
+            return false;
+        }
+
+        return in_array($user->groups->find($credential->groupid)->pivot->permission, ['admin', 'write']);
     }
 
     /**
@@ -43,6 +47,10 @@ class CredentialPolicy
      */
     public function delete(User $user, Credential $credential)
     {
-        return $user->groups->contains('id', $credential->groupid);
+        if (!$user->groups->contains('id', $credential->groupid)) {
+            return false;
+        }
+
+        return in_array($user->groups->find($credential->groupid)->pivot->permission, ['admin', 'write']);
     }
 }

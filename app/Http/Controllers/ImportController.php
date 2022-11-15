@@ -16,6 +16,9 @@ class ImportController extends Controller
 
         abort_unless(auth()->user()->groups->contains('id', $params['group']), 403);
 
+        $group = auth()->user()->groups->find($params['group']);
+        $this->authorize('update', $group);
+
         $file = $request->file('csvfile');
 
         if (($fh = fopen($file->getRealPath(), 'r')) !== false) {

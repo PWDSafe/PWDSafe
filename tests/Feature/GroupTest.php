@@ -89,14 +89,14 @@ class GroupTest extends TestCase
         $this->assertDatabaseHas('groups', ['name' => 'new name']);
     }
 
-    public function testVisitingShareGroup(): void
+    public function testVisitingGroupMembers(): void
     {
         $this->post('/groups/create', [
             'groupname' => 'testgroup',
         ]);
 
         $group = \App\Group::orderBy('id', 'desc')->first();
-        $this->get('/groups/' . $group->id . '/share')->assertOk()->assertSee('Share group');
+        $this->get('/groups/' . $group->id . '/members')->assertOk()->assertSee('Share group');
     }
 
     public function testSharingGroup(): void
@@ -123,7 +123,10 @@ class GroupTest extends TestCase
         ]);
         $this->post('logout');
         $this->from('/login')->post('/login', ['email' => 'some@email.com', 'password' => 'password']);
-        $this->post('/groups/' . $group->id . '/share', ['username' => 'second@email.com']);
+        $this->post('/groups/' . $group->id . '/members', [
+            'username' => 'second@email.com',
+            'permission' => 'admin'
+        ]);
 
         $this->assertCount(2, $group->fresh()->users);
 
@@ -146,13 +149,15 @@ class GroupTest extends TestCase
         $this->assertEquals('The super secret password', $decryptedcredential);
         $this->assertCount(2, \App\Encryptedcredential::all());
 
-        $this->post('/groups/' . $group->id . '/share', [
-            'username' => 'does@not.exist'
+        $this->post('/groups/' . $group->id . '/members', [
+            'username' => 'does@not.exist',
+            'permission' => 'admin'
         ])
             ->assertRedirect()
             ->assertSessionHasErrors();
-        $this->post('/groups/' . $group->id . '/share', [
-            'username' => 'second@email.com'
+        $this->post('/groups/' . $group->id . '/members', [
+            'username' => 'second@email.com',
+            'permission' => 'admin'
         ])
             ->assertRedirect()
             ->assertSessionDoesntHaveErrors();
@@ -184,10 +189,13 @@ class GroupTest extends TestCase
         $this->actingAs(\App\User::first());
         session()->put('password', 'password');
 
-        $this->post('/groups/' . $group->id . '/share', ['username' => $user2->email]);
+        $this->post('/groups/' . $group->id . '/members', [
+            'username' => $user2->email,
+            'permission' => 'admin'
+        ]);
         $this->assertCount(2, $user2->fresh()->groups);
 
-        $this->delete('/groups/' . $group->id . '/share', ['userid' => $user2->id]);
+        $this->delete('/groups/' . $group->id . '/members', ['userid' => $user2->id]);
         $this->assertCount(1, $user2->fresh()->groups);
     }
 }

@@ -34,7 +34,7 @@ class Group extends Eloquent
      */
     public function usersWithoutCurrentUser(): BelongsToMany
     {
-        return $this->users()->where('userid', '!=', auth()->user()->id);
+        return $this->users()->where('userid', '!=', auth()->user()->id)->withPivot('permission');
     }
 
     public function deleteGroup(): void

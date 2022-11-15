@@ -31,19 +31,11 @@ class GroupPolicy
      */
     public function update(User $user, Group $group)
     {
-        return $user->groups->contains('id', $group->id);
-    }
+        if (!$user->groups->contains('id', $group->id)) {
+            return false;
+        }
 
-    /**
-     * Determine whether the user can update the group.
-     *
-     * @param  \App\User  $user
-     * @param  \App\Group  $group
-     * @return mixed
-     */
-    public function updateExceptPrimary(User $user, Group $group)
-    {
-        return $user->groups->contains('id', $group->id) && $group->id !== $user->primarygroup;
+        return in_array($user->groups->find($group->id)->pivot->permission, ['admin', 'write']);
     }
 
     /**
@@ -55,6 +47,22 @@ class GroupPolicy
      */
     public function delete(User $user, Group $group)
     {
-        return $user->groups->contains('id', $group->id) && $group->id !== $user->primarygroup;
+        if (!$user->groups->contains('id', $group->id)) {
+            return false;
+        }
+
+        return $user->groups->find($group->id)->pivot->permission === 'admin' && $group->id !== $user->primarygroup;
+    }
+
+    /**
+     * Determine whether the user can administer the group.
+     *
+     * @param  \App\User  $user
+     * @param  \App\Group  $group
+     * @return mixed
+     */
+    public function administer(User $user, Group $group)
+    {
+        return $user->groups->find($group->id)->pivot->permission === 'admin' && $group->id !== $user->primarygroup;
     }
 }

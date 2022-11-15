@@ -41,7 +41,7 @@
                                 <pwdsafe-label for="notes" class="mb-1">Notes</pwdsafe-label>
                                 <pwdsafe-textarea name="notes" id="notes" rows="3" @changed="credentialint.notes = $event">{{ credentialint.notes }}</pwdsafe-textarea>
                             </div>
-                            <div class="mb-2">
+                            <div class="mb-2" v-if="canUpdate">
                                 <pwdsafe-label for="notes" class="mb-1">Move to group</pwdsafe-label>
                                 <pwdsafe-select name="group" id="group"
                                                 @selected="credentialint.groupid = parseInt($event.target.value)">
@@ -51,7 +51,7 @@
                                 </pwdsafe-select>
                             </div>
 
-                            <div class="flex justify-between py-2">
+                            <div class="flex justify-between py-2" v-if="canUpdate">
                                 <pwdsafe-button btntype="a" :href="'/credential/' + credential.id" theme="danger">Delete</pwdsafe-button>
                                 <div>
                                     <pwdsafe-button type="submit">Save</pwdsafe-button>
@@ -86,6 +86,9 @@ const props = defineProps({
     groupname: {
         type: String,
         default: ''
+    },
+    canUpdate: {
+        type: Boolean
     }
 })
 const password = ref('')

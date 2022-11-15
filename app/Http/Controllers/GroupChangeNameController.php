@@ -16,14 +16,14 @@ class GroupChangeNameController extends Controller
 {
     public function index(Group $group): Factory|View|Application
     {
-        $this->authorize('updateExceptPrimary', $group);
+        $this->authorize('administer', $group);
 
         return view('group.name', compact('group'));
     }
 
     public function store(Request $request, Group $group): Response|Redirector|RedirectResponse|Application|ResponseFactory
     {
-        $this->authorize('updateExceptPrimary', $group);
+        $this->authorize('administer', $group);
         $params = $this->validate($request, [
             'groupname' => 'required|max:100'
         ]);

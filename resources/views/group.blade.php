@@ -11,9 +11,12 @@
                 @endif
             </h3>
             <div class="flex">
+                @can('update', $group)
                 <pwdsafe-button btntype="a" href="{{ route('addCredentials', $group->id) }}" classes="mr-2 flex items-center">
                     <heroicons-plus-icon class="h-5 w-5 mr-1"></heroicons-plus-icon> Add
                 </pwdsafe-button>
+                @endcan
+                @can('view', $group)
                 <form method="post" action="{{ route('export', $group->id) }}">
                     @csrf
                     <pwdsafe-button classes="mr-2 flex items-center" theme="secondary">
@@ -21,6 +24,8 @@
                         Export
                     </pwdsafe-button>
                 </form>
+                @endcan
+                @can('update', $group)
                 <pwdsafe-modal>
                     <template v-slot:trigger>
                         <pwdsafe-button theme="secondary" class="flex items-center">
@@ -45,7 +50,8 @@
                         </form>
                     </template>
                 </pwdsafe-modal>
-                @if (auth()->user()->primarygroup != $group->id)
+                @endcan
+                @can('administer', $group)
                     <dropdown-menu>
                         <template #trigger>
                             <span class="h-full flex items-center border text-gray-600 border-gray-600 hover:bg-gray-600 hover:text-gray-100 px-4 py-1 rounded transition duration-200 ml-2">
@@ -55,7 +61,7 @@
                         <template #default>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 <dropdown-link href="/groups/{{ $group->id }}/name">Change name</dropdown-link>
-                                <dropdown-link href="/groups/{{ $group->id }}/share">Share</dropdown-link>
+                                <dropdown-link href="/groups/{{ $group->id }}/members">Manage members</dropdown-link>
                                 <div class="my-1 border-b"></div>
                                 <dropdown-link href="/groups/{{ $group->id }}/delete" class="flex items-center gap-x-1">
                                     <heroicons-trash-icon class="h-5 w-5"></heroicons-trash-icon> Delete
@@ -63,14 +69,18 @@
                             </div>
                         </template>
                     </dropdown-menu>
-                @endif
+                @endcan
             </div>
         </div>
     </div>
     @if ($credentials->count() > 0)
     <div class="flex flex-wrap -mx-2">
         @foreach($credentials as $credential)
-            <credential-card :credential="{{ $credential }}" :groups="{{ auth()->user()->groups->map->only('id', 'name') }}"></credential-card>
+            <credential-card
+                :credential="{{ $credential }}"
+                :groups="{{ auth()->user()->groups->map->only('id', 'name') }}"
+                :can-update="{{ auth()->user()->can('update', $group) ? 'true' : 'false' }}"
+            ></credential-card>
         @endforeach
     </div>
     @else

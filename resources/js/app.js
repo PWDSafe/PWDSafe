@@ -47,6 +47,7 @@ app.component('pwdsafe-input', require('./components/Input.vue').default);
 app.component('pwdsafe-textarea', require('./components/Textarea.vue').default);
 app.component('pwdsafe-select', require('./components/Select.vue').default);
 app.component('credential-card', require('./components/CredentialCard.vue').default);
+app.component('update-permission', require('./components/UpdatePermission.vue').default);
 app.component('pwdsafe-modal', require('./components/Modal.vue').default);
 
 /**
