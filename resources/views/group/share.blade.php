@@ -54,10 +54,11 @@
                 <strong>Not shared!</strong> This group isn't shared with anyone yet.
             </pwdsafe-alert>
         @endif
-        <div class="mt-8 max-w-sm">
+        <div class="mt-8 max-w-lg bg-white rounded-md shadow">
             <form method="post">
+                <div class="px-8 py-4">
                 @csrf
-                <h4 class="text-xl mb-2">Share group</h4>
+                <h4 class="text-xl mb-4">Share group</h4>
                 <div class="mb-4">
                     <label for="username" class="block text-sm font-medium leading-5 text-gray-700 mb-1">Username</label>
                     <input type="text" id="username" name="username"
@@ -80,7 +81,11 @@
                         </pwdsafe-alert>
                     @endif
                 </div>
-                <pwdsafe-button type="submit">Share group</pwdsafe-button>
+                </div>
+                <div class="flex justify-end gap-x-2 bg-gray-50 px-8 py-4">
+                    <pwdsafe-button btntype="a" theme="secondary" href="{{ route('group', $group) }}">Back</pwdsafe-button>
+                    <pwdsafe-button type="submit">Share group</pwdsafe-button>
+                </div>
             </form>
         </div>
     </div>
