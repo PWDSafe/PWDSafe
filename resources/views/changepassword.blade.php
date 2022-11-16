@@ -8,8 +8,8 @@
             </pwdsafe-alert>
         @endif
         @if (config('ldap.enabled') && !auth()->user()->canDecryptPrivkey(session('password')))
-            <div class="mb-4 text-gray-600">
-                <h4 class="text-lg mb-2 text-amber-600">Warning</h4>
+            <div class="mt-8 max-w-3xl bg-white rounded-md shadow px-8 py-4 mb-4 text-gray-600">
+                <h4 class="text-xl mb-2 text-amber-600">Warning</h4>
                 <p class="mb-1">
                     You have logged in via LDAP/AD, but we cannot seem to decrypt your private key.<br>
                     The cause of this is most likely that you've changed your password in your LDAP/AD.
@@ -22,6 +22,8 @@
         @endif
         @if (!config('ldap.enabled') || !auth()->user()->canDecryptPrivkey(session('password')))
             <form method="post" action="{{ route('changepassword') }}" class="max-w-lg">
+                <div class="mt-8 max-w-lg bg-white rounded-md shadow">
+                    <div class="px-8 py-4">
                 @if ($errors->any())
                     <pwdsafe-alert theme="danger" classes="my-4">
                     @foreach($errors->all() as $error)
@@ -44,14 +46,16 @@
                         <pwdsafe-input type="password" name="password_confirmation" id="password_confirmation" autocomplete="off" required></pwdsafe-input>
                     </div>
                 </div>
-                <div class="flex justify-between">
+                    </div>
+                <div class="flex justify-end gap-x-2 bg-gray-50 px-8 py-4">
                     <pwdsafe-button type="submit">Change password</pwdsafe-button>
+                </div>
                 </div>
             </form>
         @else
-            <div class="mb-4 text-gray-600">
-                <h4 class="text-lg mb-2 text-amber-600">Warning</h4>
-                <p class="mb-1">
+            <div class="mt-8 max-w-xl bg-white rounded-md shadow px-8 py-4 text-gray-600">
+                <h4 class="text-xl mb-2 text-amber-600">Warning</h4>
+                <p>
                     This feature is disabled since you have logged in via LDAP/AD.
                 </p>
             </div>
