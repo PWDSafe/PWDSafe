@@ -85,7 +85,7 @@
     </div>
     @else
         <pwdsafe-alert>
-            <strong>No credentials!</strong> You can add some below if you'd like.
+            <strong>No credentials!</strong> You can add some if you'd like.
         </pwdsafe-alert>
     @endif
 </div>
