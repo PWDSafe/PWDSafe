@@ -9,7 +9,13 @@
     @if ($data->count() > 0)
     <div class="flex flex-wrap">
         @foreach ($data as $row)
-            <credential-card :credential="{{ $row }}" :showgroupname="true" :groups="{{ auth()->user()->groups->map->only('id', 'name') }}" groupname="{{ auth()->user()->primarygroup === $row->group->id ? 'Private' : $row->group->name }}"></credential-card>
+            <credential-card
+                :credential="{{ $row }}"
+                :showgroupname="true"
+                :groups="{{ auth()->user()->groups->map->only('id', 'name') }}"
+                groupname="{{ auth()->user()->primarygroup === $row->group->id ? 'Private' : $row->group->name }}"
+                :can-update="{{ auth()->user()->can('update', $row->group) ? 'true' : 'false' }}"
+            ></credential-card>
         @endforeach
     </div>
     @else
