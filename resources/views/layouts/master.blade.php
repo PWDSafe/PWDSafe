@@ -19,31 +19,14 @@
                             <a href="/">PWDSafe</a>
                         </div>
                         <div class="hidden lg:ml-6 lg:flex">
-                        <span
-                            class="inline-flex items-center px-1 pt-1 border-b-2 {{ (request()->is('groups/*')) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} text-sm font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out ml-8">
-                        <dropdown-menu>
-                            <template v-slot:trigger>
+                            <a href="{{ route('group', auth()->user()->primarygroup) }}"
+                               class="inline-flex items-center px-1 pt-1 border-b-2 {{ (request()->is('groups/' . auth()->user()->primarygroup)) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} text-sm font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out ml-8">
+                                Private
+                            </a>
+                            <a href="{{ route('groups') }}"
+                               class="inline-flex items-center px-1 pt-1 border-b-2 {{ (request()->is('groups')) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} text-sm font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out ml-8">
                                 Groups
-                            </template>
-                            <template v-slot:default>
-                                <dropdown-link href="{{ route('groupCreate') }}">Create group</dropdown-link>
-                                <div class="my-1 border-b"></div>
-                                @foreach (auth()->user()->groups()->withCount('credentials')->get() as $group)
-                                    <dropdown-link href="{{ route('group', $group->id) }}">
-                                        <span class="flex items-center justify-between">
-                                            @if ($group->id === auth()->user()->primarygroup)
-                                                Private
-                                            @else
-                                                {{ $group->name }}
-                                            @endif
-                                        <span
-                                            class="bg-gray-200 text-indigo-500 p-1 px-2 ml-2 rounded-md">{{ $group->credentials_count }}</span>
-                                        </span>
-                                    </dropdown-link>
-                                @endforeach
-                            </template>
-                        </dropdown-menu>
-                            </span>
+                            </a>
                             <a href="{{ route('securitycheck') }}"
                                class="inline-flex items-center px-1 pt-1 border-b-2 {{ (request()->is('securitycheck')) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} text-sm font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out ml-8">
                                 Security check

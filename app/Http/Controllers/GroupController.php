@@ -17,7 +17,16 @@ use Illuminate\Routing\Redirector;
 
 class GroupController extends Controller
 {
-    public function index(Group $group): Factory|View|Application
+    public function index()
+    {
+        $groups = auth()
+            ->user()
+            ->groups
+            ->filter(fn ($group) => $group->id !== auth()->user()->primarygroup);
+        return view('groups.index', compact('groups'));
+    }
+
+    public function show(Group $group): Factory|View|Application
     {
         $this->authorize('view', $group);
 

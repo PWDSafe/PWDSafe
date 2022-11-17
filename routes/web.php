@@ -31,9 +31,10 @@ use App\Http\Controllers\HealthController;
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/', [PreLogonFirstPageCallback::class, 'index']);
+    Route::get('/groups', [GroupController::class, 'index'])->name('groups');
     Route::get('/groups/create', [GroupController::class, 'create'])->name('groupCreate');
     Route::post('/groups/create', [GroupController::class, 'store']);
-    Route::get('/groups/{group}', [GroupController::class, 'index'])->name('group');
+    Route::get('/groups/{group}', [GroupController::class, 'show'])->name('group');
     Route::post('/groups/{group}/export', [ExportController::class, 'store'])->name('export');
     Route::delete('/groups/{group}', [GroupDeleteController::class, 'delete']);
     Route::get('/groups/{group}/add', [GroupController::class, 'addCredential'])->name('addCredentials');
