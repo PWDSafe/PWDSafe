@@ -1,5 +1,5 @@
 <template>
-    <div class="absolute bottom-0 w-full">
+    <div class="fixed bottom-0 w-full">
         <transition name="slide">
             <div
                 v-show="show"
