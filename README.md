@@ -9,8 +9,14 @@ See latest image tags and documentation on [Docker Hub](https://hub.docker.com/r
 
 Prerequisite
 -----------
-* Webserver with support for PHP
-* Access to a MySQL-database
+* Webserver with support for PHP 8.1 and modules:
+  - ldap
+  - openssl
+  - json
+  - mbstring
+  - pdo_mysql
+  - pdo_pgsql
+* Access to a MySQL or PostgreSQL-database
 * Composer
 
 Installation
@@ -28,28 +34,24 @@ location / {
 * Browse to your site, register and login.
 * Enjoy!
 
-Upgrading from pre-Laravel
+Upgrading
 --------------------------
-* Copy the `.env.example` to `.env` and modify it to point to your database.
-* Run the following SQL in your database:
-```SQL
-create table migrations
-(
-	id int unsigned auto_increment
-		primary key,
-	migration varchar(255) not null,
-	batch int not null
-)
-collate=utf8mb4_unicode_ci;
-
-INSERT INTO migrations (id, migration, batch) VALUES (1, '2019_08_19_000000_create_failed_jobs_table', 1);
-INSERT INTO migrations (id, migration, batch) VALUES (2, '2020_02_03_180732_create_credentials_table', 1);
-INSERT INTO migrations (id, migration, batch) VALUES (3, '2020_02_03_180732_create_encryptedcredentials_table', 1);
-INSERT INTO migrations (id, migration, batch) VALUES (4, '2020_02_03_180732_create_groups_table', 1);
-INSERT INTO migrations (id, migration, batch) VALUES (5, '2020_02_03_180732_create_usergroups_table', 1);
-INSERT INTO migrations (id, migration, batch) VALUES (6, '2020_02_03_180732_create_users_table', 1);
-```
+* Pull down the latest tag from the repository
+* Run `composer install`
+* Run `npm install && npm run prod`
 * Run any outstanding migrations by executing `php artisan migrate`
+
+Extra configuration
+-------------------
+### LDAP
+Authentication using Active Directory can be configured by setting `USE_LDAP` and the env-variables prefix with `AD_`.
+`AD_USERCONTAINER` is used as a base for finding users in your AD. If your user is outside of the OU configured in `AD_USERCONTAINER`, they cannot login.
+
+When using OpenLDAP, users must be directly in OU configured in `AD_USERCONTAINER`.
+
+### Sentry
+You can configure error tracking with Sentry by configuring the required env-variables. See `.env.example` for placeholders.
+
 
 This application uses
 ---------------------
