@@ -28,6 +28,7 @@ export default {
                 primary: 'text-indigo-500 border-indigo-500 hover:bg-indigo-500 hover:text-white',
                 secondary: 'text-gray-600 border-gray-600 hover:bg-gray-600 hover:text-gray-100',
                 danger: 'text-red-600 border-red-600 hover:bg-red-600 hover:text-red-100',
+                warning: 'text-orange-600 border-orange-600 hover:bg-orange-600 hover:text-orange-100',
             }
         }
     },

@@ -49,6 +49,7 @@ app.component('pwdsafe-select', require('./components/Select.vue').default);
 app.component('credential-card', require('./components/CredentialCard.vue').default);
 app.component('update-permission', require('./components/UpdatePermission.vue').default);
 app.component('pwdsafe-modal', require('./components/Modal.vue').default);
+app.component('warning-message', require('./components/WarningMessage.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

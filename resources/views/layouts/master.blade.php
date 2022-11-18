@@ -142,6 +142,11 @@
     <div class="container mx-auto mt-4 px-4 sm:px-8">
         @yield('content')
     </div>
+        @auth
+            @if (!auth()->user()->warning_seen)
+                <warning-message :ldap="{{ config('ldap.enabled') ? 'true' : 'false' }}"></warning-message>
+            @endif
+        @endauth
 </div>
 <script src="{{ mix('js/app.js') }}"></script>
 </body>
