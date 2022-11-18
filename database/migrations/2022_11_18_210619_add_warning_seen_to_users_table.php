@@ -13,7 +13,7 @@ return new class () extends Migration {
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->boolean('warning_seen')->default('false');
+            $table->boolean('warning_seen')->default(false);
         });
     }
 
