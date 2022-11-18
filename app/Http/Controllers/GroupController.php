@@ -17,7 +17,7 @@ use Illuminate\Routing\Redirector;
 
 class GroupController extends Controller
 {
-    public function index()
+    public function index(): Factory|View|Application
     {
         $groups = auth()
             ->user()
