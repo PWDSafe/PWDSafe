@@ -15,7 +15,7 @@ class SecurityCheckController extends Eloquent
     {
         $sql = "SELECT CASE WHEN groups.id = users.primarygroup THEN 'Private' ELSE groups.name END AS groupname,
                         groups.id AS groupid, credentials.id, credentials.site, credentials.username, credentials.notes, encryptedcredentials.data AS pass FROM credentials
-                        INNER JOIN `groups` ON credentials.groupid = groups.id
+                        INNER JOIN groups ON credentials.groupid = groups.id
                         INNER JOIN usergroups ON groups.id = usergroups.groupid
                         INNER JOIN users ON usergroups.userid = users.id
                         INNER JOIN encryptedcredentials ON encryptedcredentials.credentialid = credentials.id
