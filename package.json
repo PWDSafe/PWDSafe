@@ -21,6 +21,8 @@
         "axios": "^0.27.2",
         "laravel-mix": "^6.0.49",
         "postcss": "^8.4.18",
+        "prettier": "^2.7.1",
+        "prettier-plugin-tailwindcss": "^0.1.13",
         "resolve-url-loader": "^5.0.0",
         "sass": "^1.56.0",
         "sass-loader": "^13.1.0",

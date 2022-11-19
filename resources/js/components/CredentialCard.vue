@@ -1,66 +1,139 @@
 <template>
-    <div class="max-w-sm w-full card my-2 mx-2 bg-white dark:bg-gray-700 shadow flex space-between flex-col">
+    <div
+        class="card space-between my-2 mx-2 flex w-full max-w-sm flex-col bg-white shadow dark:bg-gray-700"
+    >
         <div class="card-body flex-1 p-4">
             <h5 class="text-xl">{{ credential.site }}</h5>
             <h6 class="mb-2 text-gray-700">{{ credential.username }}</h6>
             <p class="line-clamp-3">{{ credential.notes }}</p>
         </div>
-        <div class="card-footer bg-gray-50 dark:bg-gray-700 p-4 border-t dark:border-gray-800">
+        <div
+            class="card-footer border-t bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-700"
+        >
             <div class="flex justify-between">
                 <div>
                     <span v-if="showgroupname">{{ groupname }}</span>
                     <span v-else>&nbsp;</span>
                 </div>
                 <div class="flex">
-                    <pwdsafe-modal v-on:modal-open="getPassword" v-on:modal-close="resetData">
+                    <pwdsafe-modal
+                        v-on:modal-open="getPassword"
+                        v-on:modal-close="resetData"
+                    >
                         <template v-slot:trigger>
-                            <pwdsafe-button theme="secondary" :data-id="credential.id" classes="mr-1" title="Show">
+                            <pwdsafe-button
+                                theme="secondary"
+                                :data-id="credential.id"
+                                classes="mr-1"
+                                title="Show"
+                            >
                                 <EyeIcon class="h-5 w-5"></EyeIcon>
                             </pwdsafe-button>
                         </template>
-                        <form method="post" :action="'/credential/' + credential.id" @submit.prevent="saveCredentials">
-                            <input type="hidden" name="_method" value="put">
+                        <form
+                            method="post"
+                            :action="'/credential/' + credential.id"
+                            @submit.prevent="saveCredentials"
+                        >
+                            <input type="hidden" name="_method" value="put" />
                             <div class="mb-2">
-                                <pwdsafe-label for="site" class="mb-1">Site</pwdsafe-label>
-                                <pwdsafe-input name="site" id="site" v-model="credentialint.site"/>
+                                <pwdsafe-label for="site" class="mb-1"
+                                    >Site</pwdsafe-label
+                                >
+                                <pwdsafe-input
+                                    name="site"
+                                    id="site"
+                                    v-model="credentialint.site"
+                                />
                             </div>
                             <div class="mb-2">
-                                <pwdsafe-label for="username" class="mb-1">Username</pwdsafe-label>
-                                <pwdsafe-input name="username" id="username" v-model="credentialint.username"/>
+                                <pwdsafe-label for="username" class="mb-1"
+                                    >Username</pwdsafe-label
+                                >
+                                <pwdsafe-input
+                                    name="username"
+                                    id="username"
+                                    v-model="credentialint.username"
+                                />
                             </div>
                             <div class="mb-2">
-                                <pwdsafe-label for="password" class="mb-1">Password</pwdsafe-label>
+                                <pwdsafe-label for="password" class="mb-1"
+                                    >Password</pwdsafe-label
+                                >
                                 <textarea
                                     v-model="password"
                                     :disabled="!passwordLoaded"
-                                    :placeholder="!passwordLoaded ? 'Loading...' : ''"
+                                    :placeholder="
+                                        !passwordLoaded ? 'Loading...' : ''
+                                    "
                                     rows="5"
-                                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md leading-5 bg-white dark:bg-gray-800 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-indigo-500 focus:shadow-outline-blue sm:text-sm transition duration-150 ease-in-out disabled:bg-gray-200 dark:disabled:bg-gray-900"></textarea>
+                                    class="focus:shadow-outline-blue block w-full rounded-md border border-gray-300 bg-white px-3 py-2 leading-5 placeholder-gray-500 transition duration-150 ease-in-out focus:border-indigo-500 focus:placeholder-gray-400 focus:outline-none disabled:bg-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:disabled:bg-gray-900 sm:text-sm"
+                                ></textarea>
                             </div>
                             <div class="mb-2">
-                                <pwdsafe-label for="notes" class="mb-1">Notes</pwdsafe-label>
-                                <pwdsafe-textarea name="notes" id="notes" rows="3" @changed="credentialint.notes = $event">{{ credentialint.notes }}</pwdsafe-textarea>
+                                <pwdsafe-label for="notes" class="mb-1"
+                                    >Notes</pwdsafe-label
+                                >
+                                <pwdsafe-textarea
+                                    name="notes"
+                                    id="notes"
+                                    rows="3"
+                                    @changed="credentialint.notes = $event"
+                                    >{{ credentialint.notes }}</pwdsafe-textarea
+                                >
                             </div>
                             <div class="mb-2" v-if="canUpdate">
-                                <pwdsafe-label for="notes" class="mb-1">Move to group</pwdsafe-label>
-                                <pwdsafe-select name="group" id="group"
-                                                @selected="credentialint.groupid = parseInt($event.target.value)">
-                                    <option v-for="group in groups" :value="group.id"
-                                            :selected="group.id === credential.groupid">{{ group.name }}
+                                <pwdsafe-label for="notes" class="mb-1"
+                                    >Move to group</pwdsafe-label
+                                >
+                                <pwdsafe-select
+                                    name="group"
+                                    id="group"
+                                    @selected="
+                                        credentialint.groupid = parseInt(
+                                            $event.target.value
+                                        )
+                                    "
+                                >
+                                    <option
+                                        v-for="group in groups"
+                                        :value="group.id"
+                                        :selected="
+                                            group.id === credential.groupid
+                                        "
+                                    >
+                                        {{ group.name }}
                                     </option>
                                 </pwdsafe-select>
                             </div>
 
-                            <div class="flex justify-between py-2" v-if="canUpdate">
-                                <pwdsafe-button btntype="a" :href="'/credential/' + credential.id" theme="danger">Delete</pwdsafe-button>
+                            <div
+                                class="flex justify-between py-2"
+                                v-if="canUpdate"
+                            >
+                                <pwdsafe-button
+                                    btntype="a"
+                                    :href="'/credential/' + credential.id"
+                                    theme="danger"
+                                    >Delete</pwdsafe-button
+                                >
                                 <div>
-                                    <pwdsafe-button type="submit">Save</pwdsafe-button>
+                                    <pwdsafe-button type="submit"
+                                        >Save</pwdsafe-button
+                                    >
                                 </div>
                             </div>
                         </form>
                     </pwdsafe-modal>
-                    <pwdsafe-button theme="secondary" classes="mr-1" @click.native="copyPwd" title="Copy to clipboard">
-                        <ClipboardDocumentListIcon class="h-5 w-5"></ClipboardDocumentListIcon>
+                    <pwdsafe-button
+                        theme="secondary"
+                        classes="mr-1"
+                        @click.native="copyPwd"
+                        title="Copy to clipboard"
+                    >
+                        <ClipboardDocumentListIcon
+                            class="h-5 w-5"
+                        ></ClipboardDocumentListIcon>
                     </pwdsafe-button>
                 </div>
             </div>
@@ -74,22 +147,22 @@ import { EyeIcon, ClipboardDocumentListIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
     credential: {
-        type: Object
+        type: Object,
     },
     groups: {
-        type: Array
+        type: Array,
     },
     showgroupname: {
         type: Boolean,
-        default: false
+        default: false,
     },
     groupname: {
         type: String,
-        default: ''
+        default: '',
     },
     canUpdate: {
-        type: Boolean
-    }
+        type: Boolean,
+    },
 })
 const password = ref('')
 const passwordLoaded = ref(false)
@@ -99,27 +172,28 @@ const getPassword = function () {
     axios.get('/pwdfor/' + props.credential.id).then((response) => {
         password.value = response.data.pwd
         passwordLoaded.value = true
-    });
+    })
 }
 const copyPwd = function () {
-    axios.get('/pwdfor/' + props.credential.id)
-        .then((response) => {
-            toClipboard(response.data.pwd);
-        });
+    axios.get('/pwdfor/' + props.credential.id).then((response) => {
+        toClipboard(response.data.pwd)
+    })
 }
 const resetData = function () {
-            password.value = '';
-            passwordLoaded.value = false
-        }
-const saveCredentials = function() {
-    axios.put('/credential/' + props.credential.id, {
-        creds: credentialint.site,
-        credu: credentialint.username,
-        credp: password.value,
-        credn: credentialint.notes,
-        currentgroupid: credentialint.groupid
-    }).then(() => {
-        window.location.reload();
-    })
+    password.value = ''
+    passwordLoaded.value = false
+}
+const saveCredentials = function () {
+    axios
+        .put('/credential/' + props.credential.id, {
+            creds: credentialint.site,
+            credu: credentialint.username,
+            credp: password.value,
+            credn: credentialint.notes,
+            currentgroupid: credentialint.groupid,
+        })
+        .then(() => {
+            window.location.reload()
+        })
 }
 </script>

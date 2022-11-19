@@ -3,17 +3,26 @@
         <transition name="slide">
             <div
                 v-show="show"
-                class="border-orange-100 bg-orange-200 dark:bg-orange-900 dark:text-orange-200 text-orange-800 px-4 py-4 mx-4 lg:mx-14 mb-4 lg:mb-8 rounded-md shadow"
+                class="mx-4 mb-4 rounded-md border-orange-100 bg-orange-200 px-4 py-4 text-orange-800 shadow dark:bg-orange-900 dark:text-orange-200 lg:mx-14 lg:mb-8"
             >
-                <div class="flex justify-between items-end lg:items-center flex-col gap-y-4 lg:flex-row">
+                <div
+                    class="flex flex-col items-end justify-between gap-y-4 lg:flex-row lg:items-center"
+                >
                     <p>
                         <strong>Make sure to remember your password!</strong>
                         Saved credentials can't be recovered if you lose it.
-                        <span v-if="ldap" class="block mt-2">
-                            You are using an external identity provider to log in. If you change your password you will be prompted to enter your old password to re-encrypt your secrets.
+                        <span v-if="ldap" class="mt-2 block">
+                            You are using an external identity provider to log
+                            in. If you change your password you will be prompted
+                            to enter your old password to re-encrypt your
+                            secrets.
                         </span>
                     </p>
-                    <pwdsafe-button @click="messageSeen" theme="warning" classes="whitespace-nowrap lg:ml-2">
+                    <pwdsafe-button
+                        @click="messageSeen"
+                        theme="warning"
+                        classes="whitespace-nowrap lg:ml-2"
+                    >
                         Got it!
                     </pwdsafe-button>
                 </div>
@@ -22,21 +31,23 @@
     </div>
 </template>
 <script setup>
-import {ref} from 'vue'
+import { ref } from 'vue'
 
 defineProps({
     ldap: {
         type: Boolean,
-        required: true
-    }
+        required: true,
+    },
 })
 const show = ref(true)
 const messageSeen = function () {
-    axios.post('/settings/warningmessage', {
-        accept: true
-    }).then(() => {
-        show.value = false
-    })
+    axios
+        .post('/settings/warningmessage', {
+            accept: true,
+        })
+        .then(() => {
+            show.value = false
+        })
 }
 </script>
 <style scoped>
