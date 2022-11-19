@@ -21,7 +21,7 @@
             leave-class="transform opacity-100 scale-100"
         >
             <div
-                class="absolute right-0 -mt-1 w-48 origin-top-right rounded-md shadow-lg"
+                class="absolute right-0 z-10 -mt-1 w-48 origin-top-right rounded-md shadow-lg"
                 v-if="open"
             >
                 <div
