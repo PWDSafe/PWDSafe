@@ -51,9 +51,9 @@
                 </form>
             </div>
         @else
-            <div class="bg-white shadow-md rounded p-4 max-w-lg mb-6">
-                <h2 class="mb-2 font-semibold text-green-700">Two factor authentication is currently enabled</h2>
-                <p class="text-gray-700">If you want to disable two factor authentication, enter your current password and a one time code below.</p>
+            <div class="bg-white dark:bg-gray-700 shadow-md rounded p-4 max-w-lg mb-6">
+                <h2 class="mb-2 font-semibold text-green-700 dark:text-green-500">Two factor authentication is currently enabled</h2>
+                <p class="text-gray-700 dark:text-gray-300">If you want to disable two factor authentication, enter your current password and a one time code below.</p>
                 <form method="post" action="{{ route('settings.twofa') }}" class="max-w-lg">
                     @csrf
                     @method('delete')
