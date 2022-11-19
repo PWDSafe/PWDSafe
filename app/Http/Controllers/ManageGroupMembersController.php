@@ -74,7 +74,7 @@ class ManageGroupMembersController extends Controller
 
         $sql = "SELECT encryptedcredentials.data, encryptedcredentials.credentialid FROM encryptedcredentials
                         INNER JOIN credentials ON credentials.id = encryptedcredentials.credentialid
-                        INNER JOIN `groups` ON credentials.groupid = groups.id
+                        INNER JOIN groups ON credentials.groupid = groups.id
                         INNER JOIN usergroups ON usergroups.groupid = groups.id
                         WHERE usergroups.groupid = :groupid AND usergroups.userid = :userid
                         AND encryptedcredentials.userid = :userid2";
