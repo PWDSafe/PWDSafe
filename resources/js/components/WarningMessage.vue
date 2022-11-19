@@ -1,6 +1,9 @@
 <template>
     <div class="fixed bottom-0 w-full">
-        <transition name="slide">
+        <transition
+            enter-active-class="duration-300 ease-out translate-y-0 opacity-100"
+            leave-active-class="duration-300 ease-out translate-y-full opacity-0"
+        >
             <div
                 v-show="show"
                 class="mx-4 mb-4 rounded-md border-orange-100 bg-orange-200 px-4 py-4 text-orange-800 shadow dark:bg-orange-900 dark:text-orange-200 lg:mx-14 lg:mb-8"
@@ -50,14 +53,3 @@ const messageSeen = function () {
         })
 }
 </script>
-<style scoped>
-.slide-enter-active,
-.slide-leave-active {
-    @apply translate-y-0 opacity-100 duration-200 ease-out;
-}
-
-.slide-enter,
-.slide-leave-active {
-    @apply translate-y-full opacity-0;
-}
-</style>
