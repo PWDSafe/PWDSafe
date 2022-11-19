@@ -14,8 +14,8 @@ WORKDIR /app/
 COPY public /app/public/
 COPY app/ /app/app/
 COPY resources/ /app/resources/
-COPY package.json package-lock.json tailwind.config.js webpack.mix.js /app/
-RUN npm install && npm run production
+COPY package.json package-lock.json tailwind.config.js vite.config.js /app/
+RUN npm install && npm run build
 
 FROM php:8.1-apache-bullseye
 ENV DEBIAN_FRONTEND noninteractive

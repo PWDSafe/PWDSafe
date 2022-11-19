@@ -18,7 +18,7 @@ test:
   script:
     - cp -n .env.example .env
     - npm install
-    - npm run production
+    - npm run build
     - composer install --no-suggest --no-progress
     - php artisan key:generate
     - php artisan test --parallel --coverage-text --log-junit junit-report.xml --coverage-cobertura cobertura-report.xml

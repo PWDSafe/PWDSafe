@@ -7,7 +7,7 @@
 import { createApp } from 'vue'
 import { VueClipboard } from '@soerenmartius/vue3-clipboard'
 
-require('./bootstrap')
+import './bootstrap'
 
 const app = createApp({
     data() {
@@ -45,27 +45,31 @@ app.component('heroicons-key-icon', KeyIcon)
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-app.component('dropdown-menu', require('./components/DropdownMenu.vue').default)
-app.component('dropdown-link', require('./components/DropdownLink.vue').default)
-app.component('pwdsafe-button', require('./components/Button.vue').default)
-app.component('pwdsafe-alert', require('./components/Alert.vue').default)
-app.component('pwdsafe-label', require('./components/Label.vue').default)
-app.component('pwdsafe-input', require('./components/Input.vue').default)
-app.component('pwdsafe-textarea', require('./components/Textarea.vue').default)
-app.component('pwdsafe-select', require('./components/Select.vue').default)
-app.component(
-    'credential-card',
-    require('./components/CredentialCard.vue').default
-)
-app.component(
-    'update-permission',
-    require('./components/UpdatePermission.vue').default
-)
-app.component('pwdsafe-modal', require('./components/Modal.vue').default)
-app.component(
-    'warning-message',
-    require('./components/WarningMessage.vue').default
-)
+import DropdownMenu from './components/DropdownMenu.vue'
+import DropdownLink from './components/DropdownLink.vue'
+import PwdsafeButton from './components/Button.vue'
+import PwdsafeAlert from './components/Alert.vue'
+import PwdsafeLabel from './components/Label.vue'
+import PwdsafeInput from './components/Input.vue'
+import PwdsafeTextarea from './components/Textarea.vue'
+import PwdsafeSelect from './components/Select.vue'
+import CredentialCard from './components/CredentialCard.vue'
+import UpdatePermission from './components/UpdatePermission.vue'
+import PwdsafeModal from './components/Modal.vue'
+import WarningMessage from './components/WarningMessage.vue'
+
+app.component('dropdown-menu', DropdownMenu)
+app.component('dropdown-link', DropdownLink)
+app.component('pwdsafe-button', PwdsafeButton)
+app.component('pwdsafe-alert', PwdsafeAlert)
+app.component('pwdsafe-label', PwdsafeLabel)
+app.component('pwdsafe-input', PwdsafeInput)
+app.component('pwdsafe-textarea', PwdsafeTextarea)
+app.component('pwdsafe-select', PwdsafeSelect)
+app.component('credential-card', CredentialCard)
+app.component('update-permission', UpdatePermission)
+app.component('pwdsafe-modal', PwdsafeModal)
+app.component('warning-message', WarningMessage)
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
