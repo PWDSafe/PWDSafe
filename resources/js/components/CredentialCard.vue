@@ -1,11 +1,11 @@
 <template>
-    <div class="max-w-sm w-full card my-2 mx-2 bg-white shadow flex space-between flex-col">
+    <div class="max-w-sm w-full card my-2 mx-2 bg-white dark:bg-gray-700 shadow flex space-between flex-col">
         <div class="card-body flex-1 p-4">
             <h5 class="text-xl">{{ credential.site }}</h5>
             <h6 class="mb-2 text-gray-700">{{ credential.username }}</h6>
             <p class="line-clamp-3">{{ credential.notes }}</p>
         </div>
-        <div class="card-footer bg-gray-50 p-4 border-t">
+        <div class="card-footer bg-gray-50 dark:bg-gray-700 p-4 border-t dark:border-gray-800">
             <div class="flex justify-between">
                 <div>
                     <span v-if="showgroupname">{{ groupname }}</span>
@@ -35,7 +35,7 @@
                                     :disabled="!passwordLoaded"
                                     :placeholder="!passwordLoaded ? 'Loading...' : ''"
                                     rows="5"
-                                    class="block w-full px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-indigo-500 focus:shadow-outline-blue sm:text-sm transition duration-150 ease-in-out disabled:bg-gray-200"></textarea>
+                                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md leading-5 bg-white dark:bg-gray-800 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-indigo-500 focus:shadow-outline-blue sm:text-sm transition duration-150 ease-in-out disabled:bg-gray-200 dark:disabled:bg-gray-900"></textarea>
                             </div>
                             <div class="mb-2">
                                 <pwdsafe-label for="notes" class="mb-1">Notes</pwdsafe-label>

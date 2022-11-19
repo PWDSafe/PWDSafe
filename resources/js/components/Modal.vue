@@ -21,7 +21,7 @@
                     <span class="hidden sm:inline-block sm:align-middle sm:h-screen"></span>&#8203;
 
                     <div v-if="open"
-                         class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm md:max-w-md sm:w-full sm:p-6"
+                         class="inline-block align-bottom bg-white dark:bg-gray-700 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm md:max-w-md sm:w-full sm:p-6"
                          role="dialog" aria-modal="true" aria-labelledby="modal-headline">
                         <slot></slot>
                     </div>

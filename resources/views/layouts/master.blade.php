@@ -8,10 +8,10 @@
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
     <title>PWDSafe</title>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 dark:bg-gray-800">
 <div id="app">
     @auth
-        <nav class="bg-white shadow">
+        <nav class="bg-white dark:bg-gray-700 dark:text-gray-300 dark:hover:text-gray-200 shadow">
             <div class="mx-auto px-2 sm:px-4 lg:px-8">
                 <div class="flex justify-between h-16">
                     <div class="flex px-2 lg:px-0">
@@ -20,15 +20,15 @@
                         </div>
                         <div class="hidden lg:ml-6 lg:flex">
                             <a href="{{ route('group', auth()->user()->primarygroup) }}"
-                               class="inline-flex items-center px-1 pt-1 border-b-2 {{ (request()->is('groups/' . auth()->user()->primarygroup)) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} text-sm font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out ml-8">
+                               class="inline-flex items-center px-1 pt-1 border-b-2 {{ (request()->is('groups/' . auth()->user()->primarygroup)) ? 'border-indigo-500 text-gray-900 dark:text-gray-100' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300' }} text-sm font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out ml-8">
                                 Private
                             </a>
                             <a href="{{ route('groups') }}"
-                               class="inline-flex items-center px-1 pt-1 border-b-2 {{ (request()->is('groups')) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} text-sm font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out ml-8">
+                               class="inline-flex items-center px-1 pt-1 border-b-2 {{ (request()->is('groups')) ? 'border-indigo-500 text-gray-900 dark:text-gray-100' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300' }} text-sm font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out ml-8">
                                 Groups
                             </a>
                             <a href="{{ route('securitycheck') }}"
-                               class="inline-flex items-center px-1 pt-1 border-b-2 {{ (request()->is('securitycheck')) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} text-sm font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out ml-8">
+                               class="inline-flex items-center px-1 pt-1 border-b-2 {{ (request()->is('securitycheck')) ? 'border-indigo-500 text-gray-900 dark:text-gray-100' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300' }} text-sm font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out ml-8">
                                 Security check
                             </a>
                         </div>
@@ -47,7 +47,7 @@
                                 <form method="post" action="{{ route('search') }}">
                                     @csrf
                                     <input id="search" name="search"
-                                           class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-indigo-500 focus:shadow-outline-blue sm:text-sm transition duration-150 ease-in-out"
+                                           class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md leading-5 bg-white dark:bg-gray-800 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:placeholder-gray-400 focus:border-indigo-500 focus:shadow-outline-blue sm:text-sm transition duration-150 ease-in-out"
                                            placeholder="Search" type="search">
                                 </form>
                             </div>
@@ -76,7 +76,7 @@
                         <dropdown-menu>
                             <template v-slot:trigger="{ open }">
                                 <span class="flex items-center hover:text-gray-700 focus:text-gray-700"
-                                      :class="{'text-gray-500': !open, 'text-gray-700': open}">
+                                      :class="{'text-gray-500 dark:text-gray-300 dark:hover:text-gray-200': !open, 'text-gray-700 dark:text-gray-200': open}">
                                     <heroicons-user-icon class="h-5 w-5 mr-1"></heroicons-user-icon>
                                     {{ auth()->user()->email }}
                                 </span>
@@ -86,11 +86,11 @@
                                     <dropdown-link href="{{ route('changepassword') }}">Change password</dropdown-link>
                                 @endif
                                 <dropdown-link href="{{ route('settings.twofa') }}">Two factor authentication</dropdown-link>
-                                <div class="my-1 border-b"></div>
+                                <div class="my-1 border-b dark:border-gray-800"></div>
                                 <form method="post" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit"
-                                            class="w-full text-left block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out">
+                                            class="w-full dark:focus:bg-gray-700 text-left block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 dark:bg-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-200 dark:text-gray-300 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out">
                                         Logout
                                     </button>
                                 </form>
@@ -130,7 +130,7 @@
                         <form method="post" action="{{ route('logout') }}" class="w-full">
                             @csrf
                             <button type="submit"
-                                    class="w-full text-left  mt-1 block pl-3 pr-4 py-2 border-l-4 items-center px-1 pt-1 border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300 text-base font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out hover:bg-gray-100">
+                                    class="w-full text-left mt-1 block pl-3 pr-4 py-2 border-l-4 items-center px-1 pt-1 border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300 text-base font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out hover:bg-gray-100">
                                 Logout
                             </button>
                         </form>
@@ -139,7 +139,7 @@
             </div>
         </nav>
     @endauth
-    <div class="container mx-auto mt-4 px-4 sm:px-8">
+    <div class="container mx-auto mt-4 px-4 sm:px-8 dark:text-gray-300">
         @yield('content')
     </div>
         @auth

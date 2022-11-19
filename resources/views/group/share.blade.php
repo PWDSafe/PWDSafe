@@ -6,20 +6,20 @@
             <div class="flex flex-col">
                 <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                     <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                        <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                            <table class="min-w-full divide-y divide-gray-200">
+                        <div class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-800 sm:rounded-lg">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
                                 <thead>
                                 <tr>
-                                    <th class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Username
                                     </th>
-                                    <th class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Permission
                                     </th>
-                                    <th class="px-6 py-3 bg-gray-50"></th>
+                                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700"></th>
                                 </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
+                                <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800">
                                 @foreach ($group->users as $user)
                                     <tr>
                                         <td class="px-6 py-4 whitespace-no-wrap">
@@ -60,7 +60,7 @@
                 <strong>Not shared!</strong> This group isn't shared with anyone yet.
             </pwdsafe-alert>
         @endif
-        <div class="mt-8 max-w-lg bg-white rounded-md shadow">
+        <div class="mt-8 max-w-lg bg-white dark:bg-gray-700 rounded-md shadow">
             <form method="post">
                 <div class="px-8 py-4">
                     @csrf
@@ -69,7 +69,7 @@
                         <label for="username"
                                class="block text-sm font-medium leading-5 text-gray-700 mb-1">Username</label>
                         <input type="text" id="username" name="username"
-                               class="block w-full px-3 py-2 mb-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-indigo-500 focus:shadow-outline-blue sm:text-sm transition duration-150 ease-in-out"
+                               class="block w-full px-3 py-2 mb-2 border border-gray-300 dark:border-gray-700 rounded-md leading-5 bg-white dark:bg-gray-800 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-indigo-500 focus:shadow-outline-blue sm:text-sm transition duration-150 ease-in-out"
                                placeholder="Username"
                                value="{{ old('email') }}"
                                required
@@ -89,8 +89,9 @@
                         @endif
                     </div>
                 </div>
-                <div class="flex justify-end gap-x-2 bg-gray-50 px-8 py-4">
-                    <pwdsafe-button btntype="a" theme="secondary" href="{{ route('group', $group) }}">Back
+                <div class="flex justify-end gap-x-2 bg-gray-50 dark:bg-gray-700 px-8 py-4 border-t dark:border-gray-800">
+                    <pwdsafe-button btntype="a" theme="secondary" href="{{ route('group', $group) }}">
+                        Back
                     </pwdsafe-button>
                     <pwdsafe-button type="submit">Share group</pwdsafe-button>
                 </div>

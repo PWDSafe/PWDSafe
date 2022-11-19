@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container mx-auto">
-        <div class="bg-white rounded-md shadow max-w-3xl">
+        <div class="bg-white dark:bg-gray-700 rounded-md shadow max-w-3xl">
             <form method="post">
                 <div class="px-8 py-4">
                     <h3 class="text-2xl mb-4">Add credentials</h3>
@@ -28,7 +28,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-gray-50">
+                <div class="bg-gray-50 dark:bg-gray-700 dark:border-t dark:border-gray-800">
                     <div class="flex justify-end gap-x-2 px-8 py-4">
                         <pwdsafe-button theme="secondary" btntype="a" href="{{ route('group', $group->id) }}">
                             Back

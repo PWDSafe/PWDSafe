@@ -15,7 +15,7 @@
                 leave-class="transform opacity-100 scale-100"
             >
                 <div class="origin-top-right absolute right-0 -mt-1 w-48 rounded-md shadow-lg" v-if="open">
-                    <div class="py-1 rounded-md bg-white shadow-xs" role="menu" aria-orientation="vertical" aria-labelledby="user-menu">
+                    <div class="py-1 rounded-md bg-white dark:bg-gray-600 shadow-xs" role="menu" aria-orientation="vertical" aria-labelledby="user-menu">
                         <slot></slot>
                     </div>
                 </div>

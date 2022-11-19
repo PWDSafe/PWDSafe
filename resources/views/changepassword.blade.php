@@ -3,12 +3,12 @@
     <div class="container mx-auto">
         <h3 class="text-2xl mb-4">Change password</h3>
         @if (session()->has('success'))
-            <pwdsafe-alert theme="success" classes="mb-4">
+            <pwdsafe-alert theme="success" classes="mb-4 max-w-lg">
                 {{ session()->get('success') }}
             </pwdsafe-alert>
         @endif
         @if (config('ldap.enabled') && !auth()->user()->canDecryptPrivkey(session('password')))
-            <div class="mt-8 max-w-3xl bg-white rounded-md shadow px-8 py-4 mb-4 text-gray-600">
+            <div class="mt-8 max-w-3xl bg-white dark:bg-gray-700 rounded-md shadow px-8 py-4 mb-4 text-gray-600 dark:text-gray-300">
                 <h4 class="text-xl mb-2 text-amber-600">Warning</h4>
                 <p class="mb-1">
                     You have logged in via LDAP/AD, but we cannot seem to decrypt your private key.<br>
@@ -22,7 +22,7 @@
         @endif
         @if (!config('ldap.enabled') || !auth()->user()->canDecryptPrivkey(session('password')))
             <form method="post" action="{{ route('changepassword') }}" class="max-w-lg">
-                <div class="mt-8 max-w-lg bg-white rounded-md shadow">
+                <div class="mt-8 max-w-lg bg-white dark:bg-gray-700 rounded-md shadow">
                     <div class="px-8 py-4">
                 @if ($errors->any())
                     <pwdsafe-alert theme="danger" classes="my-4">
@@ -47,7 +47,7 @@
                     </div>
                 </div>
                     </div>
-                <div class="flex justify-end gap-x-2 bg-gray-50 px-8 py-4">
+                <div class="flex justify-end gap-x-2 bg-gray-50 dark:bg-gray-700 dark:border-t dark:border-gray-800 px-8 py-4">
                     <pwdsafe-button type="submit">Change password</pwdsafe-button>
                 </div>
                 </div>

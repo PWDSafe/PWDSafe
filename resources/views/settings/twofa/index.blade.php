@@ -2,7 +2,7 @@
 @section('content')
     <div class="container mx-auto">
         <h3 class="text-2xl mb-4">Two factor authentication</h3>
-        <p class="max-w-xl mb-4 text-gray-700">This is where you can enable two factor authentication for your account. This is <strong>highly</strong> recommended. Once this has been activated, there is no way to access your account without having access to your two factor app.</p>
+        <p class="max-w-xl mb-4 text-gray-700 dark:text-gray-300">This is where you can enable two factor authentication for your account. This is <strong>highly</strong> recommended. Once this has been activated, there is no way to access your account without having access to your two factor app.</p>
         @if (session()->has('success'))
             <pwdsafe-alert theme="success" classes="mb-4 max-w-lg">
                 {{ session()->get('success') }}
@@ -10,12 +10,12 @@
         @endif
 
         @if (is_null(auth()->user()->two_factor_secret))
-            <div class="bg-white shadow-md rounded p-4 max-w-lg mb-6">
+            <div class="bg-white dark:bg-gray-700 shadow-md rounded p-4 max-w-lg mb-6">
                 <h2 class="mb-2 font-semibold">Step 1</h2>
                 <p>Install any TOTP-based multifactor application</p>
             </div>
 
-            <div class="bg-white shadow-md rounded p-4 max-w-lg mb-6">
+            <div class="bg-white dark:bg-gray-700 shadow-md rounded p-4 max-w-lg mb-6">
                 <h2 class="mb-2 font-semibold">Step 2</h2>
                 <p>Scan this code with your two factor authentication app:</p>
                 {!! $qrcodeinline !!}
@@ -23,7 +23,7 @@
                 <strong>{{ session()->get('2fa_secret') }}</strong>
             </div>
 
-            <div class="bg-white shadow-md rounded p-4 max-w-lg mb-6">
+            <div class="bg-white dark:bg-gray-700 shadow-md rounded p-4 max-w-lg mb-6">
                 <h2 class="mb-2 font-semibold">Step 3</h2>
                 <p class="mb-4">Enter your current password and the one time password your application is generating below</p>
                 <form method="post" action="{{ route('settings.twofa') }}" class="max-w-lg">

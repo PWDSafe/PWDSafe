@@ -54,7 +54,7 @@
                 @can('administer', $group)
                     <dropdown-menu>
                         <template #trigger>
-                            <span class="h-full flex items-center border text-gray-600 border-gray-600 hover:bg-gray-600 hover:text-gray-100 px-4 py-1 rounded transition duration-200 ml-2">
+                            <span class="h-full flex items-center border text-gray-600 border-gray-600 hover:bg-gray-600 hover:text-gray-100 px-4 py-1 rounded transition duration-200 ml-2 dark:text-gray-400 dark:border-gray-400 dark:hover:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-gray-200">
                                 <heroicons-cog-6-tooth-icon class="h-5 w-5"></heroicons-cog-6-tooth-icon>
                             </span>
                         </template>
@@ -62,7 +62,7 @@
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 <dropdown-link href="/groups/{{ $group->id }}/name">Change name</dropdown-link>
                                 <dropdown-link href="/groups/{{ $group->id }}/members">Manage members</dropdown-link>
-                                <div class="my-1 border-b"></div>
+                                <div class="my-1 border-b dark:border-gray-800"></div>
                                 <dropdown-link href="/groups/{{ $group->id }}/delete" class="flex items-center gap-x-1">
                                     <heroicons-trash-icon class="h-5 w-5"></heroicons-trash-icon> Delete
                                 </dropdown-link>

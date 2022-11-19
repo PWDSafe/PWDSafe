@@ -3,7 +3,7 @@
         <transition name="slide">
             <div
                 v-show="show"
-                class="border-orange-100 bg-orange-200 text-orange-800 px-4 py-4 mx-4 lg:mx-14 mb-4 lg:mb-8 rounded-md shadow"
+                class="border-orange-100 bg-orange-200 dark:bg-orange-900 dark:text-orange-200 text-orange-800 px-4 py-4 mx-4 lg:mx-14 mb-4 lg:mb-8 rounded-md shadow"
             >
                 <div class="flex justify-between items-end lg:items-center flex-col gap-y-4 lg:flex-row">
                     <p>
