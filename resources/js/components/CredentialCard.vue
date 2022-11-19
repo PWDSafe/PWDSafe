@@ -20,12 +20,13 @@
                         v-on:modal-open="getPassword"
                         v-on:modal-close="resetData"
                     >
-                        <template v-slot:trigger>
+                        <template v-slot:trigger="{ openModal }">
                             <pwdsafe-button
                                 theme="secondary"
                                 :data-id="credential.id"
                                 classes="mr-1"
                                 title="Show"
+                                @click="openModal"
                             >
                                 <EyeIcon class="h-5 w-5"></EyeIcon>
                             </pwdsafe-button>
@@ -115,12 +116,13 @@
                                     btntype="a"
                                     :href="'/credential/' + credential.id"
                                     theme="danger"
-                                    >Delete</pwdsafe-button
                                 >
+                                    Delete
+                                </pwdsafe-button>
                                 <div>
-                                    <pwdsafe-button type="submit"
-                                        >Save</pwdsafe-button
-                                    >
+                                    <pwdsafe-button type="submit">
+                                        Save
+                                    </pwdsafe-button>
                                 </div>
                             </div>
                         </form>

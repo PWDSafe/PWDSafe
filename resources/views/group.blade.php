@@ -27,8 +27,8 @@
                 @endcan
                 @can('update', $group)
                 <pwdsafe-modal>
-                    <template v-slot:trigger>
-                        <pwdsafe-button theme="secondary" class="flex items-center">
+                    <template v-slot:trigger="{ openModal }">
+                        <pwdsafe-button theme="secondary" class="flex items-center" @click='openModal'>
                             <heroicons-arrow-up-on-square-icon class="h-5 w-5 mr-1"></heroicons-arrow-up-on-square-icon>
                             Import
                         </pwdsafe-button>
