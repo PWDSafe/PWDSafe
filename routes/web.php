@@ -48,6 +48,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/groups/{group}/name', [GroupChangeNameController::class, 'index']);
     Route::post('/groups/{group}/name', [GroupChangeNameController::class,'store']);
     Route::get('/pwdfor/{credential}', [PasswordForController::class, 'index']);
+    Route::get('/search', function() { return redirect()->back(); });
     Route::post('/search', [SearchController::class, 'store'])->name('search');
     Route::get('/search/{search}', [SearchController::class, 'index']);
     Route::get('/changepwd', [ChangePasswordController::class, 'index'])->name('changepassword');
