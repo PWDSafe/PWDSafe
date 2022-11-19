@@ -16,7 +16,12 @@
                     <div class="px-2 py-3">
                         <div class="flex flex-wrap">
                             @foreach ($group as $row)
-                                <credential-card :credential="{{ json_encode($row) }}" :groups="{{ auth()->user()->groups }}"></credential-card>
+                                <credential-card
+                                    :credential="{{ json_encode($row) }}"
+                                    :groups="{{ auth()->user()->groups }}"
+                                    :showgroupname="true"
+                                    groupname="{{ auth()->user()->primarygroup === $row['groupid'] ? 'Private' : $row['groupname'] }}"
+                                ></credential-card>
                             @endforeach
                         </div>
                     </div>
