@@ -34,8 +34,6 @@ RUN echo "uploads_max_filesize = 8M\npost_max_size = 8M" > /usr/local/etc/php/co
 
 COPY . /var/www/html
 COPY --from=vendor /app/vendor/ /var/www/html/vendor/
-COPY --from=frontend /app/public/css/ /var/www/html/public/css/
-COPY --from=frontend /app/public/js/ /var/www/html/public/js/
-COPY --from=frontend /app/public/mix-manifest.json /var/www/html/public/mix-manifest.json
+COPY --from=frontend /app/public/build/ /var/www/html/public/build/
 RUN chmod 777 -R storage/
 ENTRYPOINT ["/var/www/html/scripts/entrypoint.sh"]
