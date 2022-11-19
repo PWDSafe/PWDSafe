@@ -26,15 +26,14 @@ class Group extends Eloquent
      */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'usergroups', 'groupid', 'userid');
+        return $this->belongsToMany(User::class, 'usergroups', 'groupid', 'userid')
+            ->orderBy('email')
+            ->withPivot('permission');
     }
 
-    /**
-     * @return BelongsToMany<User>
-     */
-    public function usersWithoutCurrentUser(): BelongsToMany
+    public function userCountWithoutCurrentUser(): int
     {
-        return $this->users()->where('userid', '!=', auth()->user()->id)->withPivot('permission');
+        return $this->users()->where('userid', '!=', auth()->user()->id)->count();
     }
 
     public function deleteGroup(): void

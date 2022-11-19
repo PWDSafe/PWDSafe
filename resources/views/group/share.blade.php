@@ -2,7 +2,7 @@
 @section('content')
     <div class="container">
         <h3 class="text-2xl mb-5">{{ $group->name }}</h3>
-        @if ($group->usersWithoutCurrentUser->count() > 0)
+        @if ($group->userCountWithoutCurrentUser() > 0)
             <div class="flex flex-col">
                 <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                     <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
@@ -20,26 +20,32 @@
                                 </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach ($group->usersWithoutCurrentUser as $user)
+                                @foreach ($group->users as $user)
                                     <tr>
                                         <td class="px-6 py-4 whitespace-no-wrap">
                                             {{ $user->email }}
                                         </td>
 
                                         <td class="px-6 py-4 whitespace-no-wrap">
-                                            <update-permission
-                                                :userid="{{ $user->id }}"
-                                                :groupid="{{ $group->id }}"
-                                                permission="{{ $user->pivot->permission }}"
-                                            ></update-permission>
+                                            @if (!auth()->user()->is($user))
+                                                <update-permission
+                                                    :userid="{{ $user->id }}"
+                                                    :groupid="{{ $group->id }}"
+                                                    permission="{{ $user->pivot->permission }}"
+                                                ></update-permission>
+                                            @else
+                                                Admin
+                                            @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">
-                                            <form method="post">
-                                                @csrf
-                                                @method('delete')
-                                                <input type="hidden" name="userid" value="{{ $user->id }}">
-                                                <pwdsafe-button theme="danger" type="submit">Remove</pwdsafe-button>
-                                            </form>
+                                            @if (!auth()->user()->is($user))
+                                                <form method="post">
+                                                    @csrf
+                                                    @method('delete')
+                                                    <input type="hidden" name="userid" value="{{ $user->id }}">
+                                                    <pwdsafe-button theme="danger" type="submit">Remove</pwdsafe-button>
+                                                </form>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach

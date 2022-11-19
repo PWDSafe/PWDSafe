@@ -57,6 +57,7 @@ class User extends Authenticatable
         return $this->belongsToMany(Group::class, 'usergroups', 'userid', 'groupid')
             ->orderBy('name')
             ->withPivot('permission')
+            ->withCount('users')
             ->withCount('credentials');
     }
 

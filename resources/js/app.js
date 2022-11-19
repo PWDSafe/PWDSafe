@@ -18,7 +18,8 @@ import {
     ArrowUpOnSquareIcon,
     UserIcon,
     Cog6ToothIcon,
-    TrashIcon
+    TrashIcon,
+    KeyIcon
 } from '@heroicons/vue/24/outline'
 app.component('heroicons-plus-icon', PlusIcon)
 app.component('heroicons-arrow-down-on-square-icon', ArrowDownOnSquareIcon)
@@ -26,6 +27,7 @@ app.component('heroicons-arrow-up-on-square-icon', ArrowUpOnSquareIcon)
 app.component('heroicons-user-icon', UserIcon)
 app.component('heroicons-cog-6-tooth-icon', Cog6ToothIcon)
 app.component('heroicons-trash-icon', TrashIcon)
+app.component('heroicons-key-icon', KeyIcon)
 
 /**
  * The following block of code may be used to automatically register your
