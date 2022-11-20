@@ -74,7 +74,7 @@
         </div>
     </div>
     @if ($credentials->count() > 0)
-    <div class="flex flex-wrap -mx-2">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         @foreach($credentials as $credential)
             <credential-card
                 :credential="{{ $credential }}"

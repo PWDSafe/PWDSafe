@@ -14,7 +14,7 @@
                 <div class="shadow-md mb-8 rounded-md bg-white dark:bg-gray-600">
                     <h5 class="text-lg border-b dark:border-gray-800 px-4 py-3 bg-gray-300 dark:bg-gray-700 rounded-t-md">Password group</h5>
                     <div class="px-2 py-3">
-                        <div class="flex flex-wrap">
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                             @foreach ($group as $row)
                                 <credential-card
                                     :credential="{{ json_encode($row) }}"

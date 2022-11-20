@@ -1,6 +1,6 @@
 <template>
     <div
-        class="card space-between my-2 mx-2 flex w-full max-w-sm flex-col bg-white shadow dark:bg-gray-700"
+        class="card space-between flex w-full max-w-lg flex-col overflow-hidden rounded-md bg-white shadow dark:bg-gray-700"
     >
         <div class="card-body flex-1 p-4">
             <h5 class="text-xl">{{ credential.site }}</h5>
