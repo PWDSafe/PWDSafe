@@ -14,7 +14,7 @@ WORKDIR /app/
 COPY public /app/public/
 COPY app/ /app/app/
 COPY resources/ /app/resources/
-COPY package.json package-lock.json tailwind.config.js vite.config.js /app/
+COPY package.json package-lock.json tailwind.config.js vite.config.js postcss.config.js /app/
 RUN npm install && npm run build
 
 FROM php:8.1-apache-bullseye
