@@ -4,7 +4,9 @@
     >
         <div class="card-body flex-1 p-4">
             <h5 class="text-xl">{{ credential.site }}</h5>
-            <h6 class="mb-2 text-gray-700">{{ credential.username }}</h6>
+            <h6 class="mb-2 text-gray-700 dark:text-gray-300">
+                {{ credential.username }}
+            </h6>
             <p class="line-clamp-3">{{ credential.notes }}</p>
         </div>
         <div
