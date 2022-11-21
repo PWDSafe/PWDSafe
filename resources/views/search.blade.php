@@ -7,7 +7,7 @@
         </div>
     </div>
     @if ($data->count() > 0)
-    <div class="flex flex-wrap">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         @foreach ($data as $row)
             <credential-card
                 :credential="{{ $row }}"
