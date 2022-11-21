@@ -5,6 +5,7 @@ use App\Http\Controllers\ExportController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\PasswordForController;
 use App\Http\Controllers\PreLogonFirstPageCallback;
+use App\Http\Controllers\ResetAccountController;
 use App\Http\Controllers\SecurityCheckController;
 use App\Http\Controllers\TwofaSettingsController;
 use App\Http\Controllers\VerifyOtpController;
@@ -61,6 +62,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::delete('/settings/twofa', [TwofaSettingsController::class, 'destroy']);
 
     Route::post('/settings/warningmessage', [WarningMessageController::class, 'store']);
+
+    Route::get('/settings/resetaccount', [ResetAccountController::class, 'index']);
+    Route::delete('/settings/resetaccount', [ResetAccountController::class, 'destroy']);
 
     Route::post('/cred/{credential}', [CredentialsController::class, 'update']);
     Route::get('/credential/{credential}', [CredentialsController::class, 'index'])->name('credential');

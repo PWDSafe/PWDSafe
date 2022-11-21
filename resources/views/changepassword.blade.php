@@ -10,13 +10,16 @@
         @if (config('ldap.enabled') && !auth()->user()->canDecryptPrivkey(session('password')))
             <div class="mt-8 max-w-3xl bg-white dark:bg-gray-700 rounded-md shadow px-8 py-4 mb-4 text-gray-600 dark:text-gray-300">
                 <h4 class="text-xl mb-2 text-amber-600">Warning</h4>
-                <p class="mb-1">
+                <p class="mb-2">
                     You have logged in via LDAP/AD, but we cannot seem to decrypt your private key.<br>
                     The cause of this is most likely that you've changed your password in your LDAP/AD.
                 </p>
-                <p>
+                <p class='mb-2'>
                     To get access to your stored passwords again, we need to re-encrypt your private key.<br>
                     Please fill out this form. If successful you will be redirected to your private group.
+                </p>
+                <p class='text-red-500'>
+                    If you do not remember your old password, you can <a href='/settings/resetaccount' class='underline'>reset your account</a>. This will cause all secrets you have stored to be deleted.
                 </p>
             </div>
         @endif
