@@ -20,7 +20,8 @@ class SearchController extends Eloquent
             ->whereIn('groupid', $groups)
             ->where(function ($query) use ($search) {
                 $query->where('site', 'like', '%' . $search . '%')
-                    ->orWhere('username', 'like', '%' . $search . '%');
+                    ->orWhere('username', 'like', '%' . $search . '%')
+                    ->orWhere('notes', 'like', '%' . $search . '%');
             })
             ->get();
 
