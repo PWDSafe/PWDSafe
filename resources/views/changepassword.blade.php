@@ -53,7 +53,7 @@
                 </div>
             </form>
         @else
-            <div class="mt-8 max-w-xl bg-white rounded-md shadow px-8 py-4 text-gray-600">
+            <div class="mt-8 max-w-xl bg-white rounded-md shadow px-8 py-4 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
                 <h4 class="text-xl mb-2 text-amber-600">Warning</h4>
                 <p>
                     This feature is disabled since you have logged in via LDAP/AD.
