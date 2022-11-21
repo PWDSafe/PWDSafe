@@ -57,7 +57,7 @@
                         <!-- Mobile menu button -->
                         <button
                             @click="mobileMenuOpen = !mobileMenuOpen"
-                            class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out"
+                            class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-gray-200 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-600 dark:focus:text-gray-300 focus:text-gray-500 transition duration-150 ease-in-out"
                             aria-label="Main menu" aria-expanded="false">
                             <svg :class="{'block': !mobileMenuOpen, 'hidden': mobileMenuOpen}" class="h-6 w-6"
                                  fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -102,35 +102,29 @@
 
             <div class="lg:hidden" :class="{'block': mobileMenuOpen, 'hidden': !mobileMenuOpen}">
                 <div class="pt-2 pb-3">
-                    @foreach (auth()->user()->groups()->withCount('credentials')->get() as $group)
-                        <a href="{{ route('group', $group->id) }}"
-                           class="mt-1 block pl-3 pr-4 py-2 border-l-4 items-center px-1 pt-1 text-base font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out hover:bg-gray-100 {{ request()->is('groups/' . $group->id) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300' }}">
+                    <a href="{{ route('group', auth()->user()->primarygroup) }}"
+                       class="mt-1 block pl-3 pr-4 py-2 border-l-4 items-center px-1 pt-1 text-base font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-600 {{ request()->is('groups/' . auth()->user()->primarygroup) ? 'border-indigo-500 text-gray-900 dark:text-gray-200' : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200 hover:border-gray-300' }}">
                             <span class="flex items-center justify-between">
-                                @if ($group->id === auth()->user()->primarygroup)
                                     Private
-                                @else
-                                    {{ $group->name }}
-                                @endif
-                                    <span
-                                        class="bg-gray-200 text-indigo-500 p-1 px-2 ml-2 rounded-md">{{ $group->credentials_count }}</span>
-                                </span>
-                        </a>
-                    @endforeach
+                            </span>
+                    </a>
+                    <a href="{{ route('groups') }}"
+                       class="mt-1 block pl-3 pr-4 py-2 border-l-4 items-center px-1 pt-1 text-base font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-600 {{ request()->is('groups') ? 'border-indigo-500 text-gray-900 dark:text-gray-200' : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200 hover:border-gray-300' }}">
+                            <span class="flex items-center justify-between">
+                                    Groups
+                            </span>
+                    </a>
+                    <a href="{{ route('securitycheck') }}"
+                       class="mt-1 block pl-3 pr-4 py-2 border-l-4 items-center px-1 pt-1 text-base font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-600 {{ request()->is('securitycheck') ? 'border-indigo-500 text-gray-900 dark:text-gray-200' : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200 hover:border-gray-300' }}">
+                        Security check
+                    </a>
                 </div>
-                <div class="pt-4 pb-3 border-t border-gray-200">
+                <div class="pt-4 pb-3 border-t border-gray-200 dark:border-gray-800">
                     <div class="mt-3">
-                        <a href="{{ route('groupCreate') }}"
-                           class="mt-1 block pl-3 pr-4 py-2 border-l-4 items-center px-1 pt-1 {{ (request()->is('groups/create')) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300' }} text-base font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out hover:bg-gray-100">
-                            Create group
-                        </a>
-                        <a href="{{ route('securitycheck') }}"
-                           class="mt-1 block pl-3 pr-4 py-2 border-l-4 items-center px-1 pt-1 {{ (request()->is('securitycheck')) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300' }} text-base font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out hover:bg-gray-100">
-                            Security check
-                        </a>
                         <form method="post" action="{{ route('logout') }}" class="w-full">
                             @csrf
                             <button type="submit"
-                                    class="w-full text-left mt-1 block pl-3 pr-4 py-2 border-l-4 items-center px-1 pt-1 border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300 text-base font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out hover:bg-gray-100">
+                                    class="w-full text-left mt-1 block pl-3 pr-4 py-2 border-l-4 items-center px-1 pt-1 border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200 hover:border-gray-300 text-base font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-600">
                                 Logout
                             </button>
                         </form>
