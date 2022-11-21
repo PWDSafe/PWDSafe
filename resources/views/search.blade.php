@@ -12,7 +12,7 @@
             <credential-card
                 :credential="{{ $row }}"
                 :showgroupname="true"
-                :groups="{{ auth()->user()->groups->map->only('id', 'name') }}"
+                :groups="{{ auth()->user()->groupsWithWriteAccess->map->only('id', 'name') }}"
                 groupname="{{ auth()->user()->primarygroup === $row->group->id ? 'Private' : $row->group->name }}"
                 :can-update="{{ auth()->user()->can('update', $row->group) ? 'true' : 'false' }}"
             ></credential-card>

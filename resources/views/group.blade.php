@@ -78,7 +78,7 @@
         @foreach($credentials as $credential)
             <credential-card
                 :credential="{{ $credential }}"
-                :groups="{{ auth()->user()->groups->map->only('id', 'name') }}"
+                :groups="{{ auth()->user()->groupsWithWriteAccess->map->only('id', 'name') }}"
                 :can-update="{{ auth()->user()->can('update', $group) ? 'true' : 'false' }}"
             ></credential-card>
         @endforeach

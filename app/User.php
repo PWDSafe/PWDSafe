@@ -61,6 +61,11 @@ class User extends Authenticatable
             ->withCount('credentials');
     }
 
+    public function groupsWithWriteAccess(): BelongsToMany
+    {
+        return $this->groups()->wherePivotIn('permission', ['write', 'admin']);
+    }
+
     public function changePassword(string $newpass): void
     {
         // Generate new public and private key

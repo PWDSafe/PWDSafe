@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Credential;
+use App\Group;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\View\Factory;
@@ -33,6 +34,8 @@ class CredentialsController extends Controller
         ]);
 
         if ($credential->groupid != $params['currentgroupid']) {
+            $group = Group::find($params['currentgroupid']);
+            $this->authorize('update', $group);
             Credential::addCredentials($params);
             $credential->delete();
         } else {

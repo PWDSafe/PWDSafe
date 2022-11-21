@@ -18,7 +18,7 @@
                             @foreach ($group as $row)
                                 <credential-card
                                     :credential="{{ json_encode($row) }}"
-                                    :groups="{{ auth()->user()->groups }}"
+                                    :groups="{{ auth()->user()->groupsWithWriteAccess->map->only('id', 'name') }}"
                                     :showgroupname="true"
                                     groupname="{{ auth()->user()->primarygroup === $row['groupid'] ? 'Private' : $row['groupname'] }}"
                                 ></credential-card>

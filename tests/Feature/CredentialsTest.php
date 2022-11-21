@@ -70,6 +70,9 @@ class CredentialsTest extends TestCase
             'groupname' => 'testgroup',
         ]);
 
+        $this->post('logout');
+        $this->from('/login')->post('/login', ['email' => 'some@email.com', 'password' => 'password']);
+
         $group = \App\Group::where('name', 'testgroup')->first();
 
         $this->json('PUT', '/credential/' . $credential->id, [
@@ -78,7 +81,7 @@ class CredentialsTest extends TestCase
             'credp' => $newpassword,
             'credn' => '',
             'currentgroupid' => $group->id,
-        ]);
+        ])->assertOk();
         $credential = \App\Credential::first();
         $this->assertEquals($group->id, $credential->groupid);
         $this->assertEquals('New site', $credential->site);
