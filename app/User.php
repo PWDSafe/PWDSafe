@@ -61,6 +61,9 @@ class User extends Authenticatable
             ->withCount('credentials');
     }
 
+    /**
+     * @return BelongsToMany<Group>
+     */
     public function groupsWithWriteAccess(): BelongsToMany
     {
         return $this->groups()->wherePivotIn('permission', ['write', 'admin']);

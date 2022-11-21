@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $users_count
+ */
 class Group extends Eloquent
 {
     use HasFactory;
