@@ -115,7 +115,6 @@
                                 v-if="canUpdate"
                             >
                                 <pwdsafe-button
-                                    btntype="a"
                                     :href="'/credential/' + credential.id"
                                     theme="danger"
                                 >

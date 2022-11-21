@@ -1,15 +1,15 @@
 <template>
     <div class="relative h-full flex-shrink-0">
-        <div v-if="open" @click="open = false" class="fixed inset-0"></div>
+        <div v-if="isOpen" @click="isOpen = false" class="fixed inset-0"></div>
         <div class="h-full">
             <button
                 class="flex h-full items-center text-sm transition duration-150 ease-in-out focus:outline-none"
                 id="user-menu"
                 aria-label="User menu"
                 aria-haspopup="true"
-                @click="open = !open"
+                @click="isOpen = !isOpen"
             >
-                <slot name="trigger" v-bind:open="open"></slot>
+                <slot name="trigger" v-bind:isOpen="isOpen"></slot>
             </button>
         </div>
         <transition
@@ -22,7 +22,7 @@
         >
             <div
                 class="absolute right-0 z-10 -mt-1 w-48 origin-top-right rounded-md shadow-lg"
-                v-if="open"
+                v-if="isOpen"
             >
                 <div
                     class="shadow-xs rounded-md bg-white py-1 dark:bg-gray-600"
@@ -36,14 +36,14 @@
         </transition>
     </div>
 </template>
-<script setup>
+<script setup lang="ts">
 import { ref, onUnmounted } from 'vue'
 
-const open = ref(false)
+const isOpen = ref(false)
 
 const onEscape = (e) => {
-    if (open.value && e.keyCode === 27) {
-        open.value = false
+    if (isOpen.value && e.keyCode === 27) {
+        isOpen.value = false
     }
 }
 

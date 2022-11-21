@@ -25,13 +25,15 @@
         </span>
     </div>
 </template>
-<script setup>
-import { ref } from 'vue'
+<script setup lang="ts">
+import { PropType, ref } from 'vue'
+import axios from 'axios'
+type PermissionType = 'read' | 'write' | 'admin'
 
 const props = defineProps({
     userid: Number,
     groupid: Number,
-    permission: String,
+    permission: String as PropType<PermissionType>,
 })
 
 const currentPermission = ref(props.permission)

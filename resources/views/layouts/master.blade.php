@@ -74,9 +74,9 @@
                     <div class="hidden lg:ml-4 lg:flex lg:items-center">
                         <!-- Profile dropdown -->
                         <dropdown-menu>
-                            <template v-slot:trigger="{ open }">
-                                <span class="flex items-center hover:text-gray-700 focus:text-gray-700"
-                                      :class="{'text-gray-500 dark:text-gray-300 dark:hover:text-gray-200': !open, 'text-gray-700 dark:text-gray-200': open}">
+                            <template v-slot:trigger="{ isOpen }">
+                                <span class="h-full flex items-center hover:text-gray-700 focus:text-gray-700"
+                                      :class="{'text-gray-500 dark:text-gray-300 dark:hover:text-gray-200': !isOpen, 'text-gray-700 dark:text-gray-200': isOpen}">
                                     <heroicons-user-icon class="h-5 w-5 mr-1"></heroicons-user-icon>
                                     {{ auth()->user()->email }}
                                 </span>

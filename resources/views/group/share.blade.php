@@ -90,7 +90,7 @@
                     </div>
                 </div>
                 <div class="flex justify-end gap-x-2 bg-gray-50 dark:bg-gray-700 px-8 py-4 border-t dark:border-gray-800">
-                    <pwdsafe-button btntype="a" theme="secondary" href="{{ route('group', $group) }}">
+                    <pwdsafe-button theme="secondary" href="{{ route('group', $group) }}">
                         Back
                     </pwdsafe-button>
                     <pwdsafe-button type="submit">Share group</pwdsafe-button>

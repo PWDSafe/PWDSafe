@@ -30,7 +30,7 @@
                 </div>
                 <div class="bg-gray-50 dark:bg-gray-700 dark:border-t dark:border-gray-800">
                     <div class="flex justify-end gap-x-2 px-8 py-4">
-                        <pwdsafe-button theme="secondary" btntype="a" href="{{ route('group', $group->id) }}">
+                        <pwdsafe-button theme="secondary" href="{{ route('group', $group->id) }}">
                             Back
                         </pwdsafe-button>
                         <pwdsafe-button type="submit">Add credential</pwdsafe-button>

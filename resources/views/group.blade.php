@@ -10,9 +10,9 @@
                     Private
                 @endif
             </h3>
-            <div class="flex">
+            <div class="flex items-start">
                 @can('update', $group)
-                <pwdsafe-button btntype="a" href="{{ route('addCredentials', $group->id) }}" classes="mr-2 flex items-center">
+                <pwdsafe-button href="{{ route('addCredentials', $group->id) }}" classes="mr-2 flex items-center">
                     <heroicons-plus-icon class="h-5 w-5 mr-1"></heroicons-plus-icon> Add
                 </pwdsafe-button>
                 @endcan

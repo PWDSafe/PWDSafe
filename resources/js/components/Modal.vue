@@ -38,7 +38,7 @@
         </div>
     </transition>
 </template>
-<script setup>
+<script setup lang="ts">
 import { ref, onUnmounted, watch } from 'vue'
 
 const open = ref(false)

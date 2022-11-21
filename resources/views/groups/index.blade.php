@@ -6,7 +6,7 @@
                 Groups
             </h3>
             <div class="flex">
-                <pwdsafe-button btntype="a" href="{{ route('groupCreate') }}" classes="mr-2 flex items-center">
+                <pwdsafe-button href="{{ route('groupCreate') }}" classes="mr-2 flex items-center">
                     <heroicons-plus-icon class="h-5 w-5 mr-1"></heroicons-plus-icon> Create
                 </pwdsafe-button>
             </div>

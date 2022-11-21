@@ -12,7 +12,7 @@
                            placeholder="Group name" value="{{ $group->name }}">
                 </div>
                 <div class="bg-gray-50 dark:bg-gray-700 dark:border-t dark:border-gray-800 px-8 py-4 flex justify-end gap-x-2">
-                    <pwdsafe-button btntype="a" theme="secondary" href="{{ route('group', $group) }}">Back
+                    <pwdsafe-button theme="secondary" href="{{ route('group', $group) }}">Back
                     </pwdsafe-button>
                     <pwdsafe-button type="submit">Change</pwdsafe-button>
                 </div>
