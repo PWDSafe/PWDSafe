@@ -2,7 +2,7 @@
 @section('content')
 <div class="container">
     <div class="clearfix">
-        <div class="flex justify-between mb-5">
+        <div class="flex justify-between mb-5 gap-x-2">
             <h3 class="text-2xl">
                 @if ($group->id !== auth()->user()->primarygroup)
                     {{ $group->name }}
@@ -10,7 +10,7 @@
                     Private
                 @endif
             </h3>
-            <div class="flex items-start gap-x-2">
+            <div class="flex items-end md:items-start gap-2 flex-col md:flex-row">
                 @can('update', $group)
                 <pwdsafe-button href="{{ route('addCredentials', $group->id) }}" classes="flex items-center">
                     <heroicons-plus-icon class="h-5 w-5 mr-1"></heroicons-plus-icon> Add
