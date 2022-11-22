@@ -6,16 +6,6 @@
 
 import { createApp } from 'vue'
 import { VueClipboard } from '@soerenmartius/vue3-clipboard'
-
-import './bootstrap'
-
-const app = createApp({
-    data() {
-        return { mobileMenuOpen: false }
-    },
-})
-app.use(VueClipboard)
-
 import {
     PlusIcon,
     ArrowDownOnSquareIcon,
@@ -26,6 +16,16 @@ import {
     KeyIcon,
 } from '@heroicons/vue/24/outline'
 
+import './bootstrap'
+
+const app = createApp({
+    data() {
+        return { mobileMenuOpen: false }
+    },
+})
+
+app.use(VueClipboard)
+
 app.component('heroicons-plus-icon', PlusIcon)
 app.component('heroicons-arrow-down-on-square-icon', ArrowDownOnSquareIcon)
 app.component('heroicons-arrow-up-on-square-icon', ArrowUpOnSquareIcon)
@@ -34,19 +34,6 @@ app.component('heroicons-cog-6-tooth-icon', Cog6ToothIcon)
 app.component('heroicons-trash-icon', TrashIcon)
 app.component('heroicons-key-icon', KeyIcon)
 
-/**
- * The following block of code may be used to automatically register your
- * Vue components. It will recursively scan this directory for the Vue
- * components and automatically register them with their "basename".
- *
- * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
- */
-
-// const files = require.context('./', true, /\.vue$/i)
-// files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
-
-import DropdownMenu from './components/DropdownMenu.vue'
-import DropdownLink from './components/DropdownLink.vue'
 import PwdsafeButton from './components/Button.vue'
 import PwdsafeAlert from './components/Alert.vue'
 import PwdsafeLabel from './components/Label.vue'
@@ -57,9 +44,9 @@ import CredentialCard from './components/CredentialCard.vue'
 import UpdatePermission from './components/UpdatePermission.vue'
 import PwdsafeModal from './components/Modal.vue'
 import WarningMessage from './components/WarningMessage.vue'
+import ProfileMenu from './components/ProfileMenu.vue'
+import GroupManagementMenu from './components/GroupManagementMenu.vue'
 
-app.component('dropdown-menu', DropdownMenu)
-app.component('dropdown-link', DropdownLink)
 app.component('pwdsafe-button', PwdsafeButton)
 app.component('pwdsafe-alert', PwdsafeAlert)
 app.component('pwdsafe-label', PwdsafeLabel)
@@ -70,11 +57,7 @@ app.component('credential-card', CredentialCard)
 app.component('update-permission', UpdatePermission)
 app.component('pwdsafe-modal', PwdsafeModal)
 app.component('warning-message', WarningMessage)
-
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
+app.component('profile-menu', ProfileMenu)
+app.component('group-management-menu', GroupManagementMenu)
 
 app.mount('#app')

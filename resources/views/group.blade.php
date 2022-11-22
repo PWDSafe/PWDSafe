@@ -10,16 +10,16 @@
                     Private
                 @endif
             </h3>
-            <div class="flex items-start">
+            <div class="flex items-start gap-x-2">
                 @can('update', $group)
-                <pwdsafe-button href="{{ route('addCredentials', $group->id) }}" classes="mr-2 flex items-center">
+                <pwdsafe-button href="{{ route('addCredentials', $group->id) }}" classes="flex items-center">
                     <heroicons-plus-icon class="h-5 w-5 mr-1"></heroicons-plus-icon> Add
                 </pwdsafe-button>
                 @endcan
                 @can('view', $group)
                 <form method="post" action="{{ route('export', $group->id) }}">
                     @csrf
-                    <pwdsafe-button classes="mr-2 flex items-center" theme="secondary">
+                    <pwdsafe-button classes="flex items-center" theme="secondary">
                         <heroicons-arrow-down-on-square-icon class="h-5 w-5 mr-1"></heroicons-arrow-down-on-square-icon>
                         Export
                     </pwdsafe-button>
@@ -52,23 +52,7 @@
                 </pwdsafe-modal>
                 @endcan
                 @can('administer', $group)
-                    <dropdown-menu>
-                        <template #trigger>
-                            <span class="h-full flex items-center border text-gray-600 border-gray-600 hover:bg-gray-600 hover:text-gray-100 px-4 py-1 rounded transition duration-200 ml-2 dark:text-gray-400 dark:border-gray-400 dark:hover:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-gray-200">
-                                <heroicons-cog-6-tooth-icon class="h-5 w-5"></heroicons-cog-6-tooth-icon>
-                            </span>
-                        </template>
-                        <template #default>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <dropdown-link href="/groups/{{ $group->id }}/name">Change name</dropdown-link>
-                                <dropdown-link href="/groups/{{ $group->id }}/members">Manage members</dropdown-link>
-                                <div class="my-1 border-b dark:border-gray-800"></div>
-                                <dropdown-link href="/groups/{{ $group->id }}/delete" class="flex items-center gap-x-1">
-                                    <heroicons-trash-icon class="h-5 w-5"></heroicons-trash-icon> Delete
-                                </dropdown-link>
-                            </div>
-                        </template>
-                    </dropdown-menu>
+                    <group-management-menu groupid="{{ $group->id }}"></group-management-menu>
                 @endcan
             </div>
         </div>

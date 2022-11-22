@@ -73,29 +73,11 @@
                     </div>
                     <div class="hidden lg:ml-4 lg:flex lg:items-center">
                         <!-- Profile dropdown -->
-                        <dropdown-menu>
-                            <template v-slot:trigger="{ isOpen }">
-                                <span class="h-full flex items-center hover:text-gray-700 focus:text-gray-700"
-                                      :class="{'text-gray-500 dark:text-gray-300 dark:hover:text-gray-200': !isOpen, 'text-gray-700 dark:text-gray-200': isOpen}">
-                                    <heroicons-user-icon class="h-5 w-5 mr-1"></heroicons-user-icon>
-                                    {{ auth()->user()->email }}
-                                </span>
-                            </template>
-                            <template v-slot:default>
-                                @if (!config('ldap.enabled'))
-                                    <dropdown-link href="{{ route('changepassword') }}">Change password</dropdown-link>
-                                @endif
-                                <dropdown-link href="{{ route('settings.twofa') }}">Two factor authentication</dropdown-link>
-                                <div class="my-1 border-b dark:border-gray-800"></div>
-                                <form method="post" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit"
-                                            class="w-full dark:focus:bg-gray-700 text-left block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 dark:bg-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-200 dark:text-gray-300 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out">
-                                        Logout
-                                    </button>
-                                </form>
-                            </template>
-                        </dropdown-menu>
+                        <profile-menu
+                            username="{{ auth()->user()->email }}"
+                            :ldap="{{ config('ldap.enabled') ? 'true' : 'false' }}"
+                            csrf='{{ csrf_token() }}'
+                        ></profile-menu>
                     </div>
                 </div>
             </div>
