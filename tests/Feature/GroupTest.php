@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Group;
 use App\Helpers\Encryption;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
@@ -33,6 +34,23 @@ class GroupTest extends TestCase
         ]);
         $this->assertCount(2, $this->user->fresh()->groups);
         $this->assertDatabaseHas('groups', ['name' => 'testgroup']);
+    }
+
+    public function testViewingEmptyGroupList(): void
+    {
+        $this->get('/groups')->assertOk()->assertSee('You do not have any groups');
+    }
+
+    public function testViewingNonEmptyGroupList(): void
+    {
+        $group = new Group();
+        $group->name = 'testgroup';
+        $group->save();
+        auth()->user()->groups()->attach($group);
+        $this->get('/groups')
+            ->assertOk()
+            ->assertDontSee('You do not have any groups')
+            ->assertSee('testgroup');
     }
 
     public function testVisitingCreate(): void
@@ -87,6 +105,10 @@ class GroupTest extends TestCase
 
         $this->assertDatabaseMissing('groups', ['name' => 'testgroup']);
         $this->assertDatabaseHas('groups', ['name' => 'new name']);
+
+        $this->postJson('/groups/' . $group->id . '/name', [
+            'groupname' => 'new name',
+        ])->assertOk()->assertJson(['status' => 'OK']);
     }
 
     public function testVisitingGroupMembers(): void
