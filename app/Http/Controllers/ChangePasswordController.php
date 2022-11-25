@@ -46,7 +46,7 @@ class ChangePasswordController extends Controller
             return redirect()->back()->withErrors(['oldpwd' => 'Old password missmatch']);
         }
 
-        if (!LdapAuthentication::login(auth()->user()->email, $validated['password'])) {
+        if (!app(LdapAuthentication::class)->login(auth()->user()->email, $validated['password'])) {
             return redirect()->back()->withErrors(['newpwd' => 'New password is incorrect when authenticating to LDAP/AD']);
         }
 

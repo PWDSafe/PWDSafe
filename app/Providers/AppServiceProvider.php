@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Helpers\Encryption;
+use App\Helpers\LdapAuthentication;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -16,6 +17,10 @@ class AppServiceProvider extends ServiceProvider
     {
         app()->singleton(Encryption::class, function () {
             return new Encryption();
+        });
+
+        app()->singleton(LdapAuthentication::class, function() {
+            return new LdapAuthentication();
         });
     }
 

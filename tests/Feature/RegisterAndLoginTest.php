@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
@@ -61,33 +63,6 @@ class RegisterAndLoginTest extends TestCase
         ])->assertOk();
 
         $this->assertTrue(Hash::check('SecretPassword', \App\User::firstOrFail()->password));
-    }
-
-    public function testRegisterUserAndChangePasswordViaWeb(): void
-    {
-        $this->registerUser();
-        $this->loginUser();
-        $this->get('/changepwd')->assertOk()->assertSee('Old password');
-        $result = $this->from('/changepwd')->post('/changepwd', ['oldpwd' => 'something', 'password' => 'short']);
-        $result->assertRedirect('/changepwd')->assertSessionHasErrors();
-
-        $result = $this->post('/changepwd', ['oldpwd' => 'password', 'password' => 'short', 'password_confirmation' => 'short']);
-        $result->assertRedirect('/changepwd')->assertSessionHasErrors();
-
-        $user = \App\User::firstOrFail();
-        $this->post("/groups/{$user->primarygroup}/add", [
-            'site' => 'Site1',
-            'user' => 'The username',
-            'pass' => 'The super secret password',
-            'notes' => 'Some notes here',
-        ]);
-
-        $cred = \App\Encryptedcredential::firstOrFail();
-        $olddata = $cred->data;
-        $result = $this->post('/changepwd', ['oldpwd' => 'password', 'password' => 'longpassword', 'password_confirmation' => 'longpassword']);
-        $result->assertRedirect('/changepwd')->assertSessionDoesntHaveErrors();
-
-        $this->assertNotEquals($olddata, $cred->fresh()->data);
     }
 
     public function testLogout(): void

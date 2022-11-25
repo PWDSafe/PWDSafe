@@ -4,7 +4,7 @@ namespace App\Helpers;
 
 class LdapAuthentication
 {
-    public static function login(string $user, string $pass): bool
+    public function login(string $user, string $pass): bool
     {
         ldap_set_option(null, LDAP_OPT_X_TLS_REQUIRE_CERT, LDAP_OPT_X_TLS_NEVER);
 

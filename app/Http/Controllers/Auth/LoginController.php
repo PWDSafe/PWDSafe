@@ -90,7 +90,7 @@ class LoginController extends Controller
             session()->put('password', $credentials['password']);
 
             return true;
-        } elseif (config('ldap.enabled') && LdapAuthentication::login($credentials['email'], $credentials['password'])) {
+        } elseif (config('ldap.enabled') && app(LdapAuthentication::class)->login($credentials['email'], $credentials['password'])) {
             $user = User::where('email', $credentials['email'])->first();
 
             if (!$user) {
