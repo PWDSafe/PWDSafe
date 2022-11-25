@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Group;
 use App\Helpers\Encryption;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExportController extends Controller
 {
@@ -44,7 +43,7 @@ class ExportController extends Controller
             Response::HTTP_OK,
             [
                 'Content-Type' => 'text/json',
-                'Content-Disposition' => 'attachment; filename="' . $exportname .'"'
+                'Content-Disposition' => 'attachment; filename="' . $exportname . '"'
             ]
         );
     }
