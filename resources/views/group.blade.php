@@ -1,6 +1,19 @@
 @extends('layouts.master')
 @section('content')
 <div class="container">
+    @error('import_error')
+    <pwdsafe-alert theme='danger' class='mb-4'>
+        {{ $message }}
+    </pwdsafe-alert>
+    @enderror
+    @if (session('import_count'))
+        <pwdsafe-alert theme='{{ (int)session('import_skipped') > 0 ? 'warning' : 'success' }}' class='mb-4'>
+            Import succeeded with <strong>{{ session('import_count') }}</strong> imported credentials.
+            @if (session('import_skipped') > 0)
+                <div class='mt-2'><strong>{{ session('import_skipped') }}</strong> skipped credentials due to missing mandatory fields (site, username, password)</div>
+            @endif
+        </pwdsafe-alert>
+    @endif
     <div class="clearfix">
         <div class="flex justify-between mb-5 gap-x-2">
             <h3 class="text-2xl">
@@ -35,14 +48,19 @@
                     </template>
                     <template v-slot:default>
                         <h3 class="text-2xl mb-4">Import credentials</h3>
-                        <p>Import a csv file with the following format:</p>
-                        <pre class="my-2">site,username,password,notes</pre>
+                        <p>Import a json file that contains an array with the following fields:</p>
+                        <ul class='ml-10 list-disc my-2'>
+                            <li>site</li>
+                            <li>username</li>
+                            <li>password</li>
+                            <li>notes <i>(optional)</i></li>
+                        </ul>
                         <p class="text-red-500 mb-4">Warning: Malformed rows will be skipped.</p>
                         <form method="post" action="/import" id="creduploadform" enctype="multipart/form-data">
                             @csrf
                             <input type="hidden" name="group" value="{{ $group->id }}">
                             <div class="form-group">
-                                <input type="file" name="csvfile" id="csvfile" required>
+                                <input type="file" name="jsonfile" id="jsonfile" required>
                             </div>
                             <div class="flex justify-end mt-8">
                                 <pwdsafe-button type="submit" classes="w-full">Import</pwdsafe-button>

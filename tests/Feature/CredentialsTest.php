@@ -3,14 +3,17 @@
 namespace Tests\Feature;
 
 use App\Credential;
+use App\Group;
+use App\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Tests\TestCase;
 
 class CredentialsTest extends TestCase
 {
     use DatabaseMigrations;
 
-    private \App\User $user;
+    private User $user;
 
     public function setUp(): void
     {
@@ -22,7 +25,7 @@ class CredentialsTest extends TestCase
         ]);
         $this->post('logout');
         $this->from('/login')->post('/login', ['email' => 'some@email.com', 'password' => 'password']);
-        $this->user = \App\User::first();
+        $this->user = User::first();
     }
 
     public function testAddingCredentials(): void
@@ -30,7 +33,7 @@ class CredentialsTest extends TestCase
         $this->get("/groups/{$this->user->primarygroup}/add")->assertSee('Add credential');
         $this->addTestCredential();
         $this->assertDatabaseHas('credentials', ['site' => 'Some site']);
-        $credential = \App\Credential::first();
+        $credential = Credential::first();
         $this->assertDatabaseHas('encryptedcredentials', ['credentialid' => $credential->id, 'userid' => $this->user->id]);
 
         $this->get('/groups/' . $this->user->primarygroup)->assertSee('Some site');
@@ -40,7 +43,7 @@ class CredentialsTest extends TestCase
     {
         $this->addTestCredential();
         $this->assertDatabaseHas('credentials', ['site' => 'Some site']);
-        $credential = \App\Credential::first();
+        $credential = Credential::first();
         $this->assertDatabaseHas('encryptedcredentials', ['credentialid' => $credential->id, 'userid' => $this->user->id]);
 
         $this->put('/credential/' . $credential->id, [
@@ -52,7 +55,7 @@ class CredentialsTest extends TestCase
         ]);
 
         $this->assertDatabaseHas('credentials', ['site' => 'New site']);
-        $this->assertCount(1, \App\Credential::all());
+        $this->assertCount(1, Credential::all());
 
         $newpassword = 'Some other password';
 
@@ -73,7 +76,7 @@ class CredentialsTest extends TestCase
         $this->post('logout');
         $this->from('/login')->post('/login', ['email' => 'some@email.com', 'password' => 'password']);
 
-        $group = \App\Group::where('name', 'testgroup')->first();
+        $group = Group::where('name', 'testgroup')->first();
 
         $this->json('PUT', '/credential/' . $credential->id, [
             'creds' => 'New site',
@@ -82,7 +85,7 @@ class CredentialsTest extends TestCase
             'credn' => '',
             'currentgroupid' => $group->id,
         ])->assertOk();
-        $credential = \App\Credential::first();
+        $credential = Credential::first();
         $this->assertEquals($group->id, $credential->groupid);
         $this->assertEquals('New site', $credential->site);
     }
@@ -97,7 +100,7 @@ class CredentialsTest extends TestCase
         ]);
 
         $this->assertDatabaseHas('credentials', ['site' => 'Some site']);
-        $credential = \App\Credential::first();
+        $credential = Credential::first();
 
         $this->get('/credential/' . $credential->id)->assertSee('Are you sure');
 
@@ -107,15 +110,25 @@ class CredentialsTest extends TestCase
 
     public function testImportingCredentials(): void
     {
-        $filename = 'credentials_to_import.csv';
+        $filename = 'credentials_to_import.json';
         $path = base_path('tests/assets/') . $filename;
-        $file = new \Symfony\Component\HttpFoundation\File\UploadedFile($path, $filename, 'text/csv', null, true);
-        $res = $this->post('/import', [
-            'csvfile' => $file,
-            'group' => $this->user->primarygroup,
-        ]);
+        $file = new UploadedFile(
+            $path,
+            $filename,
+            'text/json',
+            null,
+            true
+        );
+        $this->from('/groups/' . $this->user->primarygroup)
+            ->post('/import', [
+                'jsonfile' => $file,
+                'group' => $this->user->primarygroup,
+            ])
+            ->assertRedirect('/groups/' . $this->user->primarygroup)
+            ->assertSessionHas('import_count', 2)
+            ->assertSessionHas('import_skipped', 1);
 
-        $this->assertCount(2, \App\Credential::all());
+        $this->assertCount(2, Credential::all());
     }
 
     private function getPassword(Credential $credential): mixed

@@ -19,32 +19,57 @@ class ImportController extends Controller
         $group = auth()->user()->groups->find($params['group']);
         $this->authorize('update', $group);
 
-        $file = $request->file('csvfile');
+        $file = $request->file('jsonfile');
 
-        if (($fh = fopen($file->getRealPath(), 'r')) !== false) {
-            while (($data = fgetcsv($fh)) !== false) {
-                if (count($data) !== 4) {
-                    # Seems malformed, skip this row
-                    continue;
-                }
+        $file = file_get_contents($file->getRealPath());
+        $data = json_decode($file);
 
-                [$site, $username, $password, $note] = $data;
-
-                if (strlen($site) === 0 || strlen($password) === 0) {
-                    # Seems malformed, skip this row
-                    continue;
-                }
-
-                Credential::addCredentials([
-                    'creds' => $site,
-                    'credu' => $username,
-                    'credn' => $note,
-                    'credp' => $password,
-                    'currentgroupid' => $params['group'],
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return redirect()
+                ->back()
+                ->withErrors([
+                    'import_error' => 'Cannot parse file. Is it valid JSON?'
                 ]);
-            }
         }
 
-        return redirect()->to('/groups/' . $params['group']);
+        if (!is_array($data)) {
+            return redirect()
+                ->back()
+                ->withErrors([
+                    'import_error' => 'JSON detected, but base element is not an array.'
+                ]);
+        }
+
+        $count = 0;
+        $skipped = 0;
+
+        foreach ($data as $row) {
+            if (
+                !property_exists($row, 'site') ||
+                !property_exists($row, 'username') ||
+                !property_exists($row, 'password')
+            ) {
+                # Seems malformed, skip this row
+                $skipped++;
+                continue;
+            }
+
+            Credential::addCredentials([
+                'creds' => $row->site,
+                'credu' => $row->username,
+                'credn' => $row->notes ?? '',
+                'credp' => $row->password,
+                'currentgroupid' => $params['group'],
+            ]);
+
+            $count++;
+        }
+
+        return redirect()
+            ->back()
+            ->with([
+                'import_count' => $count,
+                'import_skipped' => $skipped
+            ]);
     }
 }
