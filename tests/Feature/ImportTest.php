@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature;
 
 use App\Credential;
@@ -8,7 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Tests\TestCase;
 
-class ImportTest extends TestCase {
+class ImportTest extends TestCase
+{
     use DatabaseMigrations;
 
     private User $user;

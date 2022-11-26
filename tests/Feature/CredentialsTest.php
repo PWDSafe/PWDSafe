@@ -6,7 +6,6 @@ use App\Credential;
 use App\Group;
 use App\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Tests\TestCase;
 
 class CredentialsTest extends TestCase

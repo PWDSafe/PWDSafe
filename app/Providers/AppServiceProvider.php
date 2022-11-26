@@ -19,7 +19,7 @@ class AppServiceProvider extends ServiceProvider
             return new Encryption();
         });
 
-        app()->singleton(LdapAuthentication::class, function() {
+        app()->singleton(LdapAuthentication::class, function () {
             return new LdapAuthentication();
         });
     }

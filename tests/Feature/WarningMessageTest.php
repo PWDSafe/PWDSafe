@@ -18,7 +18,7 @@ class WarningMessageTest extends TestCase
         Auth::loginUsingId($user->id);
         session()->put('password', 'password');
 
-        $this->get('/groups/' . $user->privategroup)
+        $this->get('/groups/' . $user->primarygroup)
             ->assertOk()
             ->assertSee('</warning-message>', false);
     }
@@ -32,7 +32,7 @@ class WarningMessageTest extends TestCase
 
         $this->post('/settings/warningmessage', ['accept' => true])->assertOk();
 
-        $this->get('/groups/' . $user->privategroup)
+        $this->get('/groups/' . $user->primarygroup)
             ->assertOk()
             ->assertDontSee('</warning-message>', false);
     }

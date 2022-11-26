@@ -94,6 +94,7 @@ class ChangePasswordTest extends TestCase
         session()->put('password', 'password1');
         config(['ldap.enabled' => true]);
 
+        /** @phpstan-ignore-next-line */
         $this->mock(LdapAuthentication::class)
             ->shouldReceive('login')
             ->andReturnTrue();
