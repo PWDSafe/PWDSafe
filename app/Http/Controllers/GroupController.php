@@ -6,6 +6,7 @@ use App\Credential;
 use App\Encryptedcredential;
 use App\Group;
 use App\Helpers\Encryption;
+use App\Http\Requests\StoreCredentialsRequest;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\View\Factory;
@@ -49,39 +50,32 @@ class GroupController extends Controller
         return view('credential.add', compact('group'));
     }
 
-    public function storeCredential(Request $request, Group $group): Response|Redirector|RedirectResponse|Application|ResponseFactory
+    public function storeCredential(StoreCredentialsRequest $request, Group $group): Response|Redirector|RedirectResponse|Application|ResponseFactory
     {
-        $this->authorize('update', $group);
+        $params = $request->validated();
 
-        $params = $request->validate([
-            'site' => 'required',
-            'user' => 'required',
-            'pass' => 'required',
-            'notes' => 'nullable'
+        $credential = Credential::create([
+            'groupid' => $group->id,
+            'site' => $params['site'],
+            'username' => $params['user'],
+            'notes' => $params['notes'],
         ]);
-
-        $credential = new Credential();
-        $credential->groupid = $group->id;
-        $credential->site = $params['site'];
-        $credential->username = $params['user'];
-        $credential->notes = $params['notes'];
-        $credential->save();
 
         $users = $group->users()->pluck('pubkey', 'users.id');
 
         foreach ($users as $userid => $pubkey) {
-            $encrypted = new Encryptedcredential();
-            $encrypted->credentialid = $credential->id;
-            $encrypted->userid = $userid;
-            $encrypted->data = app(Encryption::class)->encWithPub($params['pass'], $pubkey);
-            $encrypted->save();
+            Encryptedcredential::create([
+                'credentialid' => $credential->id,
+                'userid' => $userid,
+                'data' => app(Encryption::class)->encWithPub($params['pass'], $pubkey),
+            ]);
         }
 
         if ($request->wantsJson()) {
             return response(['status' => 'OK']);
-        } else {
-            return redirect(route('group', $group->id));
         }
+
+        return redirect(route('group', $group->id));
     }
 
     public function store(Request $request): Response|Redirector|RedirectResponse|Application|ResponseFactory
@@ -89,9 +83,7 @@ class GroupController extends Controller
         $params = $request->validate([
             'groupname' => 'required'
         ]);
-        $group = new Group();
-        $group->name = $params['groupname'];
-        $group->save();
+        $group = Group::create(['name' => $params['groupname']]);
         auth()->user()->groups()->attach($group);
 
         if ($request->wantsJson()) {

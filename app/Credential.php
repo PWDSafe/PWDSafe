@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Credential extends Eloquent
 {
     public $timestamps = false;
+    protected $guarded = [];
 
     /**
      * @return BelongsTo<Group, Credential>

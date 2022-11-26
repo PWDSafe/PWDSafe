@@ -14,6 +14,8 @@ class Group extends Eloquent
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     public $timestamps = false;
 
     /**
