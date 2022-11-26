@@ -57,6 +57,10 @@ class TwoFaTest extends TestCase
         $this->post('/login', ['email' => $user->email, 'password' => 'testing123'])
             ->assertRedirect('/verifyotp');
 
+        $this->get('/verifyotp')
+            ->assertOk()
+            ->assertSee('Verify two factor authentication');
+
         $this->get('/securitycheck')->assertRedirect();
 
         $this->post('/verifyotp', ['twofacode' => 'test'])->assertSessionHasErrors('twofacode');
@@ -79,6 +83,17 @@ class TwoFaTest extends TestCase
             ->assertSee('Two factor authentication')
             ->assertSee('Disable 2FA');
 
+        $this->delete('/settings/twofa', [
+            'currentpassword' => 'wrongpassword',
+            'otpcode' => $google2fa->getCurrentOtp(decrypt($user->two_factor_secret))
+        ])
+            ->assertSessionHasErrors('currentpassword');
+
+        $this->delete('/settings/twofa', [
+            'currentpassword' => 'testing123',
+            'otpcode' => '112233'
+        ])
+            ->assertSessionHasErrors('otpcode');
 
         $this->delete('/settings/twofa', [
             'currentpassword' => 'testing123',

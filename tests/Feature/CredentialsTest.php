@@ -108,29 +108,6 @@ class CredentialsTest extends TestCase
         $this->assertDatabaseMissing('credentials', ['site' => 'Some site']);
     }
 
-    public function testImportingCredentials(): void
-    {
-        $filename = 'credentials_to_import.json';
-        $path = base_path('tests/assets/') . $filename;
-        $file = new UploadedFile(
-            $path,
-            $filename,
-            'text/json',
-            null,
-            true
-        );
-        $this->from('/groups/' . $this->user->primarygroup)
-            ->post('/import', [
-                'jsonfile' => $file,
-                'group' => $this->user->primarygroup,
-            ])
-            ->assertRedirect('/groups/' . $this->user->primarygroup)
-            ->assertSessionHas('import_count', 2)
-            ->assertSessionHas('import_skipped', 1);
-
-        $this->assertCount(2, Credential::all());
-    }
-
     private function getPassword(Credential $credential): mixed
     {
         return json_decode($this->get('/pwdfor/' . $credential->id)->getContent(), true)['pwd'];

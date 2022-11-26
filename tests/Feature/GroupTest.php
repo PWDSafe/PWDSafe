@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Group;
 use App\Helpers\Encryption;
+use App\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 
@@ -219,5 +220,34 @@ class GroupTest extends TestCase
 
         $this->delete('/groups/' . $group->id . '/members', ['userid' => $user2->id]);
         $this->assertCount(1, $user2->fresh()->groups);
+    }
+
+    public function testUpdateMemberPermission(): void
+    {
+        $group = new Group();
+        $group->name = 'testgroup';
+        $group->save();
+        User::first()->groups()->attach($group);
+
+        \App\User::registerUser('second@email.com', 'abitlongersecret');
+        $user2 = \App\User::where('email', 'second@email.com')->first();
+
+        $this->post('/groups/' . $group->id . '/members', [
+            'username' => $user2->email,
+            'permission' => 'admin'
+        ]);
+        $this->assertCount(2, $user2->fresh()->groups);
+
+        $this->patch('/groups/' . $group->id . '/members/' . $user2->id, [
+            'permission' => 'write'
+        ])->assertOk();
+
+        $this->post('/logout');
+        $this->from('/login')
+            ->post('/login', [
+                'email' => 'second@email.com',
+                'password' => 'abitlongersecret'
+            ]);
+        $this->get('/groups/' . $group->id . '/members')->assertForbidden();
     }
 }
