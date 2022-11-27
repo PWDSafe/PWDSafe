@@ -60,7 +60,7 @@
                 <strong>Not shared!</strong> This group isn't shared with anyone yet.
             </pwdsafe-alert>
         @endif
-        <div class="mt-8 max-w-lg bg-white dark:bg-gray-700 rounded-md shadow">
+        <div class="mt-8 max-w-lg bg-white dark:bg-gray-700 rounded-md shadow overflow-hidden">
             <form method="post">
                 <div class="px-8 py-4">
                     @csrf
