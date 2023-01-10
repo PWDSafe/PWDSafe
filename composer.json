@@ -15,10 +15,10 @@
         "doctrine/dbal": "^3.3",
         "laravel/framework": "^v9.19.0",
         "laravel/tinker": "^2.7",
-        "laravel/ui": "^3.0",
+        "laravel/ui": "^4.0",
         "pragmarx/google2fa": "^8.0",
         "pragmarx/google2fa-qrcode": "^3.0",
-        "sentry/sentry-laravel": "^2.0",
+        "sentry/sentry-laravel": "^3.0",
         "ext-mbstring": "*"
     },
     "require-dev": {
