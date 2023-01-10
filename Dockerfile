@@ -1,4 +1,4 @@
-FROM composer:2.4 as vendor
+FROM composer:2.5 as vendor
 COPY database/ database/
 COPY composer.json composer.json
 COPY composer.lock composer.lock
@@ -17,7 +17,7 @@ COPY resources/ /app/resources/
 COPY package.json package-lock.json tailwind.config.js vite.config.js postcss.config.js /app/
 RUN npm install && npm run build
 
-FROM php:8.1-apache-bullseye
+FROM php:8.2-apache-bullseye
 ENV DEBIAN_FRONTEND noninteractive
 WORKDIR /var/www/html
 
