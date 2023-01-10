@@ -21,7 +21,7 @@ test:
     - npm run build
     - composer install --no-suggest --no-progress
     - php artisan key:generate
-    - php artisan test --parallel --coverage-text --log-junit junit-report.xml --coverage-cobertura cobertura-report.xml
+    - XDEBUG_MODE=coverage php artisan test --parallel --coverage-text --log-junit junit-report.xml --coverage-cobertura cobertura-report.xml
   artifacts:
     when: always
     expire_in: 1month
