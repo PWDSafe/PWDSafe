@@ -23,6 +23,8 @@ WORKDIR /var/www/html
 
 RUN sed -i /etc/apache2/sites-enabled/000-default.conf -e 's,DocumentRoot /var/www/html, DocumentRoot /var/www/html/public,g' -e 's,:80,:8080,g'
 RUN sed -i /etc/apache2/ports.conf -e 's,Listen 80,Listen 8080,g'
+RUN sed -i /etc/apache2/sites-enabled/000-default.conf -e 's,^\t#LogLevel.*,\tSetEnvIf Request_URI "^/health$" dontlog,g'
+RUN sed -i /etc/apache2/sites-enabled/000-default.conf -e 's,^\tCustomLog.*,\tCustomLog ${APACHE_LOG_DIR}/access.log combined env=!dontlog,g'
 ENV APACHE_HTTP_PORT=8080
 EXPOSE 8080
 RUN apt-get update && apt-get install -y libldap2-dev libc-client-dev libkrb5-dev nmap inetutils-ping net-tools libpng-dev libxml2-dev libxslt1-dev libcurl4-openssl-dev zip unzip git libfreetype6-dev libjpeg62-turbo-dev libpng-dev libpq-dev && rm -r /var/lib/apt/lists/*
