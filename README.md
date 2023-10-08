@@ -9,7 +9,7 @@ See latest image tags and documentation on [Docker Hub](https://hub.docker.com/r
 
 Prerequisite
 -----------
-* Webserver with support for PHP 8.1 and modules:
+* Webserver with support for PHP 8.2 and modules:
   - ldap
   - openssl
   - json
