@@ -5,6 +5,7 @@ namespace App;
 use App\Helpers\Encryption;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
@@ -130,5 +131,13 @@ class User extends Authenticatable
     public function canDecryptPrivkey(string $password): bool
     {
         return strlen(app(Encryption::class)->dec($this->privkey, $password)) !== 0;
+    }
+
+    /**
+     * @return HasMany<SharedCredential>
+     */
+    public function sharedCredentials(): HasMany
+    {
+        return $this->hasMany(SharedCredential::class);
     }
 }

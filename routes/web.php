@@ -7,6 +7,7 @@ use App\Http\Controllers\PasswordForController;
 use App\Http\Controllers\PreLogonFirstPageCallback;
 use App\Http\Controllers\ResetAccountController;
 use App\Http\Controllers\SecurityCheckController;
+use App\Http\Controllers\SharedCredentialController;
 use App\Http\Controllers\TwofaSettingsController;
 use App\Http\Controllers\VerifyOtpController;
 use App\Http\Controllers\WarningMessageController;
@@ -70,15 +71,22 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/credential/{credential}', [CredentialsController::class, 'index'])->name('credential');
     Route::delete('/credential/{credential}', [CredentialsController::class, 'delete']);
     Route::put('/credential/{credential}', [CredentialsController::class, 'update']);
+    Route::post('/credential/{credential}/share', [SharedCredentialController::class, 'store']);
     Route::get('/securitycheck', [SecurityCheckController::class, 'index'])->name('securitycheck');
 
     Route::post('/import', [ImportController::class, 'store']);
+
+    Route::get('/shared', [SharedCredentialController::class, 'index']);
+    Route::delete('/shared/{credential}', [SharedCredentialController::class, 'destroy']);
 });
 
 Route::get('/verifyotp', [VerifyOtpController::class, 'index'])->name('verifyotp');
 Route::post('/verifyotp', [VerifyOtpController::class, 'store']);
 
 Route::get('/health', [HealthController::class, 'index']);
+
+Route::get('/shared/{credential}', [SharedCredentialController::class, 'show'])->name('shared.show');
+Route::post('/shared/{credential}', [SharedCredentialController::class, 'show']);
 
 Auth::routes([
     'reset' => false,

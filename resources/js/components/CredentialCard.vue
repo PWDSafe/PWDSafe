@@ -17,7 +17,8 @@
                     <span v-if="showgroupname">{{ groupname }}</span>
                     <span v-else>&nbsp;</span>
                 </div>
-                <div class="flex">
+                <div class="flex gap-x-2">
+                    <ShareModal :credential="credential" />
                     <pwdsafe-modal
                         v-on:modal-open="getPassword"
                         v-on:modal-close="resetData"
@@ -26,7 +27,6 @@
                             <pwdsafe-button
                                 theme="secondary"
                                 :data-id="credential.id"
-                                classes="mr-1"
                                 title="Show"
                                 @click="openModal"
                             >
@@ -94,7 +94,7 @@
                                     id="group"
                                     @selected="
                                         credentialint.groupid = parseInt(
-                                            $event.target.value
+                                            $event.target.value,
                                         )
                                     "
                                 >
@@ -130,7 +130,6 @@
                     </pwdsafe-modal>
                     <pwdsafe-button
                         theme="secondary"
-                        classes="mr-1"
                         @click.native="copyPwd"
                         title="Copy to clipboard"
                     >
@@ -147,6 +146,7 @@
 import { ref, reactive } from 'vue'
 import { toClipboard } from '@soerenmartius/vue3-clipboard'
 import { EyeIcon, ClipboardDocumentListIcon } from '@heroicons/vue/24/outline'
+import ShareModal from './ShareModal.vue'
 
 const props = defineProps({
     credential: {

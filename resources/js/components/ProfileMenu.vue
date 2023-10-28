@@ -47,6 +47,19 @@
                             Two factor authentication
                         </a>
                     </MenuItem>
+                    <MenuItem v-slot="{ active }">
+                        <a
+                            href="/shared"
+                            :class="[
+                                active
+                                    ? 'bg-gray-100 dark:bg-gray-700 dark:text-white'
+                                    : 'dark:bg-gray-600',
+                                'group flex w-full items-center px-4 py-2 text-sm text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-200 dark:focus:bg-gray-700',
+                            ]"
+                        >
+                            Shared credentials
+                        </a>
+                    </MenuItem>
                 </div>
 
                 <div class="py-1">
