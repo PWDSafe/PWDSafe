@@ -13,7 +13,8 @@ return new class () extends Migration {
             $table->string('username', 255);
             $table->text('notes');
             $table->text('secret');
-            $table->foreignIdFor(\App\User::class)->constrained();
+            $table->integer('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->boolean('burn_after_read')->default(true);
             $table->dateTime('expire_at');
             $table->timestamps();
