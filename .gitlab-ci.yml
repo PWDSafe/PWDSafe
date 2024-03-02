@@ -11,10 +11,6 @@ cache:
 test:
   image: $BUILDIMAGE
   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
-  before_script:
-    - apt-get update && apt-get install -y php-sqlite3 php-ast
-    - composer global require pdepend/pdepend squizlabs/php_codesniffer phpmd/phpmd phploc/phploc sebastian/phpcpd phan/phan
-    - mkdir -p build/logs
   script:
     - cp -n .env.example .env
     - npm install
