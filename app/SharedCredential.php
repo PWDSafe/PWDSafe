@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class SharedCredential extends Model
@@ -11,6 +12,6 @@ class SharedCredential extends Model
 
     public static function deleteExpired(): void
     {
-        static::where('expire_at', '<', DB::raw('NOW()'))->delete();
+        static::where('expire_at', '<', Carbon::now())->delete();
     }
 }
