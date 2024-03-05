@@ -46,6 +46,8 @@ import PwdsafeModal from './components/Modal.vue'
 import WarningMessage from './components/WarningMessage.vue'
 import ProfileMenu from './components/ProfileMenu.vue'
 import GroupManagementMenu from './components/GroupManagementMenu.vue'
+import PasswordGenerator from './components/PasswordGenerator.vue'
+import AddCredentialsForm from './components/AddCredentialsForm.vue'
 
 app.component('pwdsafe-button', PwdsafeButton)
 app.component('pwdsafe-alert', PwdsafeAlert)
@@ -59,5 +61,7 @@ app.component('pwdsafe-modal', PwdsafeModal)
 app.component('warning-message', WarningMessage)
 app.component('profile-menu', ProfileMenu)
 app.component('group-management-menu', GroupManagementMenu)
+app.component('pwdsafe-passwordgen', PasswordGenerator)
+app.component('add-credentials-form', AddCredentialsForm)
 
 app.mount('#app')

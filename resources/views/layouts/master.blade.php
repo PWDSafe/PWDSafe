@@ -8,7 +8,7 @@
     <title>PWDSafe</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-100 dark:bg-gray-800">
+<body class="bg-gray-100 dark:bg-gray-800 accent-indigo-500">
 <div id="app">
     @auth
         <nav class="bg-white dark:bg-gray-700 dark:text-gray-300 dark:hover:text-gray-200 shadow">
@@ -124,5 +124,6 @@
             @endif
         @endauth
 </div>
+<div id='modals' class='dark:text-gray-300'></div>
 </body>
 </html>

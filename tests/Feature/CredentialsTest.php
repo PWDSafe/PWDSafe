@@ -29,7 +29,7 @@ class CredentialsTest extends TestCase
 
     public function testAddingCredentials(): void
     {
-        $this->get("/groups/{$this->user->primarygroup}/add")->assertSee('Add credential');
+        $this->get("/groups/{$this->user->primarygroup}/add")->assertSee('<add-credentials-form', false);
         $this->addTestCredential();
         $this->assertDatabaseHas('credentials', ['site' => 'Some site']);
         $credential = Credential::first();

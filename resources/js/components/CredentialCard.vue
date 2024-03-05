@@ -60,9 +60,21 @@
                                 />
                             </div>
                             <div class="mb-2">
-                                <pwdsafe-label for="password" class="mb-1"
-                                    >Password</pwdsafe-label
+                                <div
+                                    class="flex justify-between items-end mb-2"
                                 >
+                                    <pwdsafe-label for="password" class="mb-1">
+                                        Password
+                                    </pwdsafe-label>
+                                    <pwdsafe-passwordgen
+                                        button-size="small"
+                                        @generated="
+                                            (event) => {
+                                                password = event
+                                            }
+                                        "
+                                    />
+                                </div>
                                 <textarea
                                     v-model="password"
                                     :disabled="!passwordLoaded"
