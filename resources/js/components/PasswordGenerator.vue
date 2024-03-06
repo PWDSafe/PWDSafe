@@ -21,7 +21,7 @@
             <h2 class="text-xl mb-4">Generate password</h2>
             <div class="grid grid-cols-2 gap-0.5">
                 <label
-                    class="flex items-center gap-x-2 bg-gray-800 px-2 py-2 rounded-tl-md"
+                    class="flex items-center gap-x-2 bg-gray-100 dark:bg-gray-800 px-2 py-2 rounded-tl-md"
                 >
                     <input
                         v-model="uppercase"
@@ -31,7 +31,7 @@
                     Uppercase
                 </label>
                 <label
-                    class="flex items-center gap-x-2 bg-gray-800 px-2 py-2 rounded-tr-md"
+                    class="flex items-center gap-x-2 bg-gray-100 dark:bg-gray-800 px-2 py-2 rounded-tr-md"
                 >
                     <input
                         v-model="lowercase"
@@ -41,7 +41,7 @@
                     Lowercase
                 </label>
                 <label
-                    class="flex items-center gap-x-2 bg-gray-800 px-2 py-2 rounded-bl-md"
+                    class="flex items-center gap-x-2 bg-gray-100 dark:bg-gray-800 px-2 py-2 rounded-bl-md"
                 >
                     <input
                         v-model="numeric"
@@ -51,7 +51,7 @@
                     Numeric
                 </label>
                 <label
-                    class="flex items-center gap-x-2 bg-gray-800 px-2 py-2 rounded-br-md"
+                    class="flex items-center gap-x-2 bg-gray-100 dark:bg-gray-800 px-2 py-2 rounded-br-md"
                 >
                     <input
                         v-model="symbols"
