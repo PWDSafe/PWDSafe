@@ -13,13 +13,23 @@ class SecurityCheckController extends Eloquent
 {
     public function index(): Factory|View|Application
     {
-        $sql = "SELECT CASE WHEN groups.id = users.primarygroup THEN 'Private' ELSE groups.name END AS groupname,
-                        groups.id AS groupid, credentials.id, credentials.site, credentials.username, credentials.notes, encryptedcredentials.data AS pass FROM credentials
-                        INNER JOIN groups ON credentials.groupid = groups.id
-                        INNER JOIN usergroups ON groups.id = usergroups.groupid
+        if (DB::connection()->getDriverName() === 'mysql') {
+            $sql = "SELECT CASE WHEN `groups`.id = users.primarygroup THEN 'Private' ELSE `groups`.name END AS groupname,
+                        `groups`.id AS groupid, credentials.id, credentials.site, credentials.username, credentials.notes, encryptedcredentials.data AS pass FROM credentials
+                        INNER JOIN `groups` ON credentials.groupid = `groups`.id
+                        INNER JOIN usergroups ON `groups`.id = usergroups.groupid
                         INNER JOIN users ON usergroups.userid = users.id
                         INNER JOIN encryptedcredentials ON encryptedcredentials.credentialid = credentials.id
                         WHERE users.id = :userid AND encryptedcredentials.userid = users.id";
+        } else {
+            $sql = "SELECT CASE WHEN \"groups\".id = users.primarygroup THEN 'Private' ELSE \"groups\".name END AS groupname,
+                        \"groups\".id AS groupid, credentials.id, credentials.site, credentials.username, credentials.notes, encryptedcredentials.data AS pass FROM credentials
+                        INNER JOIN \"groups\" ON credentials.groupid = \"groups\".id
+                        INNER JOIN usergroups ON \"groups\".id = usergroups.groupid
+                        INNER JOIN users ON usergroups.userid = users.id
+                        INNER JOIN encryptedcredentials ON encryptedcredentials.credentialid = credentials.id
+                        WHERE users.id = :userid AND encryptedcredentials.userid = users.id";
+        }
         $result = DB::select($sql, ['userid' => auth()->user()->id]);
         $encryption = app(Encryption::class);
         $data = [];
