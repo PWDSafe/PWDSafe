@@ -18,7 +18,7 @@
             <div class="bg-white dark:bg-gray-700 shadow-md rounded p-4 max-w-lg mb-6">
                 <h2 class="mb-2 font-semibold">Step 2</h2>
                 <p>Scan this code with your two factor authentication app:</p>
-                {!! $qrcodeinline !!}
+                <img src='{!! $qrcodeinline !!}' alt='QR code' />
                 <p>If you can't use the QR-code, you can either click this <a href="{{ $totpUrl }}">link</a> or enter this code manually:</p>
                 <strong>{{ session()->get('2fa_secret') }}</strong>
             </div>
