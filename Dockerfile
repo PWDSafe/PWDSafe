@@ -1,4 +1,4 @@
-FROM composer:2.5 as vendor
+FROM composer:2.7 as vendor
 COPY database/ database/
 COPY composer.json composer.json
 COPY composer.lock composer.lock
@@ -9,7 +9,7 @@ RUN composer install \
     --no-scripts \
     --prefer-dist
 
-FROM node:19-slim as frontend
+FROM node:20-slim as frontend
 WORKDIR /app/
 COPY public /app/public/
 COPY app/ /app/app/
@@ -17,7 +17,7 @@ COPY resources/ /app/resources/
 COPY package.json package-lock.json tailwind.config.js vite.config.js postcss.config.js /app/
 RUN npm install && npm run build
 
-FROM php:8.2-apache-bullseye
+FROM php:8.3-apache-bullseye
 ENV DEBIAN_FRONTEND noninteractive
 WORKDIR /var/www/html
 
