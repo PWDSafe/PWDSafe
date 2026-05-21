@@ -1,5 +1,13 @@
 <?php
 
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| These routes are loaded in bootstrap/app.php with the "web" middleware group.
+*/
+
 use App\Http\Controllers\CredentialsController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\ImportController;
@@ -11,28 +19,17 @@ use App\Http\Controllers\SharedCredentialController;
 use App\Http\Controllers\TwofaSettingsController;
 use App\Http\Controllers\VerifyOtpController;
 use App\Http\Controllers\WarningMessageController;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HealthController;
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\GroupChangeNameController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\GroupDeleteController;
 use App\Http\Controllers\ManageGroupMembersController;
 use App\Http\Controllers\SearchController;
-use App\Http\Controllers\HealthController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
-Route::group(['middleware' => 'auth'], function () {
+Route::middleware('auth')->group(function () {
     Route::get('/', [PreLogonFirstPageCallback::class, 'index']);
     Route::get('/groups', [GroupController::class, 'index'])->name('groups');
     Route::get('/groups/create', [GroupController::class, 'create'])->name('groupCreate');

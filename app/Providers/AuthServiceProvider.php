@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use App\Group;
+use App\Policies\GroupPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -12,7 +14,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        'App\Group' => 'App\Policies\GroupPolicy',
+        Group::class => GroupPolicy::class,
     ];
 
     /**
