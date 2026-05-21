@@ -26,6 +26,7 @@
         "fruitcake/laravel-debugbar": "^4.2",
         "larastan/larastan": "^3.0",
         "laravel/boost": "^2.4",
+        "laravel/pao": "^1.0",
         "laravel/pint": "^v1.13.2",
         "laravel/sail": "^1.30",
         "mockery/mockery": "^1.6.6",
