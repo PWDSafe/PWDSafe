@@ -12,9 +12,7 @@ class Credential extends Eloquent
     public $timestamps = false;
     protected $guarded = [];
 
-    /**
-     * @return BelongsTo<Group, Credential>
-     */
+    /** @return BelongsTo<Group, $this> */
     public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class, 'groupid');
@@ -68,9 +66,7 @@ class Credential extends Eloquent
         $this->delete();
     }
 
-    /**
-     * @return HasMany<Encryptedcredential>
-     */
+    /** @return HasMany<Encryptedcredential, $this> */
     public function encryptedcredentials(): HasMany
     {
         return $this->hasMany(Encryptedcredential::class, 'credentialid');

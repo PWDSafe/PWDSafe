@@ -26,7 +26,6 @@ class User extends Authenticatable
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
      */
     protected $fillable = [
         'email', 'password',
@@ -35,7 +34,6 @@ class User extends Authenticatable
     /**
      * The attributes that should be hidden for arrays.
      *
-     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -53,9 +51,7 @@ class User extends Authenticatable
 
     public bool $ldap = false;
 
-    /**
-     * @return BelongsToMany<Group>
-     */
+    /** @return BelongsToMany<Group, $this> */
     public function groups(): BelongsToMany
     {
         return $this->belongsToMany(Group::class, 'usergroups', 'userid', 'groupid')
@@ -65,9 +61,7 @@ class User extends Authenticatable
             ->withCount('credentials');
     }
 
-    /**
-     * @return BelongsToMany<Group>
-     */
+    /** @return BelongsToMany<Group, $this> */
     public function groupsWithWriteAccess(): BelongsToMany
     {
         return $this->groups()->wherePivotIn('permission', ['write', 'admin']);
@@ -136,9 +130,7 @@ class User extends Authenticatable
         return strlen(app(Encryption::class)->dec($this->privkey, $password)) !== 0;
     }
 
-    /**
-     * @return HasMany<SharedCredential>
-     */
+    /** @return HasMany<SharedCredential, $this> */
     public function sharedCredentials(): HasMany
     {
         return $this->hasMany(SharedCredential::class);

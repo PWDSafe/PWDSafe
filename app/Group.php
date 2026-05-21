@@ -20,17 +20,13 @@ class Group extends Eloquent
 
     public $timestamps = false;
 
-    /**
-     * @return HasMany<Credential>
-     */
+    /** @return HasMany<Credential, $this> */
     public function credentials(): HasMany
     {
         return $this->hasMany(Credential::class, 'groupid');
     }
 
-    /**
-     * @return BelongsToMany<User>
-     */
+    /** @return BelongsToMany<User, $this> */
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'usergroups', 'groupid', 'userid')

@@ -18,6 +18,8 @@ class Authenticate extends Middleware
         if (! $request->expectsJson()) {
             return route('login');
         }
+
+        return null;
     }
 
     public function handle($request, Closure $next, ...$guards)
