@@ -23,7 +23,7 @@
                             type="text"
                             name="email"
                             id="inputEmail"
-                            class="block w-full rounded-md px-4 py-2 placeholder-gray-400 dark:bg-gray-800 dark:border-gray-700 border appearance-none focus:outline-none focus:shadow-outline-blue focus:border-blue-500 transition duration-150 ease-in-out @if($errors->any()) border-red-500 @endif" value="{{ old('email') }}"
+                            class="block w-full rounded-md px-4 py-2 placeholder:text-gray-400 dark:bg-gray-800 dark:border-gray-700 border appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out @if($errors->any()) border-red-500 @endif" value="{{ old('email') }}"
                             required
                             :autofocus="'autofocus'"
                         >
@@ -35,7 +35,7 @@
                         Password
                     </label>
                     <div class="mb-4">
-                        <input type="password" name="password" id="inputPassword" class="block w-full rounded-md px-4 py-2 placeholder-gray-400 dark:bg-gray-800 dark:border-gray-700 border appearance-none focus:outline-none focus:shadow-outline-blue focus:border-blue-500 transition duration-150 ease-in-out @if($errors->any()) border-red-500 @endif" required>
+                        <input type="password" name="password" id="inputPassword" class="block w-full rounded-md px-4 py-2 placeholder:text-gray-400 dark:bg-gray-800 dark:border-gray-700 border appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out @if($errors->any()) border-red-500 @endif" required>
                         @if ($errors->any())
                             <span class="text-red-600 dark:text-red-400 text-xs">Wrong username or password</span>
                         @endif
