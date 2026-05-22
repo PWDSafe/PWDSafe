@@ -8,16 +8,31 @@ cache:
   paths:
     - vendor/
 
+composer:
+  image: $BUILDIMAGE
+  cache:
+    paths:
+      - vendor/
+  script:
+    - php --version
+    - cp .env.example .env
+    - time composer install --no-progress
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - vendor/
+
 test:
   image: $BUILDIMAGE
   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
   script:
     - cp -n .env.example .env
-    - npm install
+    - npm ci --prefer-offline --no-audit --progress=false --no-fund
     - npm run build
-    - composer install --no-suggest --no-progress
     - php artisan key:generate
     - XDEBUG_MODE=coverage php artisan test --parallel --coverage-text --log-junit junit-report.xml --coverage-cobertura cobertura-report.xml
+  needs:
+    - composer
   artifacts:
     when: always
     expire_in: 1month
@@ -31,25 +46,29 @@ test:
         coverage_format: cobertura
         path: cobertura-report.xml
 
-security-check:
+security-check-composer:
   image: $BUILDIMAGE
   stage: analysis
+  needs:
+    - composer
+  variables:
+    GIT_DEPTH: 1
   script:
-    - local-php-security-checker
+    - COMPOSER_AUDIT_ABANDONED=ignore composer audit
 
 static analysis:
   image: $BUILDIMAGE
   stage: analysis
-  before_script:
-    - composer install --no-suggest --no-progress
+  needs:
+    - composer
   script:
     - ./vendor/bin/phpstan analyse
 
 code style:
   image: $BUILDIMAGE
   stage: analysis
-  before_script:
-    - composer install --no-suggest --no-progress
+  needs:
+    - composer
   script:
     - ./vendor/bin/pint --test
 
@@ -60,8 +79,12 @@ build docker:
     - test
   cache: []
   services:
-    - docker:29.0-dind
+    - name: docker:29.0-dind
+      alias: docker
+      command: ["--tls=false"]
   variables:
+    DOCKER_HOST: "tcp://docker:2375"
+    DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ''
   script:
     - if [ "$CI_COMMIT_REF_NAME" = "master" ]; then TAGNAME="latest"; else TAGNAME="$CI_COMMIT_REF_NAME-latest"; fi
@@ -79,8 +102,12 @@ deploy docker:
     - tags
   cache: []
   services:
-    - docker:29.0-dind
+    - name: docker:29.0-dind
+      alias: docker
+      command: ["--tls=false"]
   variables:
+    DOCKER_HOST: "tcp://docker:2375"
+    DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ''
   script:
     - echo $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
