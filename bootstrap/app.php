@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Sentry\Laravel\Integration;
 
 return Application::configure()
     ->withRouting(
@@ -13,39 +14,15 @@ return Application::configure()
         health: '/health',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->group('web', [
-            \App\Http\Middleware\EncryptCookies::class,
-            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-            \Illuminate\Session\Middleware\StartSession::class,
-            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            \App\Http\Middleware\PreventRequestForgery::class,
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        ]);
-
-        $middleware->group('api', [
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        ]);
-
         $middleware->alias([
             'auth' => \App\Http\Middleware\Authenticate::class,
-            'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-            'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,
-            'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
-            'can' => \Illuminate\Auth\Middleware\Authorize::class,
             'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
-            'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
-            'preventRequestForgery' => \App\Http\Middleware\PreventRequestForgery::class,
-            'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
-            'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-            'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        Integration::handles($exceptions);
     })
     ->withSingletons([
-        \Illuminate\Contracts\Http\Kernel::class => App\Http\Kernel::class,
         \Illuminate\Contracts\Console\Kernel::class => App\Console\Kernel::class,
-        \Illuminate\Contracts\Debug\ExceptionHandler::class => App\Exceptions\Handler::class,
     ])
     ->create();
