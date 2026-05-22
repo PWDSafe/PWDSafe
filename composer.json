@@ -10,15 +10,15 @@
         "php": "^8.2",
         "ext-json": "*",
         "ext-ldap": "*",
+        "ext-mbstring": "*",
         "ext-openssl": "*",
         "bacon/bacon-qr-code": "^v3.0.0",
         "laravel/framework": "^13.0",
         "laravel/tinker": "^3.0",
         "laravel/ui": "^4.2",
-        "pragmarx/google2fa": "^v8.0.1",
-        "pragmarx/google2fa-qrcode": "^v3.0.0",
-        "sentry/sentry-laravel": "^4.2.0",
-        "ext-mbstring": "*"
+        "pragmarx/google2fa": "^9.0",
+        "pragmarx/google2fa-qrcode": "^4.0",
+        "sentry/sentry-laravel": "^4.2.0"
     },
     "require-dev": {
         "brianium/paratest": "^v7.2.9",
