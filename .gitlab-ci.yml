@@ -54,13 +54,13 @@ code style:
     - ./vendor/bin/pint --test
 
 build docker:
-  image: docker:20.10
+  image: docker:29.0
   stage: docker
   needs:
     - test
   cache: []
   services:
-    - docker:20.10-dind
+    - docker:29.0-dind
   variables:
     DOCKER_TLS_CERTDIR: ''
   script:
@@ -71,7 +71,7 @@ build docker:
     - docker push $CI_REGISTRY_IMAGE:$TAGNAME
 
 deploy docker:
-  image: docker:20.10
+  image: docker:29.0
   stage: deploy
   needs:
     - build docker
@@ -79,7 +79,7 @@ deploy docker:
     - tags
   cache: []
   services:
-    - docker:20.10-dind
+    - docker:29.0-dind
   variables:
     DOCKER_TLS_CERTDIR: ''
   script:
