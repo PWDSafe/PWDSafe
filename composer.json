@@ -7,7 +7,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.2",
+        "php": "^8.5",
         "ext-json": "*",
         "ext-ldap": "*",
         "ext-mbstring": "*",
@@ -18,10 +18,11 @@
         "laravel/ui": "^4.2",
         "pragmarx/google2fa": "^9.0",
         "pragmarx/google2fa-qrcode": "^4.0",
-        "sentry/sentry-laravel": "^4.2.0"
+        "sentry/sentry-laravel": "^4.2.0",
+        "ext-pdo": "*"
     },
     "require-dev": {
-        "brianium/paratest": "^v7.2.9",
+        "brianium/paratest": "^7.22",
         "fakerphp/faker": "^v1.23.0",
         "fruitcake/laravel-debugbar": "^4.2",
         "larastan/larastan": "^3.0",
@@ -31,7 +32,7 @@
         "laravel/sail": "^1.30",
         "mockery/mockery": "^1.6.6",
         "nunomaduro/collision": "^v8.1.0",
-        "phpunit/phpunit": "^12.0",
+        "phpunit/phpunit": "^13.0",
         "spatie/laravel-ignition": "^2.3.0"
     },
     "autoload": {
