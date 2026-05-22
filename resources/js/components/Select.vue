@@ -2,7 +2,7 @@
     <div class="relative inline-block" :class="wrapperclasses">
         <select
             v-bind="$attrs"
-            class="block w-full appearance-none rounded border bg-white py-2 pl-3 pr-8 focus:border-2 focus:border-blue-400 disabled:bg-gray-200 dark:border-gray-700 dark:bg-gray-800"
+            class="block w-full appearance-none rounded border bg-white py-2 pr-8 pl-3 focus:border-2 focus:border-blue-400 disabled:bg-gray-200 dark:border-gray-700 dark:bg-gray-800"
             :class="classes"
             @change="$emit('selected', $event)"
         >

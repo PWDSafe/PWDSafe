@@ -6,7 +6,7 @@
         >
             <div
                 v-show="show"
-                class="mx-4 mb-4 rounded-md border-orange-100 bg-orange-200 px-4 py-4 text-orange-800 shadow dark:bg-orange-900 dark:text-orange-200 lg:mx-14 lg:mb-8"
+                class="mx-4 mb-4 rounded-md border-orange-100 bg-orange-200 px-4 py-4 text-orange-800 shadow lg:mx-14 lg:mb-8 dark:bg-orange-900 dark:text-orange-200"
             >
                 <div
                     class="flex flex-col items-end justify-between gap-y-4 lg:flex-row lg:items-center"

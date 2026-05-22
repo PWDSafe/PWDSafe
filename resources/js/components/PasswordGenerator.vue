@@ -14,14 +14,14 @@
                 theme="secondary"
                 type="button"
                 @click="$refs.modal.closeModal()"
-                class="absolute top-0 right-0 mr-4 mt-4"
+                class="absolute top-0 right-0 mt-4 mr-4"
             >
                 X
             </Button>
-            <h2 class="text-xl mb-4">Generate password</h2>
+            <h2 class="mb-4 text-xl">Generate password</h2>
             <div class="grid grid-cols-2 gap-0.5">
                 <label
-                    class="flex items-center gap-x-2 bg-gray-100 dark:bg-gray-800 px-2 py-2 rounded-tl-md"
+                    class="flex items-center gap-x-2 rounded-tl-md bg-gray-100 px-2 py-2 dark:bg-gray-800"
                 >
                     <input
                         v-model="uppercase"
@@ -31,7 +31,7 @@
                     Uppercase
                 </label>
                 <label
-                    class="flex items-center gap-x-2 bg-gray-100 dark:bg-gray-800 px-2 py-2 rounded-tr-md"
+                    class="flex items-center gap-x-2 rounded-tr-md bg-gray-100 px-2 py-2 dark:bg-gray-800"
                 >
                     <input
                         v-model="lowercase"
@@ -41,7 +41,7 @@
                     Lowercase
                 </label>
                 <label
-                    class="flex items-center gap-x-2 bg-gray-100 dark:bg-gray-800 px-2 py-2 rounded-bl-md"
+                    class="flex items-center gap-x-2 rounded-bl-md bg-gray-100 px-2 py-2 dark:bg-gray-800"
                 >
                     <input
                         v-model="numeric"
@@ -51,7 +51,7 @@
                     Numeric
                 </label>
                 <label
-                    class="flex items-center gap-x-2 bg-gray-100 dark:bg-gray-800 px-2 py-2 rounded-br-md"
+                    class="flex items-center gap-x-2 rounded-br-md bg-gray-100 px-2 py-2 dark:bg-gray-800"
                 >
                     <input
                         v-model="symbols"
@@ -61,7 +61,7 @@
                     Symbols
                 </label>
             </div>
-            <label class="flex flex-col mt-2">
+            <label class="mt-2 flex flex-col">
                 Password length: {{ length }}
                 <Input
                     v-model.number="length"

@@ -61,7 +61,7 @@
                             </div>
                             <div class="mb-2">
                                 <div
-                                    class="flex justify-between items-end mb-2"
+                                    class="mb-2 flex items-end justify-between"
                                 >
                                     <pwdsafe-label for="password" class="mb-1">
                                         Password
@@ -82,7 +82,7 @@
                                         !passwordLoaded ? 'Loading...' : ''
                                     "
                                     rows="5"
-                                    class="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 leading-5 placeholder:text-gray-500 transition duration-150 ease-in-out focus:border-indigo-500 focus:outline-none focus:placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:disabled:bg-gray-900 sm:text-sm"
+                                    class="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 leading-5 transition duration-150 ease-in-out placeholder:text-gray-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none focus:placeholder:text-gray-400 disabled:bg-gray-200 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:disabled:bg-gray-900"
                                 ></textarea>
                             </div>
                             <div class="mb-2">

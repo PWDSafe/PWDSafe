@@ -32,7 +32,7 @@
 
                     <div
                         v-if="open"
-                        class="relative inline-block overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left align-bottom shadow-xl transition-all dark:bg-gray-700 sm:my-8 sm:w-full sm:max-w-sm sm:p-6 sm:align-middle md:max-w-md"
+                        class="relative inline-block overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6 sm:align-middle md:max-w-md dark:bg-gray-700"
                         role="dialog"
                         aria-modal="true"
                         aria-labelledby="modal-headline"

@@ -1,7 +1,7 @@
 <template>
     <form method="post">
         <div class="px-8 py-4">
-            <h3 class="text-2xl mb-4">Add credentials</h3>
+            <h3 class="mb-4 text-2xl">Add credentials</h3>
             <input type="hidden" name="_token" :value="csrftoken" />
             <div class="mb-4">
                 <div class="mb-2">
@@ -29,7 +29,7 @@
                     ></pwdsafe-input>
                 </div>
                 <div class="mb-2">
-                    <div class="flex gap-x-2 justify-between items-end mb-2">
+                    <div class="mb-2 flex items-end justify-between gap-x-2">
                         <pwdsafe-label class="mb-1" for="pass">
                             Password
                         </pwdsafe-label>
@@ -58,7 +58,7 @@
             </div>
         </div>
         <div
-            class="bg-gray-50 dark:bg-gray-700 dark:border-t dark:border-gray-800"
+            class="bg-gray-50 dark:border-t dark:border-gray-800 dark:bg-gray-700"
         >
             <div class="flex justify-end gap-x-2 px-8 py-4">
                 <pwdsafe-button theme="secondary" :href="backlink">

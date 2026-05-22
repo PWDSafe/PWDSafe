@@ -2,7 +2,7 @@
     <Menu as="div" class="relative inline-block text-left">
         <div>
             <MenuButton
-                class="inline-flex w-full justify-center rounded border px-4 py-1.5 text-sm font-medium text-gray-600 duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75 dark:border-gray-400 dark:text-gray-400 dark:text-gray-300 dark:hover:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-gray-200"
+                class="inline-flex w-full justify-center rounded border px-4 py-1.5 text-sm font-medium text-gray-600 duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75 dark:border-gray-400 dark:text-gray-300 dark:text-gray-400 dark:hover:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-gray-200"
             >
                 <heroicons-cog-6-tooth-icon
                     class="h-5 w-5"

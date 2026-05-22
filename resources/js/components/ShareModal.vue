@@ -11,7 +11,7 @@
             @submit.prevent="shareCredential"
         >
             <h2 class="text-xl">Share credential</h2>
-            <div class="mt-4 bg-gray-600 px-4 py-2 rounded shadow">
+            <div class="mt-4 rounded bg-gray-600 px-4 py-2 shadow">
                 <h5 class="text-lg">{{ credential.site }}</h5>
                 <h6 class="mb-2 text-gray-700 dark:text-gray-300">
                     {{ credential.username }}
@@ -19,7 +19,7 @@
                 <p class="line-clamp-3 text-sm">{{ credential.notes }}</p>
             </div>
             <div class="mt-4">
-                <span class="text-lg mb-1 block">Expires at</span>
+                <span class="mb-1 block text-lg">Expires at</span>
                 <PwdsafeInput
                     type="datetime-local"
                     :min="formatDate(new Date())"
@@ -32,7 +32,7 @@
                     <input type="checkbox" v-model="burnAfterRead" /> Burn after
                     read
                 </label>
-                <p class="italic text-sm">
+                <p class="text-sm italic">
                     This allows anyone with the link to look at the data only
                     once.
                 </p>
