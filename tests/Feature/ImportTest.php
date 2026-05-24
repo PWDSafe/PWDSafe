@@ -6,7 +6,6 @@ use App\Credential;
 use App\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Tests\TestCase;
 
 class ImportTest extends TestCase
@@ -21,69 +20,73 @@ class ImportTest extends TestCase
         User::registerUser('some@email.com', 'password');
         $this->user = User::first();
         Auth::loginUsingId($this->user->id);
-        session()->put('password', 'password');
+        $this->setupVaultSessionForUser($this->user, 'password');
     }
 
     public function testImportingCredentials(): void
     {
-        $filename = 'credentials_to_import.json';
-        $path = base_path('tests/assets/') . $filename;
-        $file = new UploadedFile(
-            $path,
-            $filename,
-            'text/json',
-            null,
-            true
-        );
-        $this->from('/groups/' . $this->user->primarygroup)
-            ->post('/import', [
-                'jsonfile' => $file,
-                'group' => $this->user->primarygroup,
-            ])
-            ->assertRedirect('/groups/' . $this->user->primarygroup)
-            ->assertSessionHas('import_count', 2)
-            ->assertSessionHas('import_skipped', 1);
+        $this->postJson('/import', [
+            'group' => $this->user->primarygroup,
+            'credentials' => [
+                [
+                    'site' => 'Some site',
+                    'username' => 'A username',
+                    'notes' => 'And some notes',
+                    'encrypted' => $this->encryptedPayloadForUsers('A password', $this->user),
+                ],
+                [
+                    'site' => 'Second site',
+                    'username' => 'the@user.com',
+                    'notes' => '',
+                    'encrypted' => $this->encryptedPayloadForUsers('StrangeP@ssW0rd!', $this->user),
+                ],
+            ],
+        ])
+            ->assertOk()
+            ->assertJson(['count' => 2]);
 
         $this->assertCount(2, Credential::all());
     }
 
-    public function testImportingMalformedCredentials(): void
+    public function testImportingSkipsMalformedRowsClientSide(): void
     {
-        $filename = 'credentials_malformed.json';
-        $path = base_path('tests/assets/') . $filename;
-        $file = new UploadedFile(
-            $path,
-            $filename,
-            'text/json',
-            null,
-            true
-        );
-        $this->from('/groups/' . $this->user->primarygroup)
-            ->post('/import', [
-                'jsonfile' => $file,
-                'group' => $this->user->primarygroup,
-            ])
-            ->assertRedirect('/groups/' . $this->user->primarygroup)
-            ->assertSessionHasErrors('import_error');
+        // The client filters malformed rows before posting, so the server
+        // receives only valid credentials. An empty credentials array is valid.
+        $this->postJson('/import', [
+            'group' => $this->user->primarygroup,
+            'credentials' => [],
+        ])
+            ->assertOk()
+            ->assertJson(['count' => 0]);
+
+        $this->assertCount(0, Credential::all());
     }
 
-    public function testImportingNonJsonCredentials(): void
+    public function testImportingRequiresGroupMembership(): void
     {
-        $filename = 'credentials_wrong_format.txt';
-        $path = base_path('tests/assets/') . $filename;
-        $file = new UploadedFile(
-            $path,
-            $filename,
-            'text/plain',
-            null,
-            true
-        );
-        $this->from('/groups/' . $this->user->primarygroup)
-            ->post('/import', [
-                'jsonfile' => $file,
-                'group' => $this->user->primarygroup,
-            ])
-            ->assertRedirect('/groups/' . $this->user->primarygroup)
-            ->assertSessionHasErrors('import_error');
+        User::registerUser('other@email.com', 'password');
+        $otherUser = User::where('email', 'other@email.com')->first();
+
+        $this->postJson('/import', [
+            'group' => $otherUser->primarygroup,
+            'credentials' => [
+                [
+                    'site' => 'Test',
+                    'username' => 'user',
+                    'notes' => '',
+                    'encrypted' => $this->encryptedPayloadForUsers('secret', $this->user),
+                ],
+            ],
+        ])->assertForbidden();
+    }
+
+    public function testImportingValidatesPayload(): void
+    {
+        $this->postJson('/import', [
+            'group' => $this->user->primarygroup,
+            'credentials' => [
+                ['site' => 'Missing username and encrypted'],
+            ],
+        ])->assertUnprocessable();
     }
 }

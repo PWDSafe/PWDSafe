@@ -2,7 +2,6 @@
 
 namespace App;
 
-use App\Helpers\Encryption;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -19,7 +18,7 @@ class Credential extends Eloquent
     }
 
     /**
-     * @param array<string, string|int|null> $params
+     * @param array<string, mixed> $params  Must include 'encrypted' array of ['userid' => int, 'data' => string]
      */
     public static function addCredentials(array $params): void
     {
@@ -30,20 +29,17 @@ class Credential extends Eloquent
         $credential->notes = $params['credn'];
         $credential->save();
 
-        $group = \App\Group::where('id', $params['currentgroupid'])->first();
-        $users = $group->users()->pluck('pubkey', 'users.id');
-
-        foreach ($users as $userid => $pubkey) {
+        foreach ($params['encrypted'] as $entry) {
             $encrypted = new Encryptedcredential();
             $encrypted->credentialid = $credential->id;
-            $encrypted->userid = $userid;
-            $encrypted->data = app(Encryption::class)->encWithPub($params['credp'], $pubkey);
+            $encrypted->userid = $entry['userid'];
+            $encrypted->data = $entry['data'];
             $encrypted->save();
         }
     }
 
     /**
-     * @param array<string, string|int|null> $params
+     * @param array<string, mixed> $params  Must include 'encrypted' array of ['userid' => int, 'data' => string]
      */
     public static function updateCredentials(Credential $credential, array $params): void
     {
@@ -52,11 +48,10 @@ class Credential extends Eloquent
         $credential->notes = $params['credn'] ?? null;
         $credential->save();
 
-        $allpublic = $credential->group->users()->get(['pubkey', 'userid'])->keyBy('userid')->toArray();
-        $allencrypted = Encryptedcredential::where('credentialid', $credential->id)->get();
-        foreach ($allencrypted as $encrypted) {
-            $encrypted->data = app(Encryption::class)->encWithPub($params['credp'], $allpublic[$encrypted->userid]['pubkey']);
-            $encrypted->save();
+        foreach ($params['encrypted'] as $entry) {
+            Encryptedcredential::where('credentialid', $credential->id)
+                ->where('userid', $entry['userid'])
+                ->update(['data' => $entry['data']]);
         }
     }
 

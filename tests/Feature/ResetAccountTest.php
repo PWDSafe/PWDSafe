@@ -17,7 +17,7 @@ class ResetAccountTest extends TestCase
         User::registerUser('some@email.com', 'password');
         $user = User::first();
         Auth::loginUsingId($user->id);
-        session()->put('password', 'password');
+        $this->setupVaultSessionForUser($user, 'password');
 
         $this->get('/settings/resetaccount')->assertUnprocessable();
         $this->delete('/settings/resetaccount')->assertUnprocessable();
@@ -28,7 +28,7 @@ class ResetAccountTest extends TestCase
         User::registerUser('some@email.com', 'password');
         $user = User::first();
         Auth::loginUsingId($user->id);
-        session()->put('password', 'password');
+        $this->setupVaultSessionForUser($user, 'password');
         config(['ldap.enabled' => true]);
 
         $this->get('/settings/resetaccount')->assertUnprocessable();
@@ -39,7 +39,9 @@ class ResetAccountTest extends TestCase
         User::registerUser('some@email.com', 'password');
         $user = User::first();
         Auth::loginUsingId($user->id);
-        session()->put('password', 'password1');
+        // Simulate LDAP password change: vault_key derived from wrong password
+        $this->setupVaultSessionForUser($user, 'password1');
+        session()->put('password', 'password1'); // ResetAccountController uses this to derive the new vault_key
         config(['ldap.enabled' => true]);
 
         $this->get('/settings/resetaccount')->assertOk();
@@ -50,7 +52,9 @@ class ResetAccountTest extends TestCase
         User::registerUser('some@email.com', 'password');
         $user = User::first();
         Auth::loginUsingId($user->id);
-        session()->put('password', 'password1');
+        // Simulate LDAP password change: vault_key derived from wrong password
+        $this->setupVaultSessionForUser($user, 'password1');
+        session()->put('password', 'password1'); // ResetAccountController uses this to derive the new vault_key
         config(['ldap.enabled' => true]);
 
         $this->get('/groups/' . $user->primarygroup)
@@ -61,7 +65,7 @@ class ResetAccountTest extends TestCase
             'creds' => 'testsite',
             'credu' => 'teuser',
             'credn' => 'Some note',
-            'credp' => 'some password',
+            'encrypted' => $this->encryptedPayloadForUsers('some password', $user),
             'currentgroupid' => $user->primarygroup,
         ]);
 

@@ -6,7 +6,11 @@ class LdapAuthentication
 {
     public function login(string $user, string $pass): bool
     {
-        ldap_set_option(null, LDAP_OPT_X_TLS_REQUIRE_CERT, LDAP_OPT_X_TLS_NEVER);
+        $certOption = config('ldap.trust_certificate') ? LDAP_OPT_X_TLS_ALLOW : LDAP_OPT_X_TLS_NEVER;
+        ldap_set_option(null, LDAP_OPT_X_TLS_REQUIRE_CERT, $certOption);
+        if (config('ldap.certificate')) {
+            ldap_set_option(null, LDAP_OPT_X_TLS_CACERTFILE, config('ldap.certificate'));
+        }
 
         $upn = config('ldap.openldap') ?
             "cn=$user," . config('ldap.basedn') :

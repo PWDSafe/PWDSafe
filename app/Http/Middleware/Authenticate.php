@@ -24,9 +24,21 @@ class Authenticate extends Middleware
 
     public function handle($request, Closure $next, ...$guards)
     {
-        if (auth()->check() && !session()->has('password')) {
-            auth()->logout();
-            return redirect('/');
+        if (auth()->check()) {
+            $user = auth()->user();
+
+            if (!$user->isVaultConfigured()) {
+                if (!$request->expectsJson() && !$request->is('vault/setup') && !$request->is('api/vault/setup')) {
+                    return redirect()->route('vault.setup');
+                }
+            } elseif ($user->hasSeparateVaultPassword() && !session()->has('vault_unlocked')) {
+                if (!$request->expectsJson() && !$request->is('vault/unlock') && !$request->is('api/vault/confirm-unlock')) {
+                    return redirect()->route('vault.unlock');
+                }
+            } elseif (!$user->hasSeparateVaultPassword() && !session()->has('vault_key') && !session()->has('password') && !session()->has('vault_unlocked')) {
+                auth()->logout();
+                return redirect('/');
+            }
         }
 
         // @phpstan-ignore-next-line

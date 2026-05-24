@@ -10,6 +10,7 @@
         "@headlessui/vue": "^1.7.4",
         "@heroicons/vue": "^2.0.13",
         "@soerenmartius/vue3-clipboard": "^0.1.2",
+        "node-forge": "^1.4.0",
         "vue": "^3.2.41"
     },
     "devDependencies": {

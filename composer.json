@@ -12,14 +12,16 @@
         "ext-ldap": "*",
         "ext-mbstring": "*",
         "ext-openssl": "*",
+        "ext-pdo": "*",
         "bacon/bacon-qr-code": "^v3.0.0",
+        "kovah/laravel-socialite-oidc": "^0.8.0",
         "laravel/framework": "^13.0",
+        "laravel/socialite": "^5.27",
         "laravel/tinker": "^3.0",
         "laravel/ui": "^4.2",
         "pragmarx/google2fa": "^9.0",
         "pragmarx/google2fa-qrcode": "^4.0",
-        "sentry/sentry-laravel": "^4.2.0",
-        "ext-pdo": "*"
+        "sentry/sentry-laravel": "^4.2.0"
     },
     "require-dev": {
         "brianium/paratest": "^7.22",

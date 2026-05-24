@@ -16,20 +16,14 @@ class ResetAccountController extends Controller
 {
     public function index(): Factory|View|Application
     {
-        abort_unless(
-            config('ldap.enabled') && !auth()->user()->canDecryptPrivkey(session('password')),
-            Response::HTTP_UNPROCESSABLE_ENTITY
-        );
+        $this->authorizeReset();
 
         return view('settings.resetaccount.index');
     }
 
     public function destroy(): RedirectResponse
     {
-        abort_unless(
-            config('ldap.enabled') && !auth()->user()->canDecryptPrivkey(session('password')),
-            Response::HTTP_UNPROCESSABLE_ENTITY
-        );
+        $this->authorizeReset();
 
         $user = auth()->user();
 
@@ -56,13 +50,42 @@ class ResetAccountController extends Controller
 
         Encryptedcredential::where('userid', $user->id)->delete();
 
-        // Regenerate private and public key
-        $encryption = app(Encryption::class);
-        [$privKey, $pubKey] = $encryption->genNewKeys();
-        $user->pubkey = $pubKey;
-        $user->privkey = $encryption->enc($privKey, session('password'));
+        if (config('ldap.enabled') && session()->has('password')) {
+            // LDAP path: re-encrypt new keys with the LDAP password held in session.
+            $encryption = app(Encryption::class);
+            [$privKey, $pubKey] = $encryption->genNewKeys();
+            $newSalt = bin2hex(random_bytes(32));
+            $newVaultKey = Encryption::deriveVaultKey(session('password'), $newSalt);
+            $user->pubkey = $pubKey;
+            $user->privkey = $encryption->encV2($privKey, $newVaultKey);
+            $user->privkey_salt = $newSalt;
+            $user->save();
+
+            session()->put('vault_key', bin2hex($newVaultKey));
+
+            return redirect()->route('group', $user->primarygroup);
+        }
+
+        // Local path: wipe vault data and send user through the vault setup flow.
+        $user->pubkey = null;
+        $user->privkey = null;
+        $user->privkey_salt = null;
+        $user->vault_configured = false;
         $user->save();
 
-        return redirect()->route('group', $user->primarygroup);
+        return redirect()->route('vault.setup');
+    }
+
+    /**
+     * For v1/LDAP users the server can verify vault decryptability directly.
+     * For v2 (login_hash) users the vault key never reaches the server, so we
+     * cannot verify it — the client is responsible for detecting the failure and
+     * routing the user here.
+     */
+    private function authorizeReset(): void
+    {
+        if (!auth()->user()->uses_login_hash) {
+            abort_unless(!auth()->user()->canDecryptPrivkey(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 }

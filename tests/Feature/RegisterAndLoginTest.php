@@ -2,8 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Support\Facades\Hash;
+use PragmaRX\Google2FAQRCode\Google2FA;
 use Tests\TestCase;
 
 class RegisterAndLoginTest extends TestCase
@@ -35,32 +36,9 @@ class RegisterAndLoginTest extends TestCase
         $this->registerUser();
         $this->assertDatabaseHas('users', ['email' => 'some@email.com']);
 
-        $result = $this->post('/register', [
-            'email' => 'some@email.com',
-            'password' => 'password',
-            'password_confirmation' => 'password'
-        ]);
+        $result = $this->post('/register', $this->registrationPayload('some@email.com', 'password'));
         $result->assertSessionHasErrors('email');
         $this->assertCount(1, \App\User::all());
-    }
-
-    public function testRegisterUserAndChangePasswordViaApi(): void
-    {
-        $this->registerUser();
-        $this->loginUser();
-        $this->post('/api/pwdchg', [
-            'username' => 'some@email.com',
-            'old_password' => 'wrongpass',
-            'new_password' => 'SecretPassword',
-        ])->assertStatus(403);
-
-        $this->post('/api/pwdchg', [
-            'username' => 'some@email.com',
-            'old_password' => 'password',
-            'new_password' => 'SecretPassword',
-        ])->assertOk();
-
-        $this->assertTrue(Hash::check('SecretPassword', \App\User::firstOrFail()->password));
     }
 
     public function testLogout(): void
@@ -80,15 +58,50 @@ class RegisterAndLoginTest extends TestCase
         $this->get('/')->assertRedirect('/groups/' . $user->primarygroup);
     }
 
-    public function testRegisterLogYouOutWhenVisitingAnyPage(): void
+    public function testRegisterLeavesUserAuthenticated(): void
     {
-        $user = [
-            'email' => 'some@email.com',
-            'password' => 'password',
-            'password_confirmation' => 'password'
-        ];
-        $this->post('/register', $user);
-        $this->get('/');
+        // After registration the vault_unlocked flag is set, so the user stays logged in.
+        $this->post('/register', $this->registrationPayload('some@email.com', 'password'));
+        $this->assertAuthenticated();
+        $this->get('/')->assertRedirect(); // Redirects to primary group
+    }
+
+    public function testAjaxLoginReturnsVaultData(): void
+    {
+        $this->registerUser();
+
+        $this->postJson('/login', ['email' => 'some@email.com', 'password' => 'password'])
+            ->assertOk()
+            ->assertJsonStructure([
+                'redirect',
+                'vault_data' => ['encrypted_privkey', 'salt', 'pubkey'],
+            ])
+            ->assertJsonMissing(['needs_2fa']);
+    }
+
+    public function testAjaxLoginFailsWithWrongPassword(): void
+    {
+        $this->registerUser();
+
+        $this->postJson('/login', ['email' => 'some@email.com', 'password' => 'wrongpassword'])
+            ->assertStatus(422);
+    }
+
+    public function testAjaxLoginWith2FaReturnsNeedsOtp(): void
+    {
+        $google2fa = new Google2FA();
+        User::factory()->create(['two_factor_secret' => encrypt($google2fa->generateSecretKey())]);
+        $user = User::first();
+
+        $this->postJson('/login', ['email' => $user->email, 'password' => 'testing123'])
+            ->assertOk()
+            ->assertJson(['needs_2fa' => true])
+            ->assertJsonStructure([
+                'needs_2fa',
+                'redirect',
+                'vault_data' => ['encrypted_privkey', 'salt'],
+            ]);
+
         $this->assertGuest();
     }
 }

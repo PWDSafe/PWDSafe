@@ -1,7 +1,5 @@
 <?php
 
-use App\Http\Controllers\ApiChangePasswordController;
-use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -10,5 +8,3 @@ use Illuminate\Support\Facades\Route;
 |
 | These routes are loaded in bootstrap/app.php with the "api" middleware group.
 */
-
-Route::post('/pwdchg', [ApiChangePasswordController::class, 'store']);

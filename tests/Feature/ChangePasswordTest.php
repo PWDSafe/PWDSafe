@@ -17,44 +17,42 @@ class ChangePasswordTest extends TestCase
         User::registerUser('some@email.com', 'password');
         $user = User::first();
         Auth::loginUsingId($user->id);
-        session()->put('password', 'password');
+        $this->setupVaultSessionForUser($user, 'password');
 
-        $this->get('/changepwd')
+        $this->get('/settings')
             ->assertOk()
-            ->assertSee('Old password');
-        $result = $this->from('/changepwd')
-            ->post('/changepwd', [
-                'oldpwd' => 'something',
-                'password' => 'short'
-            ]);
-        $result->assertRedirect('/changepwd')->assertSessionHasErrors();
+            ->assertSee('Safe password');
 
-        $result = $this->post('/changepwd', [
-            'oldpwd' => 'password',
-            'password' => 'short',
-            'password_confirmation' => 'short'
-        ]);
-        $result->assertRedirect('/changepwd')->assertSessionHasErrors();
+        // Wrong old password with no crypto fields: should fail on auth check.
+        $result = $this->from('/settings')
+            ->post('/settings', [
+                'change_type' => 'vault',
+                'oldpwd' => 'something',
+            ]);
+        $result->assertRedirect('/settings')->assertSessionHasErrors('oldpwd');
 
         $user = \App\User::firstOrFail();
         $this->post("/groups/{$user->primarygroup}/add", [
             'site' => 'Site1',
             'user' => 'The username',
-            'pass' => 'The super secret password',
             'notes' => 'Some notes here',
+            'encrypted' => $this->encryptedPayloadForUsers('The super secret password', $user),
         ]);
 
         $cred = \App\Encryptedcredential::firstOrFail();
         $olddata = $cred->data;
-        $result = $this->post('/changepwd', [
-            'oldpwd' => 'password',
-            'password' => 'longpassword',
-            'password_confirmation' => 'longpassword'
-        ]);
-        $result->assertRedirect('/changepwd')
+        $result = $this->post('/settings', array_merge(
+            [
+                'change_type' => 'vault',
+                'oldpwd' => 'password',
+            ],
+            $this->encryptedPrivkeyPayload($user->fresh(), 'password', 'longpassword'),
+        ));
+        $result->assertRedirect('/settings')
             ->assertSessionDoesntHaveErrors();
 
-        $this->assertNotEquals($olddata, $cred->fresh()->data);
+        // RSA key pair is unchanged — encrypted credential data stays the same
+        $this->assertEquals($olddata, $cred->fresh()->data);
     }
 
     public function testChangingPasswordWithIncorrectCurrentPassword(): void
@@ -62,28 +60,27 @@ class ChangePasswordTest extends TestCase
         User::registerUser('some@email.com', 'password');
         $user = User::first();
         Auth::loginUsingId($user->id);
-        session()->put('password', 'password');
+        $this->setupVaultSessionForUser($user, 'password');
 
-        $this->from('/changepwd')
-            ->post('/changepwd', [
+        $this->from('/settings')
+            ->post('/settings', [
+                'change_type' => 'vault',
                 'oldpwd' => 'something',
-                'password' => 'newpassword',
-                'password_confirmation' => 'newpassword'
             ])
             ->assertSessionHasErrors('oldpwd');
     }
 
-    public function testViewingChangePasswordWithLdapEnabledFeatureDisabled(): void
+    public function testViewingChangePasswordWithLdapEnabledShowsSafePasswordSection(): void
     {
         User::registerUser('some@email.com', 'password');
         $user = User::first();
         Auth::loginUsingId($user->id);
-        session()->put('password', 'password');
+        $this->setupVaultSessionForUser($user, 'password');
         config(['ldap.enabled' => true]);
 
-        $this->get('/changepwd')
+        $this->get('/settings')
             ->assertOk()
-            ->assertSee('This feature is disabled');
+            ->assertSee('Safe password');
     }
 
     public function testViewingChangePasswordWithLdapEnabledPasswordChangedInLdap(): void
@@ -91,22 +88,25 @@ class ChangePasswordTest extends TestCase
         User::registerUser('some@email.com', 'password');
         $user = User::first();
         Auth::loginUsingId($user->id);
-        session()->put('password', 'password1');
+        // Simulate LDAP password change: vault_key derived from wrong password
+        $this->setupVaultSessionForUser($user, 'password1');
         config(['ldap.enabled' => true]);
 
         $this->mock(LdapAuthentication::class)
             ->shouldReceive('login')
             ->andReturnTrue();
 
-        $this->from('/changepwd')
-            ->post('/changepwd', [
+        $this->from('/settings')
+            ->post('/settings', [
+                'change_type' => 'vault',
                 'oldpwd' => 'password15',
                 'password' => 'password1',
                 'password_confirmation' => 'password1'
             ])->assertSessionHasErrors('oldpwd');
 
-        $this->from('/changepwd')
-            ->post('/changepwd', [
+        $this->from('/settings')
+            ->post('/settings', [
+                'change_type' => 'vault',
                 'oldpwd' => 'password',
                 'password' => 'password1',
                 'password_confirmation' => 'password1'
@@ -118,11 +118,12 @@ class ChangePasswordTest extends TestCase
         User::registerUser('some@email.com', 'password');
         $user = User::first();
         Auth::loginUsingId($user->id);
-        session()->put('password', 'password1');
+        // Simulate LDAP password change: vault_key derived from wrong password
+        $this->setupVaultSessionForUser($user, 'password1');
         config(['ldap.enabled' => true]);
 
-        $this->get('/changepwd')
+        $this->get('/settings/safe-password')
             ->assertOk()
-            ->assertSee('cannot seem to decrypt your private key');
+            ->assertSee('We cannot decrypt your safe');
     }
 }

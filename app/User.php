@@ -28,7 +28,7 @@ class User extends Authenticatable
      *
      */
     protected $fillable = [
-        'email', 'password',
+        'email', 'password', 'name', 'auth_source',
     ];
 
     /**
@@ -37,6 +37,7 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
+        'two_factor_secret',
     ];
 
     /**
@@ -45,8 +46,8 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
-        'lastlogin' => 'datetime',
         'primarygroup' => 'integer',
+        'is_admin' => 'boolean',
     ];
 
     public bool $ldap = false;
@@ -67,48 +68,132 @@ class User extends Authenticatable
         return $this->groups()->wherePivotIn('permission', ['write', 'admin']);
     }
 
-    public function changePassword(string $newpass): void
+    public function isV2Format(): bool
     {
-        // Generate new public and private key
-        $enc = new Encryption();
-        list($privKey, $pubKey) = $enc->genNewKeys();
+        return !is_null($this->privkey_salt);
+    }
 
-        // Loop through all credentials for this user and reencrypt them with the new private key
-        $this->updateEncryptedCredentials(session()->get('password'), $pubKey, $enc);
+    public function isVaultConfigured(): bool
+    {
+        return (bool) $this->vault_configured;
+    }
 
-        // Encrypt private key with new password
-        $encryptedprivkey = $enc->enc($privKey, $newpass);
-
-        // Update users-table with the new password (hashed) and the private key (encrypted)
-        $this->password = Hash::make($newpass);
-        $this->pubkey = $pubKey;
-        $this->privkey = $encryptedprivkey;
-        $this->save();
-
-        session()->put('password', $newpass);
+    public function hasSeparateVaultPassword(): bool
+    {
+        return (bool) $this->separate_vault_password;
     }
 
     /**
-     * @param string $currentpass
-     * @param string $newPubKey
-     * @param Encryption $enc
+     * Decrypt the user's RSA private key using the vault_key from the session.
+     * Falls back to the legacy session password for users not yet migrated.
      */
-    private function updateEncryptedCredentials(string $currentpass, string $newPubKey, Encryption $enc): void
+    public function decryptPrivkey(): string
     {
-        $encryptedcredentials = Encryptedcredential::where('userid', $this->id)->get();
-        foreach ($encryptedcredentials as $credential) {
-            $data = $enc->decWithPriv($credential->data, $enc->dec($this->privkey, $currentpass));
-            $newdata = $enc->encWithPub($data, $newPubKey);
-            $credential->data = $newdata;
-            $credential->save();
+        if (is_null($this->privkey)) {
+            return '';
         }
+
+        $enc = app(Encryption::class);
+
+        if ($this->isV2Format()) {
+            return $enc->decV2($this->privkey, hex2bin(session('vault_key', '')));
+        }
+
+        return $enc->dec($this->privkey, session('password', ''));
+    }
+
+    /**
+     * Returns true when the vault is unlocked.
+     * For v2 (login_hash) users this is determined by the session flag set on login.
+     * For v1 / LDAP users the server-held vault_key is used to verify decryption.
+     */
+    public function canDecryptPrivkey(): bool
+    {
+        if ($this->uses_login_hash) {
+            return session('vault_unlocked', false);
+        }
+
+        return strlen($this->decryptPrivkey()) > 0;
+    }
+
+    /**
+     * Migrate to the v2 privkey format (if needed) and set session('vault_key').
+     *
+     * If the password cannot decrypt the legacy privkey (e.g. an LDAP password
+     * has changed), migration is skipped. canDecryptPrivkey() will return false,
+     * which causes LoginController to redirect to the change-password page.
+     */
+    public function setupVaultSession(string $password): void
+    {
+        $enc = app(Encryption::class);
+
+        if (!$this->isV2Format() && !is_null($this->privkey)) {
+            $privkey = $enc->dec($this->privkey, $password);
+            if (strlen($privkey) > 0) {
+                $salt = bin2hex(random_bytes(32));
+                $vaultKey = Encryption::deriveVaultKey($password, $salt);
+                $this->privkey = $enc->encV2($privkey, $vaultKey);
+                $this->privkey_salt = $salt;
+                $this->save();
+            }
+            // If decryption failed (LDAP password changed), skip migration.
+            // The vault_key below won't decrypt the privkey; canDecryptPrivkey()
+            // returns false and the user is sent to the change-password page.
+        }
+
+        // Derive vault_key from current salt (or a temporary one if still legacy).
+        $salt = $this->privkey_salt ?? bin2hex(random_bytes(32));
+        $vaultKey = Encryption::deriveVaultKey($password, $salt);
+        session()->put('vault_key', bin2hex($vaultKey));
+    }
+
+    public function changePassword(string $newLoginHash, string $newEncryptedPrivkey, string $newSalt): void
+    {
+        $this->password = Hash::make($newLoginHash);
+        $this->privkey = $newEncryptedPrivkey;
+        $this->privkey_salt = $newSalt;
+        $this->uses_login_hash = true;
+        $this->save();
+    }
+
+    /**
+     * Create a user from client-provided cryptographic data (production registration path).
+     * The server never sees the raw password, RSA private key, or vault key.
+     */
+    public static function registerFromClientData(
+        string $email,
+        string $loginHash,
+        string $encryptedPrivKey,
+        string $privkeySalt,
+        string $pubKey,
+    ): void {
+        $group = new Group();
+        $group->name = $email;
+        $group->save();
+
+        $user = new User();
+        $user->email = $email;
+        $user->password = Hash::make($loginHash);
+        $user->pubkey = $pubKey;
+        $user->privkey = $encryptedPrivKey;
+        $user->privkey_salt = $privkeySalt;
+        $user->uses_login_hash = true;
+        $user->vault_configured = true;
+        $user->auth_source = 'local';
+        $user->primarygroup = $group->id;
+        $user->save();
+
+        $user->groups()->attach($group);
     }
 
     public static function registerUser(string $username, string $password): void
     {
         $enc = app(Encryption::class);
-        list($privKey, $pubKey) = $enc->genNewKeys();
-        $privKey = $enc->enc($privKey, $password);
+        [$privKey, $pubKey] = $enc->genNewKeys();
+
+        $salt = bin2hex(random_bytes(32));
+        $vaultKey = Encryption::deriveVaultKey($password, $salt);
+        $encryptedPrivKey = $enc->encV2($privKey, $vaultKey);
 
         $group = new Group();
         $group->name = $username;
@@ -118,21 +203,50 @@ class User extends Authenticatable
         $user->email = $username;
         $user->password = Hash::make($password);
         $user->pubkey = $pubKey;
-        $user->privkey = $privKey;
+        $user->privkey = $encryptedPrivKey;
+        $user->privkey_salt = $salt;
+        $user->vault_configured = true;
         $user->primarygroup = $group->id;
         $user->save();
 
         $user->groups()->attach($group);
     }
 
-    public function canDecryptPrivkey(string $password): bool
+    /**
+     * Create a local user without vault keys (admin-created account).
+     * The user will be routed to vault setup on first login where they choose
+     * their own vault password, which then becomes their login credential.
+     */
+    public static function createPendingLocalUser(string $email, string $password, ?string $name = null): User
     {
-        return strlen(app(Encryption::class)->dec($this->privkey, $password)) !== 0;
+        $group = new Group();
+        $group->name = $email;
+        $group->save();
+
+        $user = new User();
+        $user->email = $email;
+        $user->name = $name;
+        $user->password = Hash::make($password);
+        $user->vault_configured = false;
+        $user->auth_source = 'local';
+        $user->uses_login_hash = false;
+        $user->primarygroup = $group->id;
+        $user->save();
+
+        $user->groups()->attach($group);
+
+        return $user;
     }
 
     /** @return HasMany<SharedCredential, $this> */
     public function sharedCredentials(): HasMany
     {
         return $this->hasMany(SharedCredential::class);
+    }
+
+    /** @return HasMany<AuditLog, $this> */
+    public function auditLogs(): HasMany
+    {
+        return $this->hasMany(AuditLog::class);
     }
 }

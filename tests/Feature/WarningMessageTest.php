@@ -16,7 +16,7 @@ class WarningMessageTest extends TestCase
         User::registerUser('some@email.com', 'password');
         $user = User::first();
         Auth::loginUsingId($user->id);
-        session()->put('password', 'password');
+        $this->setupVaultSessionForUser($user, 'password');
 
         $this->get('/groups/' . $user->primarygroup)
             ->assertOk()
@@ -28,7 +28,7 @@ class WarningMessageTest extends TestCase
         User::registerUser('some@email.com', 'password');
         $user = User::first();
         Auth::loginUsingId($user->id);
-        session()->put('password', 'password');
+        $this->setupVaultSessionForUser($user, 'password');
 
         $this->post('/settings/warningmessage', ['accept' => true])->assertOk();
 

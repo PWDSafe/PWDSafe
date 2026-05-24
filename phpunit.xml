@@ -21,6 +21,7 @@
     <server name="APP_ENV" value="testing"/>
     <server name="USE_LDAP" value="false"/>
     <server name="BCRYPT_ROUNDS" value="4"/>
+    <server name="VAULT_PBKDF2_ITERATIONS" value="1"/>
     <server name="CACHE_DRIVER" value="array"/>
     <server name="DB_CONNECTION" value="sqlite"/>
     <server name="DB_DATABASE" value=":memory:"/>

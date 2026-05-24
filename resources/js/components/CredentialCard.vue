@@ -159,6 +159,7 @@ import { ref, reactive } from 'vue'
 import { toClipboard } from '@soerenmartius/vue3-clipboard'
 import { EyeIcon, ClipboardDocumentListIcon } from '@heroicons/vue/24/outline'
 import ShareModal from './ShareModal.vue'
+import { loadPrivkey, decryptCredential, encryptCredentialV2 } from '../vault.js'
 
 const props = defineProps({
     credential: {
@@ -183,32 +184,44 @@ const password = ref('')
 const passwordLoaded = ref(false)
 const credentialint = reactive(props.credential)
 
-const getPassword = function () {
-    axios.get('/pwdfor/' + props.credential.id).then((response) => {
-        password.value = response.data.pwd
-        passwordLoaded.value = true
-    })
+const getPassword = async function () {
+    const privkeyPem = loadPrivkey()
+    const response = await axios.get('/pwdfor/' + props.credential.id)
+    password.value = privkeyPem
+        ? await decryptCredential(response.data.data, privkeyPem)
+        : response.data.data
+    passwordLoaded.value = true
 }
-const copyPwd = function () {
-    axios.get('/pwdfor/' + props.credential.id).then((response) => {
-        toClipboard(response.data.pwd)
-    })
+const copyPwd = async function () {
+    const privkeyPem = loadPrivkey()
+    if (!privkeyPem) return
+    const response = await axios.get('/pwdfor/' + props.credential.id)
+    toClipboard(await decryptCredential(response.data.data, privkeyPem))
 }
 const resetData = function () {
     password.value = ''
     passwordLoaded.value = false
 }
-const saveCredentials = function () {
-    axios
-        .put('/credential/' + props.credential.id, {
-            creds: credentialint.site,
-            credu: credentialint.username,
-            credp: password.value,
-            credn: credentialint.notes,
-            currentgroupid: credentialint.groupid,
-        })
-        .then(() => {
-            window.location.reload()
-        })
+const saveCredentials = async function () {
+    const privkeyPem = loadPrivkey()
+    const groupId = credentialint.groupid
+
+    const { data: pubkeysData } = await axios.get(`/api/groups/${groupId}/pubkeys`)
+    const encrypted = await Promise.all(
+        pubkeysData.users.map(async ({ id, pubkey }) => ({
+            userid: id,
+            data: await encryptCredentialV2(password.value, pubkey),
+        })),
+    )
+
+    await axios.put('/credential/' + props.credential.id, {
+        creds: credentialint.site,
+        credu: credentialint.username,
+        credn: credentialint.notes,
+        currentgroupid: groupId,
+        encrypted,
+    })
+
+    window.location.reload()
 }
 </script>

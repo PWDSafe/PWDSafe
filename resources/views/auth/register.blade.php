@@ -8,7 +8,7 @@
             </svg>
         </div>
         <div class="card-container max-w-sm px-12 py-10 mx-auto shadow-md border bg-white dark:bg-gray-700 dark:border-gray-700">
-            <form method="post">
+            <form method="post" data-register>
                 @if ($errors->any())
                     <pwdsafe-alert theme="danger" classes="mt-4">
                         @foreach ($errors->all() as $error)
@@ -22,32 +22,41 @@
                         Username
                     </label>
                     <div class="mb-1">
-                        <input type="text"
-                               name="email"
-                               id="inputEmail"
-                               class="block w-full rounded-md px-4 py-2 placeholder:text-gray-400 dark:bg-gray-800 dark:border-gray-700 border appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out @if($errors->any()) border-red-500 @endif"
-                               value="{{ old('email') }}"
-                               required
-                               :autofocus="'autofocus'"
-                        >
+                        <pwdsafe-input
+                            type="text"
+                            name="email"
+                            id="inputEmail"
+                            value="{{ old('email') }}"
+                            required
+                            autofocus
+                            :error="{{ $errors->any() ? 'true' : 'false' }}"
+                        ></pwdsafe-input>
                     </div>
                     <label class="block text-sm font-medium leading-5 text-gray-700 dark:text-gray-300 mb-1 mt-6" for="inputPassword">
                         Password
                     </label>
                     <div class="mb-1">
-                        <input type="password" name="password" id="inputPassword"
-                               class="block w-full rounded-md px-4 py-2 placeholder:text-gray-400 dark:bg-gray-800 dark:border-gray-700 border appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out @if($errors->any()) border-red-500 @endif"
-                               required>
+                        <pwdsafe-input
+                            type="password"
+                            name="password"
+                            id="inputPassword"
+                            required
+                            :error="{{ $errors->any() ? 'true' : 'false' }}"
+                        ></pwdsafe-input>
                     </div>
                     <label class="block text-sm font-medium leading-5 text-gray-700 dark:text-gray-300 mb-1 mt-6" for="inputPassword">
                         Verify password
                     </label>
                     <div class="mb-4">
-                        <input type="password" name="password_confirmation"
-                               class="block w-full rounded-md px-4 py-2 placeholder:text-gray-400 dark:bg-gray-800 dark:border-gray-700 border appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out @if($errors->any()) border-red-500 @endif"
-                               required>
+                        <pwdsafe-input
+                            type="password"
+                            name="password_confirmation"
+                            required
+                            :error="{{ $errors->any() ? 'true' : 'false' }}"
+                        ></pwdsafe-input>
                     </div>
                 </div>
+                <p id="register-status" class="text-sm text-amber-500 mb-1"></p>
                 <button type="submit"
                    class="block text-center py-1 font-bold h-8 bg-gray-600 hover:bg-gray-700 dark:hover:bg-gray-800 w-full rounded text-white mt-1 transition duration-150 ease-in-out">Register</button>
                 <a href="/"
@@ -55,5 +64,8 @@
             </form>
         </div>
     </div>
+@push('scripts')
+    @vite('resources/js/register.js')
+@endpush
 @endsection
 

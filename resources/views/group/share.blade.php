@@ -22,8 +22,13 @@
                                 <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800">
                                 @foreach ($group->users as $user)
                                     <tr>
-                                        <td class="px-6 py-4 whitespace-no-wrap">
-                                            {{ $user->email }}
+                                        <td class="px-6 py-4">
+                                            @if ($user->name)
+                                                <div class="font-medium">{{ $user->name }}</div>
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">{{ $user->email }}</div>
+                                            @else
+                                                {{ $user->email }}
+                                            @endif
                                         </td>
 
                                         <td class="px-6 py-4 whitespace-no-wrap">
@@ -60,42 +65,10 @@
                 <strong>Not shared!</strong> This group isn't shared with anyone yet.
             </pwdsafe-alert>
         @endif
-        <div class="mt-8 max-w-lg bg-white dark:bg-gray-700 rounded-md shadow overflow-hidden">
-            <form method="post">
-                <div class="px-8 py-4">
-                    @csrf
-                    <h4 class="text-xl mb-4">Share group</h4>
-                    <div class="mb-4">
-                        <label for="username"
-                               class="block text-sm font-medium leading-5 text-gray-700 mb-1">Username</label>
-                        <input type="text" id="username" name="username"
-                               class="block w-full px-3 py-2 mb-2 border border-gray-300 dark:border-gray-700 rounded-md leading-5 bg-white dark:bg-gray-800 placeholder:text-gray-500 focus:outline-none focus:placeholder:text-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 sm:text-sm transition duration-150 ease-in-out"
-                               placeholder="Username"
-                               value="{{ old('email') }}"
-                               required
-                        >
-                        <label for="permission" class="block text-sm font-medium leading-5 text-gray-700 mb-1">Permission</label>
-                        <pwdsafe-select name="permission" id="permission">
-                            <option value="read">Read</option>
-                            <option value="write" selected>Read & write</option>
-                            <option value="admin">Admin</option>
-                        </pwdsafe-select>
-                        @if ($errors->any())
-                            <pwdsafe-alert theme="danger" classes="mt-4">
-                                @foreach ($errors->all() as $error)
-                                    {{ $error }}<br>
-                                @endforeach
-                            </pwdsafe-alert>
-                        @endif
-                    </div>
-                </div>
-                <div class="flex justify-end gap-x-2 bg-gray-50 dark:bg-gray-700 px-8 py-4 border-t dark:border-gray-800">
-                    <pwdsafe-button theme="secondary" href="{{ route('group', $group) }}">
-                        Back
-                    </pwdsafe-button>
-                    <pwdsafe-button type="submit">Share group</pwdsafe-button>
-                </div>
-            </form>
-        </div>
+        <add-group-member
+            :groupid="{{ $group->id }}"
+            backlink="{{ route('group', $group) }}"
+            :existing-member-ids="{{ json_encode($group->users->pluck('id')->values()) }}"
+        ></add-group-member>
     </div>
 @endsection

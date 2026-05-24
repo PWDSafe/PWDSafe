@@ -15,25 +15,35 @@
                         Verify two factor authentication
                     </label>
                     <div class="mb-2">
-                        <input
+                        <pwdsafe-input
                             type="text"
                             name="twofacode"
                             id="twofacode"
-                            class="block w-full rounded-md px-4 py-2 placeholder:text-gray-400 dark:bg-gray-800 dark:border-gray-700 border appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out @if($errors->any()) border-red-500 @endif"
-                            value=""
                             placeholder="xxxxxx"
                             required
-                            :autofocus="'autofocus'"
-                        >
-                        @if ($errors->any())
+                            autofocus
+                            :error="{{ $errors->has('twofacode') ? 'true' : 'false' }}"
+                        ></pwdsafe-input>
+                        @if ($errors->has('twofacode'))
                             <span class="text-red-600 text-xs">Wrong two factor authentication code</span>
+                        @endif
+                        @if ($errors->has('session_expired'))
+                            <span class="text-amber-600 dark:text-amber-400 text-xs">Your session has expired.</span>
                         @endif
                     </div>
                 </div>
                 <button class="font-bold h-8 bg-gray-600 hover:bg-gray-700 dark:hover:bg-gray-800 w-full rounded text-white transition duration-150 ease-in-out" type="submit">
                     Verify login
                 </button>
+                @if ($errors->has('session_expired'))
+                    <a href="{{ route('login') }}" class="block text-center mt-2 font-bold h-8 leading-8 bg-blue-600 hover:bg-blue-700 w-full rounded text-white transition duration-150 ease-in-out">
+                        Restart login process
+                    </a>
+                @endif
             </form>
         </div>
     </div>
+@push('scripts')
+    @vite('resources/js/otp.js')
+@endpush
 @endsection

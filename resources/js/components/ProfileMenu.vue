@@ -21,9 +21,9 @@
                 class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-200 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none dark:divide-gray-800 dark:bg-gray-600"
             >
                 <div class="py-1">
-                    <MenuItem v-slot="{ active }" v-if="!ldap">
+                    <MenuItem v-slot="{ active }" v-if="isAdmin">
                         <a
-                            href="/changepwd"
+                            href="/admin"
                             :class="[
                                 active
                                     ? 'bg-gray-100 dark:bg-gray-700 dark:text-white'
@@ -31,7 +31,20 @@
                                 'group flex w-full items-center px-4 py-2 text-sm text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-200 dark:focus:bg-gray-700',
                             ]"
                         >
-                            Change password
+                            Administration
+                        </a>
+                    </MenuItem>
+                    <MenuItem v-slot="{ active }">
+                        <a
+                            href="/settings"
+                            :class="[
+                                active
+                                    ? 'bg-gray-100 dark:bg-gray-700 dark:text-white'
+                                    : 'dark:bg-gray-600',
+                                'group flex w-full items-center px-4 py-2 text-sm text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-200 dark:focus:bg-gray-700',
+                            ]"
+                        >
+                            Settings
                         </a>
                     </MenuItem>
                     <MenuItem v-slot="{ active }">
@@ -98,6 +111,10 @@ defineProps({
     },
     username: {
         type: String,
+        required: true,
+    },
+    isAdmin: {
+        type: Boolean,
         required: true,
     },
 })

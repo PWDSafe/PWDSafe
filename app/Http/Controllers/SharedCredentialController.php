@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Credential;
-use App\Encryptedcredential;
 use App\Helpers\Encryption;
 use App\SharedCredential;
 use Illuminate\Contracts\Foundation\Application;
@@ -41,32 +40,24 @@ class SharedCredentialController extends Controller
         $this->authorize('view', $credential);
         $attributes = $request->validate([
             'expire_at' => ['required', 'date', 'after:today', 'before:' . Carbon::now()->addMonth()->addDay()],
-            'burn_after_read' => ['required', 'boolean']
+            'burn_after_read' => ['required', 'boolean'],
+            'secret' => ['required', 'string'],
+            'token' => ['required', 'string', 'size:40'],
         ]);
-        $token = sha1(uniqid((string)time(), true));
-        $pwd = Encryptedcredential::query()
-            ->where('credentialid', $credential->id)
-            ->where('userid', auth()->user()->id)
-            ->firstOrFail();
 
-        $secret = $this->encryption->decWithPriv(
-            $pwd->data,
-            $this->encryption->dec(auth()->user()->privkey, session()->get('password'))
-        );
-
-        $shared_credential = SharedCredential::create(
-            array_merge($attributes, [
-                'site' => $credential->site,
-                'username' => $credential->username,
-                'notes' => $credential->notes,
-                'secret' => $this->encryption->enc($secret, $token),
-                'user_id' => auth()->id()
-            ])
-        );
+        $shared_credential = SharedCredential::create([
+            'expire_at' => $attributes['expire_at'],
+            'burn_after_read' => $attributes['burn_after_read'],
+            'site' => $credential->site,
+            'username' => $credential->username,
+            'notes' => $credential->notes,
+            'secret' => $attributes['secret'],
+            'user_id' => auth()->id(),
+        ]);
 
         return response()->json([
             'status' => 'OK',
-            'url' => route('shared.show', $shared_credential->id) . '?token=' . $token
+            'url' => route('shared.show', $shared_credential->id) . '?token=' . $attributes['token'],
         ]);
     }
 

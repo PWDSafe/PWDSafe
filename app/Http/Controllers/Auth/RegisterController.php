@@ -49,7 +49,10 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'email' => ['required', 'string', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'string', 'confirmed'],
+            'encrypted_privkey' => ['required', 'string'],
+            'privkey_salt' => ['required', 'string', 'size:64'],
+            'pubkey' => ['required', 'string'],
         ]);
     }
 
@@ -61,8 +64,23 @@ class RegisterController extends Controller
      */
     protected function create(array $data): User
     {
-        User::registerUser($data['email'], $data['password']);
+        User::registerFromClientData(
+            $data['email'],
+            $data['password'],
+            $data['encrypted_privkey'],
+            $data['privkey_salt'],
+            $data['pubkey'],
+        );
 
         return User::where('email', $data['email'])->first();
+    }
+
+    /**
+     * The user was registered. Set vault_unlocked so the auth middleware passes
+     * when the framework auto-logs-in the newly registered user.
+     */
+    protected function registered($request, $user): void
+    {
+        session()->put('vault_unlocked', true);
     }
 }

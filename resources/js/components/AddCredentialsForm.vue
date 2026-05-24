@@ -1,14 +1,13 @@
 <template>
-    <form method="post">
+    <form @submit.prevent="handleSubmit">
         <div class="px-8 py-4">
             <h3 class="mb-4 text-2xl">Add credentials</h3>
-            <input type="hidden" name="_token" :value="csrftoken" />
             <div class="mb-4">
                 <div class="mb-2">
                     <pwdsafe-label class="mb-1" for="site">Site</pwdsafe-label>
                     <pwdsafe-input
                         type="text"
-                        name="site"
+                        v-model="site"
                         id="site"
                         autocomplete="off"
                         required
@@ -16,55 +15,32 @@
                     ></pwdsafe-input>
                 </div>
                 <div class="mb-2">
-                    <pwdsafe-label class="mb-1" for="user"
-                        >Username</pwdsafe-label
-                    >
+                    <pwdsafe-label class="mb-1" for="user">Username</pwdsafe-label>
                     <pwdsafe-input
                         type="text"
-                        name="user"
+                        v-model="user"
                         id="user"
-                        class="form-control"
                         autocomplete="off"
                         required
                     ></pwdsafe-input>
                 </div>
                 <div class="mb-2">
                     <div class="mb-2 flex items-end justify-between gap-x-2">
-                        <pwdsafe-label class="mb-1" for="pass">
-                            Password
-                        </pwdsafe-label>
-                        <pwdsafe-passwordgen
-                            @generated="updatePassword"
-                        ></pwdsafe-passwordgen>
+                        <pwdsafe-label class="mb-1" for="pass">Password</pwdsafe-label>
+                        <pwdsafe-passwordgen @generated="updatePassword"></pwdsafe-passwordgen>
                     </div>
-                    <TextareaVue
-                        v-model="password"
-                        name="pass"
-                        id="pass"
-                        rows="5"
-                        required
-                    ></TextareaVue>
+                    <TextareaVue v-model="password" id="pass" rows="5" required></TextareaVue>
                 </div>
                 <div class="mb-2">
-                    <pwdsafe-label class="mb-1" for="notes"
-                        >Notes</pwdsafe-label
-                    >
-                    <pwdsafe-textarea
-                        name="notes"
-                        id="notes"
-                        rows="5"
-                    ></pwdsafe-textarea>
+                    <pwdsafe-label class="mb-1" for="notes">Notes</pwdsafe-label>
+                    <pwdsafe-textarea v-model="notes" id="notes" rows="5"></pwdsafe-textarea>
                 </div>
             </div>
         </div>
-        <div
-            class="bg-gray-50 dark:border-t dark:border-gray-800 dark:bg-gray-700"
-        >
+        <div class="bg-gray-50 dark:border-t dark:border-gray-800 dark:bg-gray-700">
             <div class="flex justify-end gap-x-2 px-8 py-4">
-                <pwdsafe-button theme="secondary" :href="backlink">
-                    Back
-                </pwdsafe-button>
-                <pwdsafe-button type="submit">Add credential</pwdsafe-button>
+                <pwdsafe-button theme="secondary" :href="backlink">Back</pwdsafe-button>
+                <pwdsafe-button type="submit" :disabled="submitting">Add credential</pwdsafe-button>
             </div>
         </div>
     </form>
@@ -72,20 +48,50 @@
 <script setup>
 import { ref } from 'vue'
 import TextareaVue from './TextareaVue.vue'
+import { encryptCredentialV2 } from '../vault.js'
 
 const props = defineProps({
     backlink: {
         type: String,
         required: true,
     },
+    groupid: {
+        type: Number,
+        required: true,
+    },
 })
 
-const csrftoken = document
-    .querySelector('meta[name="csrf-token"]')
-    .getAttribute('content')
-
+const site = ref('')
+const user = ref('')
 const password = ref('')
+const notes = ref('')
+const submitting = ref(false)
+
 const updatePassword = (event) => {
     password.value = event
+}
+
+const handleSubmit = async () => {
+    submitting.value = true
+    try {
+        const { data: pubkeysData } = await axios.get(`/api/groups/${props.groupid}/pubkeys`)
+        const encrypted = await Promise.all(
+            pubkeysData.users.map(async ({ id, pubkey }) => ({
+                userid: id,
+                data: await encryptCredentialV2(password.value, pubkey),
+            })),
+        )
+
+        await axios.post(`/groups/${props.groupid}/add`, {
+            site: site.value,
+            user: user.value,
+            notes: notes.value,
+            encrypted,
+        })
+
+        window.location.href = props.backlink
+    } finally {
+        submitting.value = false
+    }
 }
 </script>

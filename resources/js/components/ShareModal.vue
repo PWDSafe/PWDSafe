@@ -66,6 +66,7 @@ import { ShareIcon } from '@heroicons/vue/24/outline'
 import PwdsafeModal from './Modal.vue'
 import PwdsafeInput from './Input.vue'
 import { ref } from 'vue'
+import { loadPrivkey, decryptCredential, encryptWithToken, generateShareToken } from '../vault.js'
 
 const props = defineProps({
     credential: {
@@ -73,15 +74,23 @@ const props = defineProps({
         required: true,
     },
 })
-const shareCredential = () => {
-    window.axios
-        .post('/credential/' + props.credential.id + '/share', {
-            expire_at: expireAt.value,
-            burn_after_read: burnAfterRead.value,
-        })
-        .then((res) => {
-            url.value = res.data.url
-        })
+const shareCredential = async () => {
+    const privkeyPem = loadPrivkey()
+    const token = generateShareToken()
+
+    const { data: pwdResponse } = await window.axios.get('/pwdfor/' + props.credential.id)
+    const plaintext = privkeyPem
+        ? await decryptCredential(pwdResponse.data, privkeyPem)
+        : pwdResponse.data
+    const secret = await encryptWithToken(plaintext, token)
+
+    const res = await window.axios.post('/credential/' + props.credential.id + '/share', {
+        expire_at: expireAt.value,
+        burn_after_read: burnAfterRead.value,
+        secret,
+        token,
+    })
+    url.value = res.data.url
 }
 
 Date.prototype.addDays = function (days) {

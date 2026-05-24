@@ -28,9 +28,11 @@ class CredentialsController extends Controller
         $params = $request->validate([
             'creds' => 'required',
             'credu' => 'required',
-            'credp' => 'required',
             'currentgroupid' => 'required',
             'credn' => 'nullable',
+            'encrypted' => 'required|array|min:1',
+            'encrypted.*.userid' => 'required|integer|exists:users,id',
+            'encrypted.*.data' => 'required|string',
         ]);
 
         if ($credential->groupid != $params['currentgroupid']) {

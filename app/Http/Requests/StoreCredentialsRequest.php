@@ -26,8 +26,10 @@ class StoreCredentialsRequest extends FormRequest
         return [
             'site' => 'required',
             'user' => 'required',
-            'pass' => 'required',
-            'notes' => 'nullable'
+            'notes' => 'nullable',
+            'encrypted' => 'required|array|min:1',
+            'encrypted.*.userid' => 'required|integer|exists:users,id',
+            'encrypted.*.data' => 'required|string',
         ];
     }
 }

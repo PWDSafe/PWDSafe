@@ -17,14 +17,10 @@ class CredentialsTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->post('/register', [
-            'email' => 'some@email.com',
-            'password' => 'password',
-            'password_confirmation' => 'password'
-        ]);
-        $this->post('logout');
-        $this->from('/login')->post('/login', ['email' => 'some@email.com', 'password' => 'password']);
+        User::registerUser('some@email.com', 'password');
         $this->user = User::first();
+        $this->actingAs($this->user);
+        $this->setupVaultSessionForUser($this->user, 'password');
     }
 
     public function testAddingCredentials(): void
@@ -45,12 +41,13 @@ class CredentialsTest extends TestCase
         $credential = Credential::first();
         $this->assertDatabaseHas('encryptedcredentials', ['credentialid' => $credential->id, 'userid' => $this->user->id]);
 
+        $currentPassword = $this->getPassword($credential);
         $this->put('/credential/' . $credential->id, [
             'creds' => 'New site',
             'credu' => $credential->username,
-            'credp' => $this->getPassword($credential),
             'credn' => '',
             'currentgroupid' => $credential->groupid,
+            'encrypted' => $this->encryptedPayloadForUsers($currentPassword, $this->user),
         ]);
 
         $this->assertDatabaseHas('credentials', ['site' => 'New site']);
@@ -61,9 +58,9 @@ class CredentialsTest extends TestCase
         $this->put('/credential/' . $credential->id, [
             'creds' => 'New site',
             'credu' => $credential->username,
-            'credp' => $newpassword,
             'credn' => '',
             'currentgroupid' => $credential->groupid,
+            'encrypted' => $this->encryptedPayloadForUsers($newpassword, $this->user),
         ]);
 
         $this->assertEquals($newpassword, $this->getPassword($credential));
@@ -80,9 +77,9 @@ class CredentialsTest extends TestCase
         $this->json('PUT', '/credential/' . $credential->id, [
             'creds' => 'New site',
             'credu' => $credential->username,
-            'credp' => $newpassword,
             'credn' => '',
             'currentgroupid' => $group->id,
+            'encrypted' => $this->encryptedPayloadForUsers($newpassword, $this->user),
         ])->assertOk();
         $credential = Credential::first();
         $this->assertEquals($group->id, $credential->groupid);
@@ -94,8 +91,8 @@ class CredentialsTest extends TestCase
         $this->json('POST', "/groups/{$this->user->primarygroup}/add", [
             'site' => 'Some site',
             'user' => 'The username',
-            'pass' => 'The super secret password',
-            'notes' => 'Notes'
+            'notes' => 'Notes',
+            'encrypted' => $this->encryptedPayloadForUsers('The super secret password', $this->user),
         ]);
 
         $this->assertDatabaseHas('credentials', ['site' => 'Some site']);
@@ -107,9 +104,28 @@ class CredentialsTest extends TestCase
         $this->assertDatabaseMissing('credentials', ['site' => 'Some site']);
     }
 
-    private function getPassword(Credential $credential): mixed
+    private function getPassword(Credential $credential): string
     {
-        return json_decode($this->get('/pwdfor/' . $credential->id)->getContent(), true)['pwd'];
+        $response = json_decode($this->get('/pwdfor/' . $credential->id)->getContent(), true);
+        $encryption = app(\App\Helpers\Encryption::class);
+
+        return $encryption->decWithPriv($response['data'], $this->user->fresh()->decryptPrivkey());
+    }
+
+    public function testPasswordForReturnsEncryptedData(): void
+    {
+        $this->addTestCredential();
+        $credential = Credential::first();
+
+        $response = $this->getJson('/pwdfor/' . $credential->id)
+            ->assertOk()
+            ->assertJsonStructure(['status', 'data', 'user', 'site', 'notes', 'groupid'])
+            ->assertJsonMissing(['pwd'])
+            ->json();
+
+        $encryption = app(\App\Helpers\Encryption::class);
+        $decrypted = $encryption->decWithPriv($response['data'], $this->user->fresh()->decryptPrivkey());
+        $this->assertEquals('The super secret password', $decrypted);
     }
 
     private function addTestCredential(): void
@@ -117,8 +133,8 @@ class CredentialsTest extends TestCase
         $this->post('/groups/' . $this->user->primarygroup . '/add', [
             'site' => 'Some site',
             'user' => 'The username',
-            'pass' => 'The super secret password',
             'notes' => 'Notes',
+            'encrypted' => $this->encryptedPayloadForUsers('The super secret password', $this->user),
         ]);
     }
 }

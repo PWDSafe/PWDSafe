@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Credential;
 use App\Encryptedcredential;
 use App\Group;
-use App\Helpers\Encryption;
 use App\Http\Requests\StoreCredentialsRequest;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -61,13 +60,11 @@ class GroupController extends Controller
             'notes' => $params['notes'],
         ]);
 
-        $users = $group->users()->pluck('pubkey', 'users.id');
-
-        foreach ($users as $userid => $pubkey) {
+        foreach ($params['encrypted'] as $entry) {
             Encryptedcredential::create([
                 'credentialid' => $credential->id,
-                'userid' => $userid,
-                'data' => app(Encryption::class)->encWithPub($params['pass'], $pubkey),
+                'userid' => $entry['userid'],
+                'data' => $entry['data'],
             ]);
         }
 
@@ -76,6 +73,18 @@ class GroupController extends Controller
         }
 
         return redirect(route('group', $group->id));
+    }
+
+    public function pubkeys(Group $group): Response|Application|ResponseFactory
+    {
+        $this->authorize('view', $group);
+
+        return response([
+            'users' => $group->users()->get(['users.id', 'pubkey'])->map(fn ($u) => [
+                'id' => $u->id,
+                'pubkey' => $u->pubkey,
+            ]),
+        ]);
     }
 
     public function store(Request $request): Response|Redirector|RedirectResponse|Application|ResponseFactory

@@ -14,14 +14,10 @@ class SearchTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->post('/register', [
-            'email' => 'some@email.com',
-            'password' => 'password',
-            'password_confirmation' => 'password'
-        ]);
-        $this->actingAs(\App\User::first());
-        session()->put('password', 'password');
+        \App\User::registerUser('some@email.com', 'password');
         $this->user = \App\User::first();
+        $this->actingAs($this->user);
+        $this->setupVaultSessionForUser($this->user, 'password');
     }
 
     public function testSearchingShouldReturnEmptyPage(): void
@@ -42,15 +38,15 @@ class SearchTest extends TestCase
         $this->post("/groups/{$this->user->primarygroup}/add", [
             'site' => 'Site1',
             'user' => 'The username',
-            'pass' => 'The super secret password',
             'notes' => 'Some notes here',
+            'encrypted' => $this->encryptedPayloadForUsers('The super secret password', $this->user),
         ]);
 
         $this->post("/groups/{$this->user->primarygroup}/add", [
             'site' => 'Site2',
             'user' => 'The username',
-            'pass' => 'The super secret password',
             'notes' => 'No notes here',
+            'encrypted' => $this->encryptedPayloadForUsers('The super secret password', $this->user),
         ]);
 
         $this->get('/search/Site2')

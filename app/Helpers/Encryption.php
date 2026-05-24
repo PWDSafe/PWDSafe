@@ -8,7 +8,6 @@ namespace App\Helpers;
  */
 class Encryption
 {
-    // Used for encrypting data longer than encryption key
     private const CHUNK_SIZE = 500;
 
     /**
@@ -69,6 +68,79 @@ class Encryption
         }
 
         return $encrypted;
+    }
+
+    /**
+     * Derive a 32-byte vault key from a password and a hex-encoded salt using PBKDF2-SHA256.
+     * Returns the raw (binary) key bytes.
+     */
+    public static function deriveVaultKey(string $password, string $saltHex): string
+    {
+        return hash_pbkdf2(
+            'sha256',
+            $password,
+            hex2bin($saltHex),
+            config('vault.pbkdf2_iterations'),
+            32,
+            true
+        );
+    }
+
+    /**
+     * Derive a login hash from a vault key and the raw password.
+     * This is what the client sends to the server instead of the raw password,
+     * so the server can never compute the vault key even if it captures the login request.
+     *
+     * Formula: PBKDF2-SHA256(key=vault_key, salt=password, iterations=1)
+     * Returns a 64-character hex string.
+     */
+    public static function deriveLoginHash(string $vaultKey, string $password): string
+    {
+        return bin2hex(hash_pbkdf2('sha256', $vaultKey, $password, 1, 32, true));
+    }
+
+    /**
+     * Derive a login hash independently from the vault (for separate-password mode).
+     * Formula: PBKDF2-SHA256(password, login_salt, PBKDF2_ITERATIONS)
+     * Returns a 64-character hex string.
+     * Mirrors deriveLoginHashIndependent() in vault.js.
+     */
+    public static function deriveLoginHashIndependent(string $password, string $loginSaltHex): string
+    {
+        return bin2hex(hash_pbkdf2(
+            'sha256',
+            $password,
+            hex2bin($loginSaltHex),
+            config('vault.pbkdf2_iterations'),
+            32,
+            true
+        ));
+    }
+
+    /**
+     * Encrypt data using AES-256-GCM with a raw 32-byte vault key.
+     * Stored format: base64( iv[12] || ciphertext[n] || tag[16] )
+     */
+    public function encV2(string $data, string $vaultKey): string
+    {
+        $iv = random_bytes(12);
+        $tag = '';
+        $ciphertext = openssl_encrypt($data, 'aes-256-gcm', $vaultKey, OPENSSL_RAW_DATA, $iv, $tag, '', 16);
+
+        return base64_encode($iv . $ciphertext . $tag);
+    }
+
+    /**
+     * Decrypt data encrypted by encV2().
+     */
+    public function decV2(string $encoded, string $vaultKey): string
+    {
+        $raw = base64_decode($encoded);
+        $iv = substr($raw, 0, 12);
+        $tag = substr($raw, -16);
+        $ciphertext = substr($raw, 12, strlen($raw) - 28);
+
+        return (string) openssl_decrypt($ciphertext, 'aes-256-gcm', $vaultKey, OPENSSL_RAW_DATA, $iv, $tag);
     }
 
     public function decWithPriv(string $data, string $privkey): string

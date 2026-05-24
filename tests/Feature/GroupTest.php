@@ -17,14 +17,10 @@ class GroupTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->post('/register', [
-            'email' => 'some@email.com',
-            'password' => 'password',
-            'password_confirmation' => 'password'
-        ]);
-        $this->actingAs(\App\User::first());
-        session()->put('password', 'password');
+        User::registerUser('some@email.com', 'password');
         $this->user = \App\User::first();
+        $this->actingAs($this->user);
+        $this->setupVaultSessionForUser($this->user, 'password');
     }
 
     public function testAddingGroup(): void
@@ -90,7 +86,7 @@ class GroupTest extends TestCase
 
     public function testRenamingGroup(): void
     {
-        $this->assertCount(1, $this->user->groups);
+        $this->assertCount(1, $this->user->fresh()->groups);
         $this->post('/groups/create', [
             'groupname' => 'testgroup',
         ]);
@@ -119,7 +115,7 @@ class GroupTest extends TestCase
         ]);
 
         $group = \App\Group::orderBy('id', 'desc')->first();
-        $this->get('/groups/' . $group->id . '/members')->assertOk()->assertSee('Share group');
+        $this->get('/groups/' . $group->id . '/members')->assertOk()->assertSee('add-group-member', false);
     }
 
     public function testSharingGroup(): void
@@ -133,57 +129,67 @@ class GroupTest extends TestCase
         $this->post("/groups/{$group->id}/add", [
             'site' => 'Some site',
             'user' => 'The username',
-            'pass' => 'The super secret password',
             'notes' => 'Notes',
+            'encrypted' => $this->encryptedPayloadForUsers('The super secret password', $this->user),
         ]);
 
         $this->post('/logout');
 
-        $this->post('/register', [
-            'email' => 'second@email.com',
-            'password' => 'abitlongersecret',
-            'password_confirmation' => 'abitlongersecret'
-        ]);
-        $this->post('logout');
+        User::registerUser('second@email.com', 'abitlongersecret');
+        $seconduser = \App\User::where('email', 'second@email.com')->first();
         $this->from('/login')->post('/login', ['email' => 'some@email.com', 'password' => 'password']);
-        $this->post('/groups/' . $group->id . '/members', [
-            'username' => 'second@email.com',
-            'permission' => 'admin'
-        ]);
+
+        // Step 1: prepare — validate new member and get credentials + their pubkey
+        $prepare = $this->postJson("/api/groups/{$group->id}/members/prepare", [
+            'user_id' => $seconduser->id,
+            'permission' => 'admin',
+        ])->assertOk()->json();
+
+        $this->assertEquals($seconduser->id, $prepare['user']['id']);
+
+        $encryption = app(Encryption::class);
+        $reEncrypted = array_map(function ($cred) use ($encryption, $seconduser) {
+            $plaintext = $encryption->decWithPriv($cred['data'], $this->user->fresh()->decryptPrivkey());
+            return [
+                'credentialid' => $cred['id'],
+                'data' => $encryption->encWithPub($plaintext, $seconduser->pubkey),
+            ];
+        }, $prepare['credentials']);
+
+        // Step 2: confirm — attach user and store re-encrypted credentials
+        $this->postJson("/api/groups/{$group->id}/members/confirm", [
+            'user_id' => $seconduser->id,
+            'permission' => 'admin',
+            'encrypted' => $reEncrypted,
+        ])->assertOk();
 
         $this->assertCount(2, $group->fresh()->users);
 
-        $this->post('logout');
-        $this->from('/login')->post('/login', ['email' => 'second@email.com', 'password' => 'abitlongersecret']);
-        $seconduser = \App\User::where('email', 'second@email.com')->first();
-
         $credential = \App\Credential::first();
-
         $pwd = \App\Encryptedcredential::where('credentialid', $credential->id)
             ->where('userid', $seconduser->id)
             ->first();
-        $encryption = app(Encryption::class);
 
+        $vaultKey = Encryption::deriveVaultKey('abitlongersecret', $seconduser->fresh()->privkey_salt);
         $decryptedcredential = $encryption->decWithPriv(
             $pwd->data,
-            $encryption->dec($seconduser->privkey, 'abitlongersecret')
+            $encryption->decV2($seconduser->fresh()->privkey, $vaultKey)
         );
 
         $this->assertEquals('The super secret password', $decryptedcredential);
         $this->assertCount(2, \App\Encryptedcredential::all());
 
-        $this->post('/groups/' . $group->id . '/members', [
-            'username' => 'does@not.exist',
-            'permission' => 'admin'
-        ])
-            ->assertRedirect()
-            ->assertSessionHasErrors();
-        $this->post('/groups/' . $group->id . '/members', [
-            'username' => 'second@email.com',
-            'permission' => 'admin'
-        ])
-            ->assertRedirect()
-            ->assertSessionDoesntHaveErrors();
+        // prepare returns an error for non-existent users
+        $this->postJson("/api/groups/{$group->id}/members/prepare", [
+            'user_id' => 999999,
+            'permission' => 'admin',
+        ])->assertStatus(422);
+
+        // prepare returns an error when user is already a member
+        $this->postJson("/api/groups/{$group->id}/members/prepare", [
+            'user_id' => $seconduser->id,
+            'permission' => 'admin',
+        ])->assertStatus(422);
     }
 
     public function testUnsharingGroup(): void
@@ -194,28 +200,24 @@ class GroupTest extends TestCase
 
         $group = \App\Group::orderBy('id', 'desc')->first();
 
-        $this->post('/cred/add', [
-            'creds' => 'Some site',
-            'credu' => 'The username',
-            'credp' => 'The super secret password',
-            'credn' => 'Notes',
-            'currentgroupid' => $group->id,
-        ]);
-
         $this->post('/logout');
-        $this->post('/register', [
-            'email' => 'second@email.com',
-            'password' => 'abitlongersecret',
-            'password_confirmation' => 'abitlongersecret'
-        ]);
+        User::registerUser('second@email.com', 'abitlongersecret');
         $user2 = \App\User::where('email', 'second@email.com')->first();
-        $this->actingAs(\App\User::first());
-        session()->put('password', 'password');
+        $user1 = \App\User::where('email', 'some@email.com')->first();
+        $this->actingAs($user1);
+        $this->setupVaultSessionForUser($user1, 'password');
 
-        $this->post('/groups/' . $group->id . '/members', [
-            'username' => $user2->email,
-            'permission' => 'admin'
-        ]);
+        $this->postJson("/api/groups/{$group->id}/members/prepare", [
+            'user_id' => $user2->id,
+            'permission' => 'admin',
+        ])->assertOk();
+
+        $this->postJson("/api/groups/{$group->id}/members/confirm", [
+            'user_id' => $user2->id,
+            'permission' => 'admin',
+            'encrypted' => [],
+        ])->assertOk();
+
         $this->assertCount(2, $user2->fresh()->groups);
 
         $this->delete('/groups/' . $group->id . '/members', ['userid' => $user2->id]);
@@ -227,15 +229,22 @@ class GroupTest extends TestCase
         $group = new Group();
         $group->name = 'testgroup';
         $group->save();
-        User::first()->groups()->attach($group);
+        User::first()->groups()->attach($group, ['permission' => 'admin']);
 
         \App\User::registerUser('second@email.com', 'abitlongersecret');
         $user2 = \App\User::where('email', 'second@email.com')->first();
 
-        $this->post('/groups/' . $group->id . '/members', [
-            'username' => $user2->email,
-            'permission' => 'admin'
-        ]);
+        $this->postJson("/api/groups/{$group->id}/members/prepare", [
+            'user_id' => $user2->id,
+            'permission' => 'admin',
+        ])->assertOk();
+
+        $this->postJson("/api/groups/{$group->id}/members/confirm", [
+            'user_id' => $user2->id,
+            'permission' => 'admin',
+            'encrypted' => [],
+        ])->assertOk();
+
         $this->assertCount(2, $user2->fresh()->groups);
 
         $this->patch('/groups/' . $group->id . '/members/' . $user2->id, [

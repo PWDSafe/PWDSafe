@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\AuditLog;
 use App\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -25,13 +26,14 @@ class VerifyOtpController extends Controller
     {
         if (
             session()->has('username') &&
-            session()->has('password') &&
+            (session()->has('vault_key') || session()->has('vault_unlocked')) &&
             auth()->guest() &&
             $request->has('twofacode')
         ) {
             $user = User::where('email', session()->get('username'))->first();
             if ($google2fa->verify($request->get('twofacode'), decrypt($user->two_factor_secret))) {
                 auth()->loginUsingId($user->id);
+                AuditLog::logLogin($user, $request);
 
                 if ($request->hasSession()) {
                     $request->session()->put('auth.password_confirmed_at', time());
@@ -39,6 +41,13 @@ class VerifyOtpController extends Controller
 
                 return $this->sendLoginResponse($request);
             }
+        }
+
+        // Session has expired or was never set — missing username or vault key in session.
+        if (!session()->has('username') || (!session()->has('vault_key') && !session()->has('vault_unlocked'))) {
+            return redirect()
+                ->back()
+                ->withErrors(['session_expired' => true]);
         }
 
         return redirect()

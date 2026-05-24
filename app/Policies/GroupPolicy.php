@@ -63,6 +63,10 @@ class GroupPolicy
      */
     public function administer(User $user, Group $group)
     {
+        if (!$user->groups->contains('id', $group->id)) {
+            return false;
+        }
+
         return $user->groups->find($group->id)->getRelationValue('pivot')->permission === 'admin' && $group->id !== $user->primarygroup;
     }
 }

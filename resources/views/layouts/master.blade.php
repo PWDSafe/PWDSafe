@@ -74,8 +74,9 @@
                     <div class="hidden lg:ml-4 lg:flex lg:items-center">
                         <!-- Profile dropdown -->
                         <profile-menu
-                            username="{{ auth()->user()->email }}"
+                            username="{{ auth()->user()->name ?? auth()->user()->email }}"
                             :ldap="{{ config('ldap.enabled') ? 'true' : 'false' }}"
+                            :is-admin="{{ auth()->user()->is_admin ? 'true' : 'false' }}"
                             csrf='{{ csrf_token() }}'
                         ></profile-menu>
                     </div>
@@ -125,5 +126,6 @@
         @endauth
 </div>
 <div id='modals' class='dark:text-gray-300'></div>
+@stack('scripts')
 </body>
 </html>

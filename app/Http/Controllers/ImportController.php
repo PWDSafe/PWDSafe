@@ -3,73 +3,38 @@
 namespace App\Http\Controllers;
 
 use App\Credential;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ImportController extends Controller
 {
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): JsonResponse
     {
-        $params = $this->validate($request, [
-            'group' => 'required',
+        $validated = $request->validate([
+            'group' => 'required|integer',
+            'credentials' => 'present|array',
+            'credentials.*.site' => 'required|string',
+            'credentials.*.username' => 'required|string',
+            'credentials.*.notes' => 'nullable|string',
+            'credentials.*.encrypted' => 'required|array',
+            'credentials.*.encrypted.*.userid' => 'required|integer',
+            'credentials.*.encrypted.*.data' => 'required|string',
         ]);
 
-        abort_unless(auth()->user()->groups->contains('id', $params['group']), 403);
-
-        $group = auth()->user()->groups->find($params['group']);
+        $group = auth()->user()->groups->find($validated['group']);
+        abort_unless($group !== null, 403);
         $this->authorize('update', $group);
 
-        $file = $request->file('jsonfile');
-
-        $file = file_get_contents($file->getRealPath());
-        $data = json_decode($file);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            return redirect()
-                ->back()
-                ->withErrors([
-                    'import_error' => 'Cannot parse file. Is it valid JSON?'
-                ]);
-        }
-
-        if (!is_array($data)) {
-            return redirect()
-                ->back()
-                ->withErrors([
-                    'import_error' => 'JSON detected, but base element is not an array.'
-                ]);
-        }
-
-        $count = 0;
-        $skipped = 0;
-
-        foreach ($data as $row) {
-            if (
-                !property_exists($row, 'site') ||
-                !property_exists($row, 'username') ||
-                !property_exists($row, 'password')
-            ) {
-                # Seems malformed, skip this row
-                $skipped++;
-                continue;
-            }
-
+        foreach ($validated['credentials'] as $row) {
             Credential::addCredentials([
-                'creds' => $row->site,
-                'credu' => $row->username,
-                'credn' => $row->notes ?? '',
-                'credp' => $row->password,
-                'currentgroupid' => $params['group'],
+                'creds' => $row['site'],
+                'credu' => $row['username'],
+                'credn' => $row['notes'] ?? '',
+                'encrypted' => $row['encrypted'],
+                'currentgroupid' => $validated['group'],
             ]);
-
-            $count++;
         }
 
-        return redirect()
-            ->back()
-            ->with([
-                'import_count' => $count,
-                'import_skipped' => $skipped
-            ]);
+        return response()->json(['count' => count($validated['credentials'])]);
     }
 }

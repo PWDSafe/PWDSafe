@@ -30,4 +30,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'oidc' => [
+        'client_id' => env('OIDC_CLIENT_ID'),
+        'client_secret' => env('OIDC_CLIENT_SECRET'),
+        'redirect' => env('APP_URL', 'http://localhost') . '/auth/oidc/callback',
+        'base_url' => env('OIDC_BASE_URL'),
+        'scopes' => env('OIDC_SCOPES', 'openid email profile'),
+    ],
+
 ];
