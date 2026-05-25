@@ -3,12 +3,15 @@
 <div class="container">
     <div class="clearfix">
         <div class="flex justify-between mb-5 gap-x-2">
-            <h3 class="text-2xl">
+            <h3 class="text-2xl flex items-center gap-x-2">
                 @if ($group->id !== auth()->user()->primarygroup)
                     {{ $group->name }}
                 @else
                     Private
                 @endif
+                <span class="bg-gray-100 dark:bg-gray-600 text-xs text-gray-500 dark:text-gray-400 px-2 py-0.5 rounded-full font-normal">
+                    {{ $credentials->count() }}
+                </span>
             </h3>
             <div class="flex items-end md:items-start gap-2 flex-col md:flex-row">
                 @can('update', $group)
