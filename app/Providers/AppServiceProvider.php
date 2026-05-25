@@ -40,7 +40,12 @@ class AppServiceProvider extends ServiceProvider
             $event->extendSocialite('oidc', \SocialiteProviders\OIDC\Provider::class);
         });
 
-        if (Schema::hasTable('system_settings')) {
+        try {
+            $hasTable = Schema::hasTable('system_settings');
+        } catch (\Exception) {
+            $hasTable = false;
+        }
+        if ($hasTable) {
             $authMethod = SystemSetting::get('auth_method', 'internal');
 
             config([
