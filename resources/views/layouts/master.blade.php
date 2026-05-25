@@ -33,7 +33,7 @@
                             </a>
                         </div>
                     </div>
-                    <div class="flex-1 flex items-center justify-center px-2 lg:ml-6 lg:justify-end">
+                    <div class="flex-1 flex items-center justify-between px-2 lg:ml-6 lg:justify-end">
                         <div class="max-w-lg w-full lg:max-w-xs">
                             <label for="search" class="sr-only">Search</label>
                             <div class="relative">
@@ -52,33 +52,33 @@
                                 </form>
                             </div>
                         </div>
-                    </div>
-                    <div class="flex items-center lg:hidden">
-                        <!-- Mobile menu button -->
-                        <button
-                            @click="mobileMenuOpen = !mobileMenuOpen"
-                            class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-gray-200 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-600 dark:focus:text-gray-300 focus:text-gray-500 transition duration-150 ease-in-out"
-                            aria-label="Main menu" aria-expanded="false">
-                            <svg :class="{'block': !mobileMenuOpen, 'hidden': mobileMenuOpen}" class="h-6 w-6"
-                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M4 6h16M4 12h16M4 18h16"/>
-                            </svg>
-                            <svg :class="{'block': mobileMenuOpen, 'hidden': !mobileMenuOpen}" class="h-6 w-6"
-                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="hidden lg:ml-4 lg:flex lg:items-center">
-                        <!-- Profile dropdown -->
-                        <profile-menu
-                            username="{{ auth()->user()->name ?? auth()->user()->email }}"
-                            :ldap="{{ config('ldap.enabled') ? 'true' : 'false' }}"
-                            :is-admin="{{ auth()->user()->is_admin ? 'true' : 'false' }}"
-                            csrf='{{ csrf_token() }}'
-                        ></profile-menu>
+                        <div class="flex items-center lg:hidden">
+                            <!-- Mobile menu button -->
+                            <button
+                                @click="mobileMenuOpen = !mobileMenuOpen"
+                                class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-gray-200 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-600 dark:focus:text-gray-300 focus:text-gray-500 transition duration-150 ease-in-out"
+                                aria-label="Main menu" aria-expanded="false">
+                                <svg :class="{'block': !mobileMenuOpen, 'hidden': mobileMenuOpen}" class="h-6 w-6"
+                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M4 6h16M4 12h16M4 18h16"/>
+                                </svg>
+                                <svg :class="{'block': mobileMenuOpen, 'hidden': !mobileMenuOpen}" class="h-6 w-6"
+                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="hidden lg:ml-4 lg:flex lg:items-center">
+                            <!-- Profile dropdown -->
+                            <profile-menu
+                                username="{{ auth()->user()->name ?? auth()->user()->email }}"
+                                :ldap="{{ config('ldap.enabled') ? 'true' : 'false' }}"
+                                :is-admin="{{ auth()->user()->is_admin ? 'true' : 'false' }}"
+                                csrf='{{ csrf_token() }}'
+                            ></profile-menu>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -87,15 +87,15 @@
                 <div class="pt-2 pb-3">
                     <a href="{{ route('group', auth()->user()->primarygroup) }}"
                        class="mt-1 block pl-3 pr-4 py-2 border-l-4 items-center px-1 pt-1 text-base font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-600 {{ request()->is('groups/' . auth()->user()->primarygroup) ? 'border-indigo-500 text-gray-900 dark:text-gray-200' : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200 hover:border-gray-300' }}">
-                            <span class="flex items-center justify-between">
-                                    Private
-                            </span>
+                        <span class="flex items-center justify-between">
+                            Private
+                        </span>
                     </a>
                     <a href="{{ route('groups') }}"
                        class="mt-1 block pl-3 pr-4 py-2 border-l-4 items-center px-1 pt-1 text-base font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-600 {{ request()->is('groups') ? 'border-indigo-500 text-gray-900 dark:text-gray-200' : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200 hover:border-gray-300' }}">
-                            <span class="flex items-center justify-between">
-                                    Groups
-                            </span>
+                        <span class="flex items-center justify-between">
+                            Groups
+                        </span>
                     </a>
                     <a href="{{ route('securitycheck') }}"
                        class="mt-1 block pl-3 pr-4 py-2 border-l-4 items-center px-1 pt-1 text-base font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-600 {{ request()->is('securitycheck') ? 'border-indigo-500 text-gray-900 dark:text-gray-200' : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200 hover:border-gray-300' }}">
@@ -103,8 +103,24 @@
                     </a>
                 </div>
                 <div class="pt-4 pb-3 border-t border-gray-200 dark:border-gray-800">
-                    <div class="mt-3">
-                        <form method="post" action="{{ route('logout') }}" class="w-full">
+                    <p class="pl-3 pr-4 pt-1 text-xs font-medium text-gray-400 dark:text-gray-500">Account</p>
+                    <div class="mt-2">
+                        <a href="/settings"
+                           class="mt-1 block pl-3 pr-4 py-2 border-l-4 items-center px-1 pt-1 text-base font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-600 {{ request()->is('settings') ? 'border-indigo-500 text-gray-900 dark:text-gray-200' : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200 hover:border-gray-300' }}">
+                            Settings
+                        </a>
+                        <a href="/settings/twofa"
+                           class="mt-1 block pl-3 pr-4 py-2 border-l-4 items-center px-1 pt-1 text-base font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-600 {{ request()->is('settings/twofa') ? 'border-indigo-500 text-gray-900 dark:text-gray-200' : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200 hover:border-gray-300' }}">
+                            Two factor authentication
+                        </a>
+                        <a href="/shared"
+                           class="mt-1 block pl-3 pr-4 py-2 border-l-4 items-center px-1 pt-1 text-base font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-600 {{ request()->is('shared') ? 'border-indigo-500 text-gray-900 dark:text-gray-200' : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200 hover:border-gray-300' }}">
+                            Shared credentials
+                        </a>
+                    </div>
+                    <div class="mt-2">
+                        <hr class="border-gray-200 dark:border-gray-800">
+                        <form method="post" action="{{ route('logout') }}" class="w-full mt-2">
                             @csrf
                             <button type="submit"
                                     class="w-full text-left mt-1 block pl-3 pr-4 py-2 border-l-4 items-center px-1 pt-1 border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200 hover:border-gray-300 text-base font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-600">
