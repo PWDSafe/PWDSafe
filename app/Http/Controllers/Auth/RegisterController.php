@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
@@ -79,7 +80,7 @@ class RegisterController extends Controller
      * The user was registered. Set vault_unlocked so the auth middleware passes
      * when the framework auto-logs-in the newly registered user.
      */
-    protected function registered($request, $user): void
+    protected function registered(Request $request, User $user): void
     {
         session()->put('vault_unlocked', true);
     }

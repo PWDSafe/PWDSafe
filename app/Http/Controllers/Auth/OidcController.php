@@ -16,7 +16,10 @@ class OidcController extends Controller
     {
         $scopes = array_filter(explode(' ', config('services.oidc.scopes', 'openid email profile')));
 
-        return Socialite::driver('oidc')->setScopes($scopes)->redirect();
+        /** @var \Laravel\Socialite\Two\AbstractProvider $provider */
+        $provider = Socialite::driver('oidc');
+
+        return $provider->setScopes($scopes)->redirect();
     }
 
     public function callback(Request $request): RedirectResponse

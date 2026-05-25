@@ -204,7 +204,7 @@ class LoginController extends Controller
                 ]);
             }
 
-            if ($user->hasSeparateVaultPassword() || (config('ldap.enabled') && $user->isVaultConfigured())) {
+            if ($user->hasSeparateVaultPassword()) {
                 // Cases 2 & 3: vault unlock required before vault access.
                 return response()->json([
                     'needs_vault_unlock' => true,
@@ -228,8 +228,7 @@ class LoginController extends Controller
             ]);
         }
 
-        return $this->authenticated($request, $this->guard()->user())
-            ?: redirect()->intended($this->redirectPath());
+        return $this->authenticated($request, $this->guard()->user());
     }
 
     protected function authenticated(Request $request, User $user): RedirectResponse

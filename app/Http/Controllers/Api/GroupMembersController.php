@@ -54,8 +54,6 @@ class GroupMembersController extends Controller
 
     /**
      * Attach the user to the group and store the client-encrypted credentials for them.
-     *
-     * @param array<int, array{credentialid: int, data: string}> $encrypted
      */
     public function confirm(Group $group, Request $request): Response|Application|ResponseFactory
     {
