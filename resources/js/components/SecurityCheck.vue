@@ -3,45 +3,60 @@
         <div class="mb-12 max-w-3xl">
             <h3 class="mb-2 text-2xl">Security check</h3>
             <p>
-                The security check groups credentials that share the same password together. Consider changing the
-                passwords for one or several credentials in each group to make sure that you use a unique password for
-                each application/site.
+                The security check groups credentials that share the same
+                password together. Consider changing the passwords for one or
+                several credentials in each group to make sure that you use a
+                unique password for each application/site.
             </p>
         </div>
 
         <template v-if="loading && !decryptionStarted">
             <div class="mb-4 rounded-md bg-gray-100 p-4 dark:bg-gray-700">
-                <p class="text-gray-600 dark:text-gray-400">Loading your credentials...</p>
+                <p class="text-gray-600 dark:text-gray-400">
+                    Loading your credentials...
+                </p>
             </div>
         </template>
 
         <template v-else-if="credentials && !loading && !decryptionStarted">
             <div class="max-w-3xl">
-                <div class="mb-4 flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                    <span>You have {{ totalCredentials }} credential{{ totalCredentials === 1 ? '' : 's' }} in your vault.</span>
+                <div
+                    class="mb-4 flex items-center gap-2 text-gray-600 dark:text-gray-400"
+                >
+                    <span
+                        >You have {{ totalCredentials }} credential{{
+                            totalCredentials === 1 ? '' : 's'
+                        }}
+                        in your vault.</span
+                    >
                 </div>
-                
+
                 <template v-if="totalCredentials >= 50">
-                    <div class="mb-4 rounded-md bg-yellow-50 p-3 text-sm text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-                        With {{ totalCredentials }} credentials this may take a minute. Continue?
+                    <div
+                        class="mb-4 rounded-md bg-yellow-50 p-3 text-sm text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                    >
+                        With {{ totalCredentials }} credentials this may take a
+                        minute. Continue?
                     </div>
                 </template>
-                
-                <button
-                    class="rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-600"
-                    @click="startDecryption"
-                >
-                    Start Security Check
-                </button>
+
+                <Button @click="startDecryption"> Start Security Check </Button>
             </div>
         </template>
 
         <div v-else-if="loading && decryptionStarted" class="max-w-3xl">
-            <div class="mb-2 flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+            <div
+                class="mb-2 flex items-center justify-between text-sm text-gray-600 dark:text-gray-400"
+            >
                 <span>Decrypting credentials…</span>
-                <span>{{ progressIndex }} of {{ totalCredentials }} decrypted</span>
+                <span
+                    >{{ progressIndex }} of
+                    {{ totalCredentials }} decrypted</span
+                >
             </div>
-            <div class="mb-2 h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+            <div
+                class="mb-2 h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700"
+            >
                 <div
                     class="h-2 rounded-full bg-indigo-500 transition-all duration-300"
                     :style="{ width: progressPercentage + '%' }"
@@ -57,7 +72,9 @@
 
         <template v-else-if="hasCancelled">
             <pwdsafe-alert theme="warning" classes="max-w-3xl">
-                <strong>Check interrupted.</strong> The security check was interrupted and could not determine the amount of duplicate credentials.
+                <strong>Check interrupted.</strong> The security check was
+                interrupted and could not determine the amount of duplicate
+                credentials.
             </pwdsafe-alert>
         </template>
 
@@ -73,7 +90,9 @@
                     Password group
                 </h5>
                 <div class="px-2 py-3">
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                    <div
+                        class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
+                    >
                         <credential-card
                             v-for="cred in group"
                             :key="cred.id"
@@ -87,19 +106,42 @@
             </div>
         </template>
 
-        <pwdsafe-alert v-else-if="decryptionStarted" theme="success" classes="max-w-3xl">
-            <strong>No credentials found!</strong> This means that your credentials all have different passwords.
+        <pwdsafe-alert
+            v-else-if="decryptionStarted"
+            theme="success"
+            classes="max-w-3xl"
+        >
+            <strong>No credentials found!</strong> This means that your
+            credentials all have different passwords.
         </pwdsafe-alert>
+
+        <template v-else-if="!loading && credentials === null">
+            <div class="max-w-3xl space-y-4">
+                <pwdsafe-alert theme="info" classes="mb-0">
+                    <strong>No credentials in vault.</strong> You have no
+                    credentials defined, so there's nothing to check.
+                </pwdsafe-alert>
+            </div>
+        </template>
     </div>
 </template>
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { loadPrivkey, decryptCredential } from '../vault.js'
+import Button from './Button.vue'
 
 const props = defineProps({
     writableGroups: {
         type: Array,
         default: () => [],
+    },
+    privateGroupUrl: {
+        type: String,
+        default: '/',
+    },
+    groupsUrl: {
+        type: String,
+        default: '/groups',
     },
 })
 
@@ -111,7 +153,9 @@ const cancelled = ref(false)
 const hasCancelled = ref(false)
 const decryptionStarted = ref(false)
 
-const totalCredentials = computed(() => credentials.value ? credentials.value.length : 0)
+const totalCredentials = computed(() =>
+    credentials.value ? credentials.value.length : 0,
+)
 const progressPercentage = computed(() => {
     if (totalCredentials.value === 0) return 0
     return Math.round((progressIndex.value / totalCredentials.value) * 100)
@@ -167,7 +211,7 @@ async function startDecryption() {
             progressIndex.value = index
         }
 
-        await new Promise(resolve => setTimeout(resolve, 0))
+        await new Promise((resolve) => setTimeout(resolve, 0))
     }
 
     if (!cancelled.value) {
