@@ -9,13 +9,13 @@
             </p>
         </div>
 
-        <template v-if="loading && !credentials">
+        <template v-if="loading && !decryptionStarted">
             <div class="mb-4 rounded-md bg-gray-100 p-4 dark:bg-gray-700">
                 <p class="text-gray-600 dark:text-gray-400">Loading your credentials...</p>
             </div>
         </template>
 
-        <template v-else-if="credentials && !loading && progressIndex === 0">
+        <template v-else-if="credentials && !loading && !decryptionStarted">
             <div class="max-w-3xl">
                 <div class="mb-4 flex items-center gap-2 text-gray-600 dark:text-gray-400">
                     <span>You have {{ totalCredentials }} credential{{ totalCredentials === 1 ? '' : 's' }} in your vault.</span>
@@ -36,7 +36,7 @@
             </div>
         </template>
 
-        <div v-else-if="loading && progressIndex > 0" class="max-w-3xl">
+        <div v-else-if="loading && decryptionStarted" class="max-w-3xl">
             <div class="mb-2 flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
                 <span>Decrypting credentials…</span>
                 <span>{{ progressIndex }} of {{ totalCredentials }} decrypted</span>
@@ -87,7 +87,7 @@
             </div>
         </template>
 
-        <pwdsafe-alert v-else-if="credentials" theme="success" classes="max-w-3xl">
+        <pwdsafe-alert v-else-if="decryptionStarted" theme="success" classes="max-w-3xl">
             <strong>No credentials found!</strong> This means that your credentials all have different passwords.
         </pwdsafe-alert>
     </div>
@@ -109,6 +109,7 @@ const credentials = ref(null)
 const progressIndex = ref(0)
 const cancelled = ref(false)
 const hasCancelled = ref(false)
+const decryptionStarted = ref(false)
 
 const totalCredentials = computed(() => credentials.value ? credentials.value.length : 0)
 const progressPercentage = computed(() => {
@@ -139,6 +140,7 @@ async function startDecryption() {
     }
 
     hasCancelled.value = false
+    decryptionStarted.value = true
     loading.value = true
     progressIndex.value = 0
 
