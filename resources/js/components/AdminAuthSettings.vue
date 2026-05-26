@@ -2,6 +2,19 @@
     <form method="POST" action="/admin/settings/auth">
         <input type="hidden" name="_token" :value="csrf" />
 
+        <div
+            v-if="settings.env_ldap_override"
+            class="mb-6 max-w-2xl rounded border border-yellow-400 bg-yellow-50 p-4 text-sm text-yellow-800 dark:border-yellow-600 dark:bg-yellow-900/20 dark:text-yellow-300"
+        >
+            <p class="font-semibold">Environment variable override active</p>
+            <p class="mt-1">
+                The <code>USE_LDAP=true</code> environment variable is set, which forces LDAP
+                authentication regardless of the setting below. To manage authentication from this
+                interface, remove <code>USE_LDAP</code> from your environment and restart the
+                application.
+            </p>
+        </div>
+
         <div class="mb-6 max-w-2xl rounded bg-white p-4 shadow-md dark:bg-gray-700">
             <h2 class="mb-4 font-semibold">Authentication method</h2>
             <div class="space-y-3">

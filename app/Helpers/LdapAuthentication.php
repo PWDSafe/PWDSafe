@@ -27,6 +27,13 @@ class LdapAuthentication
         $bind = @ldap_bind($conn, $upn, $pass);
 
         if ($bind) {
+            // For OpenLDAP, a successful bind is sufficient proof of valid credentials.
+            // The sAMAccountName search below is AD-specific and would fail for regular
+            // OpenLDAP users who lack directory search permissions.
+            if (config('ldap.openldap')) {
+                return true;
+            }
+
             $s = ldap_search(
                 $conn,
                 config('ldap.basedn'),

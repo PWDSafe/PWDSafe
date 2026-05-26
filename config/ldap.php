@@ -2,6 +2,7 @@
 
 return [
     'enabled' => env('USE_LDAP', false),
+    'env_enabled' => env('USE_LDAP', false),
     'basedn' => env('AD_USERCONTAINER', ''),
     'domain' => env('AD_DOM', ''),
     'server' => env('AD_SRV', ''),

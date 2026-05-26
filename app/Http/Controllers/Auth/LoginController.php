@@ -150,8 +150,11 @@ class LoginController extends Controller
                 $user->vault_configured = false;
                 $user->auth_source = 'ldap';
                 $user->save();
-            } elseif (is_null($user->auth_source)) {
-                $user->auth_source = 'ldap';
+            } else {
+                if (is_null($user->auth_source)) {
+                    $user->auth_source = 'ldap';
+                }
+                $user->password = Hash::make($credentials['password']);
                 $user->save();
             }
 

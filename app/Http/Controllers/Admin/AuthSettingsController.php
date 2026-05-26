@@ -14,6 +14,7 @@ class AuthSettingsController extends Controller
     {
         $settings = [
             'auth_method' => SystemSetting::get('auth_method', 'internal'),
+            'env_ldap_override' => (bool) config('ldap.env_enabled'),
             'ldap_server' => SystemSetting::get('ldap_server', config('ldap.server')),
             'ldap_domain' => SystemSetting::get('ldap_domain', config('ldap.domain')),
             'ldap_base_dn' => SystemSetting::get('ldap_base_dn', config('ldap.basedn')),

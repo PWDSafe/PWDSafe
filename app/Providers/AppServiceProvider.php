@@ -46,12 +46,13 @@ class AppServiceProvider extends ServiceProvider
             $hasTable = false;
         }
         if ($hasTable) {
-            $authMethod = SystemSetting::get('auth_method', 'internal');
+            $dbAuthMethod = SystemSetting::get('auth_method', 'internal');
+            $authMethod = config('ldap.env_enabled') ? 'ldap' : $dbAuthMethod;
 
             config([
                 'app.auth_method' => $authMethod,
                 'app.registration_enabled' => (bool) SystemSetting::get('registration_enabled', true),
-                'ldap.enabled' => $authMethod === 'ldap',
+                'ldap.enabled' => config('ldap.enabled') || $authMethod === 'ldap',
                 'ldap.server' => SystemSetting::get('ldap_server', config('ldap.server')),
                 'ldap.domain' => SystemSetting::get('ldap_domain', config('ldap.domain')),
                 'ldap.basedn' => SystemSetting::get('ldap_base_dn', config('ldap.basedn')),

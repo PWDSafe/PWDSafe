@@ -43,9 +43,12 @@ class VaultController extends Controller
         // to the server secret, making it unpredictable without server access.
         $fakeSalt = hash_hmac('sha256', $email, config('app.key'));
 
+        // In LDAP mode the raw password must reach the server so it can be forwarded to
+        // the LDAP bind. Returning uses_login_hash=false makes the JS send the real password
+        // instead of a derived hash, while keeping the fake salt for enumeration protection.
         return response()->json([
             'salt' => $fakeSalt,
-            'uses_login_hash' => true,
+            'uses_login_hash' => !config('ldap.enabled'),
             'vault_configured' => true,
             'separate_vault_password' => false,
             'login_salt' => null,
