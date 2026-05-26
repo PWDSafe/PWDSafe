@@ -87,6 +87,31 @@ class RegisterAndLoginTest extends TestCase
             ->assertStatus(422);
     }
 
+    public function testRegisterButtonHiddenWhenRegistrationDisabled(): void
+    {
+        config(['app.registration_enabled' => false]);
+
+        $response = $this->get('/login');
+        $response->assertDontSee('href="/register"', false);
+    }
+
+    public function testRegisterButtonVisibleWhenRegistrationEnabled(): void
+    {
+        config(['app.registration_enabled' => true]);
+
+        $response = $this->get('/login');
+        $response->assertSee('href="/register"', false);
+    }
+
+    public function testRegisterRouteReturnsForbiddenWhenRegistrationDisabled(): void
+    {
+        config(['app.registration_enabled' => false]);
+
+        $this->get('/register')->assertForbidden();
+        $this->post('/register', $this->registrationPayload('new@email.com', 'password'))->assertForbidden();
+        $this->assertDatabaseMissing('users', ['email' => 'new@email.com']);
+    }
+
     public function testAjaxLoginWith2FaReturnsNeedsOtp(): void
     {
         $google2fa = new Google2FA();

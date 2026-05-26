@@ -84,7 +84,7 @@
                         </div>
                     </div>
                     <button class="btn-signin font-bold h-8 bg-gray-600 hover:bg-gray-700 dark:hover:bg-gray-800 w-full rounded text-white transition duration-150 ease-in-out" type="submit" id="login-submit">Sign in</button>
-                    @if (!config('ldap.enabled') && !$internalFallback)
+                    @if (!config('ldap.enabled') && config('app.registration_enabled') && !$internalFallback)
                         <a href="/register" class="block text-center py-1 font-bold h-8 bg-gray-600 hover:bg-gray-700 dark:hover:bg-gray-800 w-full rounded text-white mt-1 transition duration-150 ease-in-out">Register</a>
                     @endif
                 </form>

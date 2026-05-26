@@ -38,6 +38,11 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+        $this->middleware(function ($request, $next) {
+            abort_if(! config('app.registration_enabled', true), 403, 'Registration is disabled.');
+
+            return $next($request);
+        });
     }
 
     /**
