@@ -26,7 +26,7 @@ class VerifyOtpController extends Controller
     {
         if (
             session()->has('username') &&
-            (session()->has('vault_key') || session()->has('vault_unlocked')) &&
+            (session()->has('vault_key') || session()->has('vault_unlocked') || session()->has('vault_unlock_pending')) &&
             auth()->guest() &&
             $request->has('twofacode')
         ) {
@@ -43,8 +43,8 @@ class VerifyOtpController extends Controller
             }
         }
 
-        // Session has expired or was never set — missing username or vault key in session.
-        if (!session()->has('username') || (!session()->has('vault_key') && !session()->has('vault_unlocked'))) {
+        // Session has expired or was never set — missing username or vault state in session.
+        if (!session()->has('username') || (!session()->has('vault_key') && !session()->has('vault_unlocked') && !session()->has('vault_unlock_pending'))) {
             return redirect()
                 ->back()
                 ->withErrors(['session_expired' => true]);

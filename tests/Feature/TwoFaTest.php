@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Helpers\LdapAuthentication;
 use App\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use PragmaRX\Google2FAQRCode\Google2FA;
@@ -69,6 +70,38 @@ class TwoFaTest extends TestCase
             ->assertRedirect();
 
         $this->get('/securitycheck')->assertOk();
+    }
+
+    public function testLdapLoginWith2FaEnabled(): void
+    {
+        $google2fa = new Google2FA();
+        $secret = $google2fa->generateSecretKey();
+
+        $user = User::factory()->create([
+            'two_factor_secret' => encrypt($secret),
+            'separate_vault_password' => true,
+        ]);
+
+        config(['ldap.enabled' => true]);
+
+        $this->mock(LdapAuthentication::class, function ($mock) {
+            $mock->shouldReceive('login')->andReturn(true);
+        });
+
+        $this->post('/login', ['email' => $user->email, 'password' => 'testing123'])
+            ->assertRedirect('/verifyotp');
+
+        $this->get('/verifyotp')
+            ->assertOk();
+
+        // Wrong OTP should yield a twofacode error, not session_expired.
+        $this->post('/verifyotp', ['twofacode' => 'wrongcode'])
+            ->assertSessionHasErrors('twofacode');
+
+        // Correct OTP should succeed.
+        $this->post('/verifyotp', ['twofacode' => $google2fa->getCurrentOtp($secret)])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect();
     }
 
     public function testDisable2Fa(): void

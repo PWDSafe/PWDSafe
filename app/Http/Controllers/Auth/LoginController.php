@@ -58,6 +58,12 @@ class LoginController extends Controller
                 $user = auth()->user();
                 $vaultData = ['encrypted_privkey' => $user->privkey, 'salt' => $user->privkey_salt];
                 session()->put('username', $user->email);
+                // For users who unlock their vault client-side (LDAP Case 3, local Case 2),
+                // vault_key and vault_unlocked aren't set at login time — mark unlock as pending
+                // so VerifyOtpController can distinguish a valid session from an expired one.
+                if (!session()->has('vault_key') && !session()->has('vault_unlocked')) {
+                    session()->put('vault_unlock_pending', true);
+                }
                 auth()->logout();
 
                 if ($request->expectsJson()) {
