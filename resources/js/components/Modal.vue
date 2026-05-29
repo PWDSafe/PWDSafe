@@ -15,7 +15,7 @@
                 v-if="open"
             >
                 <div
-                    class="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0"
+                    class="flex min-h-screen items-end justify-center px-2 pt-4 pb-20 text-center sm:block sm:p-0"
                 >
                     <div class="fixed inset-0 transition-opacity">
                         <div
@@ -32,7 +32,7 @@
 
                     <div
                         v-if="open"
-                        class="relative inline-block overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6 sm:align-middle md:max-w-md dark:bg-gray-700"
+                        class="relative inline-block w-full overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left align-bottom shadow-xl transition-all sm:my-8 sm:max-w-sm sm:p-6 sm:align-middle md:max-w-md dark:bg-gray-700"
                         role="dialog"
                         aria-modal="true"
                         aria-labelledby="modal-headline"
