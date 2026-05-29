@@ -1,6 +1,7 @@
-@extends('layouts.master')
+@php $activeGroupId = $group->id; @endphp
+@extends('layouts.vault')
 @section('content')
-    <div class="container">
+    <div>
         <div class="bg-white dark:bg-gray-700 rounded-md shadow max-w-sm overflow-hidden">
             <form method="post">
                 <div class="px-8 py-4">

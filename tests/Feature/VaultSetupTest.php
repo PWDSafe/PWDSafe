@@ -101,7 +101,7 @@ class VaultSetupTest extends TestCase
         Auth::loginUsingId($user->id);
         $this->setupVaultSessionForUser($user, 'password');
 
-        $this->get('/groups')->assertOk();
+        $this->get('/groups')->assertRedirect();
     }
 
     public function testVaultSetupUpdatesLoginHashWhenProvided(): void

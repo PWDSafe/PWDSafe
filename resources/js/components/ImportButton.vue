@@ -1,5 +1,5 @@
 <template>
-    <pwdsafe-modal>
+    <pwdsafe-modal ref="modalRef">
         <template #trigger="{ openModal }">
             <pwdsafe-button theme="secondary" class="flex items-center" @click="open(openModal)">
                 <heroicons-arrow-up-on-square-icon class="h-5 w-5 mr-1"></heroicons-arrow-up-on-square-icon>
@@ -38,8 +38,17 @@ const props = defineProps({
     groupid: { type: Number, required: true },
 })
 
+const modalRef = ref(null)
 const fileInput = ref(null)
 const importing = ref(false)
+
+defineExpose({
+    openImport: () => {
+        error.value = ''
+        successMessage.value = ''
+        modalRef.value?.openModal()
+    },
+})
 const error = ref('')
 const successMessage = ref('')
 

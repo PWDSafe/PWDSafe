@@ -1,8 +1,14 @@
-@extends('layouts.master')
+@php $activeGroupId = isset($parentGroup) ? $parentGroup->id : null; @endphp
+@extends('layouts.vault')
 @section('content')
-<div class="container">
-    <form method="post" action="{{ route('groupCreate') }}" class="max-w-sm">
+<div>
+    <form method="post" action="{{ isset($parentGroup) ? route('groupSubCreate', $parentGroup) : route('groupCreate') }}" class="max-w-sm">
         @csrf
+        @if (isset($parentGroup))
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                Sub-group of: <a href="{{ route('group', $parentGroup) }}" class="text-indigo-600 dark:text-indigo-400 hover:underline">{{ $parentGroup->id === auth()->user()->primarygroup ? 'Private' : $parentGroup->name }}</a>
+            </p>
+        @endif
         <div class="form-group">
             <label for="groupname" class="block text-sm font-medium leading-5 text-gray-700 dark:text-gray-300 mb-1">Group name</label>
             <input
@@ -14,7 +20,7 @@
                 :autofocus="'autofocus'"
             >
         </div>
-        <pwdsafe-button type="submit" classes="mt-4">Create group</pwdsafe-button>
+        <pwdsafe-button type="submit" classes="mt-4">{{ isset($parentGroup) ? 'Create sub-group' : 'Create group' }}</pwdsafe-button>
     </form>
 </div>
 @endsection

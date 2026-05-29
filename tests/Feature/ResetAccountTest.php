@@ -59,7 +59,7 @@ class ResetAccountTest extends TestCase
 
         $this->get('/groups/' . $user->primarygroup)
             ->assertOk()
-            ->assertSee('No credentials!');
+            ->assertDontSee('testsite');
 
         Credential::addCredentials([
             'creds' => 'testsite',
@@ -71,13 +71,12 @@ class ResetAccountTest extends TestCase
 
         $this->get('/groups/' . $user->primarygroup)
             ->assertOk()
-            ->assertSee('testsite')
-            ->assertDontSee('No credentials!');
+            ->assertSee('testsite');
 
         $this->delete('/settings/resetaccount')->assertRedirect('/groups/' . $user->primarygroup);
 
         $this->get('/groups/' . $user->primarygroup)
             ->assertOk()
-            ->assertSee('No credentials!');
+            ->assertDontSee('testsite');
     }
 }

@@ -33,21 +33,9 @@ class GroupTest extends TestCase
         $this->assertDatabaseHas('groups', ['name' => 'testgroup']);
     }
 
-    public function testViewingEmptyGroupList(): void
+    public function testGroupsIndexRedirectsToPrimaryGroup(): void
     {
-        $this->get('/groups')->assertOk()->assertSee('You do not have any groups');
-    }
-
-    public function testViewingNonEmptyGroupList(): void
-    {
-        $group = new Group();
-        $group->name = 'testgroup';
-        $group->save();
-        auth()->user()->groups()->attach($group);
-        $this->get('/groups')
-            ->assertOk()
-            ->assertDontSee('You do not have any groups')
-            ->assertSee('testgroup');
+        $this->get('/groups')->assertRedirect(route('group', $this->user->primarygroup));
     }
 
     public function testVisitingCreate(): void
@@ -70,6 +58,177 @@ class GroupTest extends TestCase
         $this->delete('/groups/' . $group->id);
         $this->assertDatabaseMissing('groups', ['name' => 'testgroup']);
         $this->assertCount(1, $this->user->fresh()->groups);
+    }
+
+    public function testCreatingSubGroup(): void
+    {
+        $this->post('/groups/create', ['groupname' => 'parent']);
+        $parent = \App\Group::orderBy('id', 'desc')->first();
+
+        $this->get('/groups/' . $parent->id . '/subgroups/create')->assertOk()->assertSee('Sub-group of');
+
+        $this->post('/groups/' . $parent->id . '/subgroups/create', ['groupname' => 'child']);
+
+        $child = \App\Group::orderBy('id', 'desc')->first();
+        $this->assertEquals($parent->id, $child->parent_id);
+        $this->assertCount(3, $this->user->fresh()->groups);
+    }
+
+    public function testNonAdminCannotCreateSubGroup(): void
+    {
+        $this->post('/groups/create', ['groupname' => 'parent']);
+        $parent = \App\Group::orderBy('id', 'desc')->first();
+
+        \App\User::registerUser('second@email.com', 'password2');
+        $user2 = \App\User::where('email', 'second@email.com')->first();
+        $parent->users()->attach($user2, ['permission' => 'write']);
+
+        $this->actingAs($user2);
+        $this->get('/groups/' . $parent->id . '/subgroups/create')->assertForbidden();
+        $this->post('/groups/' . $parent->id . '/subgroups/create', ['groupname' => 'child'])->assertForbidden();
+    }
+
+    public function testDeletingGroupWithChildrenIsBlocked(): void
+    {
+        $this->post('/groups/create', ['groupname' => 'parent']);
+        $parent = \App\Group::orderBy('id', 'desc')->first();
+
+        $this->post('/groups/' . $parent->id . '/subgroups/create', ['groupname' => 'child']);
+
+        $this->delete('/groups/' . $parent->id)->assertForbidden();
+        $this->assertDatabaseHas('groups', ['name' => 'parent']);
+    }
+
+    public function testSubGroupAppearsInParentView(): void
+    {
+        $this->post('/groups/create', ['groupname' => 'parent']);
+        $parent = \App\Group::orderBy('id', 'desc')->first();
+
+        $this->post('/groups/' . $parent->id . '/subgroups/create', ['groupname' => 'child']);
+
+        $this->get('/groups/' . $parent->id)
+            ->assertOk()
+            ->assertSee('Sub-groups')
+            ->assertSee('child');
+    }
+
+    public function testBreadcrumbsForNestedGroup(): void
+    {
+        $this->post('/groups/create', ['groupname' => 'grandparent'])->assertRedirect();
+        $grandparent = \App\Group::orderBy('id', 'desc')->first();
+
+        $this->actingAs($this->user->fresh());
+        $this->post('/groups/' . $grandparent->id . '/subgroups/create', ['groupname' => 'parent'])->assertRedirect();
+        $parent = \App\Group::orderBy('id', 'desc')->first();
+
+        $this->actingAs($this->user->fresh());
+        $this->post('/groups/' . $parent->id . '/subgroups/create', ['groupname' => 'child'])->assertRedirect();
+        $child = \App\Group::orderBy('id', 'desc')->first();
+
+        // Refresh the user to clear stale groups cache before the view policy check
+        $this->actingAs($this->user->fresh());
+        $this->get('/groups/' . $child->id)
+            ->assertOk()
+            ->assertSee('grandparent')
+            ->assertSee('parent')
+            ->assertSee('child');
+    }
+
+    public function testCreatingSubGroupUnderPrivateGroup(): void
+    {
+        $privateGroup = \App\Group::find($this->user->primarygroup);
+
+        $this->get('/groups/' . $privateGroup->id . '/subgroups/create')
+            ->assertOk()
+            ->assertSee('Sub-group of')
+            ->assertSee('Private');
+
+        $this->post('/groups/' . $privateGroup->id . '/subgroups/create', ['groupname' => 'my folder']);
+
+        $child = \App\Group::orderBy('id', 'desc')->first();
+        $this->assertEquals($privateGroup->id, $child->parent_id);
+        $this->assertCount(2, $this->user->fresh()->groups);
+    }
+
+    public function testSubGroupAppearsInPrivateGroupView(): void
+    {
+        $privateGroup = \App\Group::find($this->user->primarygroup);
+
+        $this->post('/groups/' . $privateGroup->id . '/subgroups/create', ['groupname' => 'my folder']);
+
+        $this->get('/groups/' . $privateGroup->id)
+            ->assertOk()
+            ->assertSee('Sub-groups')
+            ->assertSee('my folder');
+    }
+
+    public function testBreadcrumbsForPrivateSubGroup(): void
+    {
+        $privateGroup = \App\Group::find($this->user->primarygroup);
+
+        $this->post('/groups/' . $privateGroup->id . '/subgroups/create', ['groupname' => 'my folder'])->assertRedirect();
+        $child = \App\Group::orderBy('id', 'desc')->first();
+
+        $this->actingAs($this->user->fresh());
+        $this->get('/groups/' . $child->id)
+            ->assertOk()
+            ->assertSee('Private')
+            ->assertSee('my folder');
+    }
+
+    public function testIsInPrivateTreeReturnsTrueForPrimaryGroup(): void
+    {
+        $privateGroup = \App\Group::find($this->user->primarygroup);
+        $this->assertTrue($privateGroup->isInPrivateTree($this->user));
+    }
+
+    public function testIsInPrivateTreeReturnsTrueForPrivateSubGroup(): void
+    {
+        $privateGroup = \App\Group::find($this->user->primarygroup);
+        $child = new Group();
+        $child->name = 'sub';
+        $child->parent_id = $privateGroup->id;
+        $child->save();
+
+        $this->assertTrue($child->isInPrivateTree($this->user));
+    }
+
+    public function testIsInPrivateTreeReturnsFalseForSharedGroup(): void
+    {
+        $shared = new Group();
+        $shared->name = 'shared';
+        $shared->save();
+        $this->user->groups()->attach($shared, ['permission' => 'admin']);
+
+        $this->assertFalse($shared->isInPrivateTree($this->user));
+    }
+
+    public function testManageMembersPolicyBlocksPrimaryGroup(): void
+    {
+        $privateGroup = \App\Group::find($this->user->primarygroup);
+        $this->assertFalse($this->user->can('manageMembers', $privateGroup));
+    }
+
+    public function testManageMembersPolicyBlocksPrivateSubGroupByDefault(): void
+    {
+        $privateGroup = \App\Group::find($this->user->primarygroup);
+        $child = new Group();
+        $child->name = 'sub';
+        $child->parent_id = $privateGroup->id;
+        $child->save();
+        $this->user->groups()->attach($child, ['permission' => 'admin']);
+
+        $this->assertFalse($this->user->fresh()->can('manageMembers', $child));
+    }
+
+    public function testManageMembersPolicyAllowsSharedGroup(): void
+    {
+        $shared = new Group();
+        $shared->name = 'shared';
+        $shared->save();
+        $this->user->groups()->attach($shared, ['permission' => 'admin']);
+
+        $this->assertTrue($this->user->fresh()->can('manageMembers', $shared));
     }
 
     public function testDeletingPrimaryGroup(): void

@@ -16,21 +16,7 @@
                 <div class="flex justify-between h-16">
                     <div class="flex px-2 lg:px-0">
                         <div class="flex-shrink-0 flex items-center">
-                            <a href="/">PWDSafe</a>
-                        </div>
-                        <div class="hidden lg:ml-6 lg:flex">
-                            <a href="{{ route('group', auth()->user()->primarygroup) }}"
-                               class="inline-flex items-center px-1 pt-1 border-b-2 {{ (request()->is('groups/' . auth()->user()->primarygroup)) ? 'border-indigo-500 text-gray-900 dark:text-gray-100' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300' }} text-sm font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out ml-8">
-                                Private
-                            </a>
-                            <a href="{{ route('groups') }}"
-                               class="inline-flex items-center px-1 pt-1 border-b-2 {{ (request()->is('groups')) ? 'border-indigo-500 text-gray-900 dark:text-gray-100' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300' }} text-sm font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out ml-8">
-                                Groups
-                            </a>
-                            <a href="{{ route('securitycheck') }}"
-                               class="inline-flex items-center px-1 pt-1 border-b-2 {{ (request()->is('securitycheck')) ? 'border-indigo-500 text-gray-900 dark:text-gray-100' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300' }} text-sm font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out ml-8">
-                                Security check
-                            </a>
+                            <a href="/" class="text-gray-800 dark:text-gray-100 font-semibold text-sm">PWDSafe</a>
                         </div>
                     </div>
                     <div class="flex-1 flex items-center justify-between px-2 lg:ml-6 lg:justify-end">
@@ -84,24 +70,6 @@
             </div>
 
             <div class="lg:hidden" :class="{'block': mobileMenuOpen, 'hidden': !mobileMenuOpen}">
-                <div class="pt-2 pb-3">
-                    <a href="{{ route('group', auth()->user()->primarygroup) }}"
-                       class="mt-1 block pl-3 pr-4 py-2 border-l-4 items-center px-1 pt-1 text-base font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-600 {{ request()->is('groups/' . auth()->user()->primarygroup) ? 'border-indigo-500 text-gray-900 dark:text-gray-200' : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200 hover:border-gray-300' }}">
-                        <span class="flex items-center justify-between">
-                            Private
-                        </span>
-                    </a>
-                    <a href="{{ route('groups') }}"
-                       class="mt-1 block pl-3 pr-4 py-2 border-l-4 items-center px-1 pt-1 text-base font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-600 {{ request()->is('groups') ? 'border-indigo-500 text-gray-900 dark:text-gray-200' : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200 hover:border-gray-300' }}">
-                        <span class="flex items-center justify-between">
-                            Groups
-                        </span>
-                    </a>
-                    <a href="{{ route('securitycheck') }}"
-                       class="mt-1 block pl-3 pr-4 py-2 border-l-4 items-center px-1 pt-1 text-base font-medium leading-5 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-600 {{ request()->is('securitycheck') ? 'border-indigo-500 text-gray-900 dark:text-gray-200' : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200 hover:border-gray-300' }}">
-                        Security check
-                    </a>
-                </div>
                 <div class="pt-4 pb-3 border-t border-gray-200 dark:border-gray-800">
                     <p class="pl-3 pr-4 pt-1 text-xs font-medium text-gray-400 dark:text-gray-500">Account</p>
                     <div class="mt-2">
@@ -135,6 +103,8 @@
     <div class="container mx-auto mt-4 px-4 sm:px-8 dark:text-gray-300">
         @yield('content')
     </div>
+        <toast></toast>
+        <vault-unlock-modal></vault-unlock-modal>
         @auth
             @if (!auth()->user()->warning_seen)
                 <warning-message :ldap="{{ config('ldap.enabled') ? 'true' : 'false' }}"></warning-message>

@@ -99,6 +99,6 @@ class VaultUnlockTest extends TestCase
         Auth::loginUsingId($user->id);
         session()->put('vault_unlocked', true);
 
-        $this->get('/groups')->assertOk();
+        $this->get('/groups')->assertRedirect();
     }
 }

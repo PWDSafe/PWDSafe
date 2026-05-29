@@ -17,13 +17,9 @@ use Illuminate\Routing\Redirector;
 
 class GroupController extends Controller
 {
-    public function index(): Factory|View|Application
+    public function index(): RedirectResponse
     {
-        $groups = auth()
-            ->user()
-            ->groups
-            ->filter(fn ($group) => $group->id !== auth()->user()->primarygroup);
-        return view('groups.index', compact('groups'));
+        return redirect()->route('group', auth()->user()->primarygroup);
     }
 
     public function show(Group $group): Factory|View|Application
@@ -35,12 +31,19 @@ class GroupController extends Controller
             ->orderBy('site')
             ->get();
 
-        return view('group', compact('group', 'credentials'));
+        $subGroups = $group->children()->withCount(['users', 'credentials', 'children'])->orderBy('name')->get();
+        $ancestors = $group->ancestors();
+
+        return view('group', compact('group', 'credentials', 'subGroups', 'ancestors'));
     }
 
-    public function create(): Factory|View|Application
+    public function create(?Group $group = null): Factory|View|Application
     {
-        return view('group.create');
+        if ($group !== null) {
+            $this->authorize('createSubGroup', $group);
+        }
+
+        return view('group.create', ['parentGroup' => $group]);
     }
 
     public function addCredential(Group $group): Factory|View|Application
@@ -87,21 +90,30 @@ class GroupController extends Controller
         ]);
     }
 
-    public function store(Request $request): Response|Redirector|RedirectResponse|Application|ResponseFactory
+    public function store(Request $request, ?Group $group = null): Response|Redirector|RedirectResponse|Application|ResponseFactory
     {
+        if ($group !== null) {
+            $this->authorize('createSubGroup', $group);
+        }
+
         $params = $request->validate([
-            'groupname' => 'required'
+            'groupname' => 'required',
         ]);
-        $group = Group::create(['name' => $params['groupname']]);
-        auth()->user()->groups()->attach($group);
+
+        $newGroup = Group::create([
+            'name' => $params['groupname'],
+            'parent_id' => $group?->id,
+        ]);
+
+        auth()->user()->groups()->attach($newGroup, ['permission' => 'admin']);
 
         if ($request->wantsJson()) {
             return response([
-                'status' => "OK",
-                "groupid" => $group->id
+                'status' => 'OK',
+                'groupid' => $newGroup->id,
             ]);
         }
 
-        return redirect()->route('group', $group->id);
+        return redirect()->route('group', $newGroup->id);
     }
 }

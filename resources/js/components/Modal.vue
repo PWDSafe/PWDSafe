@@ -71,7 +71,7 @@ const closeModal = function () {
     open.value = false
 }
 
-defineExpose({ closeModal })
+defineExpose({ closeModal, openModal })
 
 document.addEventListener('keydown', onEscape)
 

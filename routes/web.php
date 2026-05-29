@@ -19,6 +19,7 @@ use App\Http\Controllers\TwofaSettingsController;
 use App\Http\Controllers\Api\ExportController as ApiExportController;
 use App\Http\Controllers\Api\GroupMembersController as ApiGroupMembersController;
 use App\Http\Controllers\Api\SecurityCheckController as ApiSecurityCheckController;
+use App\Http\Controllers\Api\SidebarController;
 use App\Http\Controllers\Api\VaultController;
 use App\Http\Controllers\VaultSetupController;
 use App\Http\Controllers\VaultUnlockController;
@@ -51,6 +52,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/vault/setup', [VaultSetupController::class, 'show'])->name('vault.setup');
     Route::get('/vault/unlock', [VaultUnlockController::class, 'show'])->name('vault.unlock');
 
+    Route::get('/api/sidebar', [SidebarController::class, 'index'])->name('api.sidebar');
     Route::get('/api/groups/{group}/pubkeys', [GroupController::class, 'pubkeys']);
     Route::get('/api/groups/{group}/export-data', [ApiExportController::class, 'show']);
     Route::post('/api/groups/{group}/members/prepare', [ApiGroupMembersController::class, 'prepare']);
@@ -62,6 +64,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/groups', [GroupController::class, 'index'])->name('groups');
     Route::get('/groups/create', [GroupController::class, 'create'])->name('groupCreate');
     Route::post('/groups/create', [GroupController::class, 'store']);
+    Route::get('/groups/{group}/subgroups/create', [GroupController::class, 'create'])->name('groupSubCreate');
+    Route::post('/groups/{group}/subgroups/create', [GroupController::class, 'store']);
     Route::get('/groups/{group}', [GroupController::class, 'show'])->name('group');
     Route::delete('/groups/{group}', [GroupDeleteController::class, 'delete']);
     Route::get('/groups/{group}/add', [GroupController::class, 'addCredential'])->name('addCredentials');

@@ -1,5 +1,6 @@
 <template>
     <div
+        v-show="!headless"
         class="card space-between flex w-full max-w-lg flex-col overflow-hidden rounded-md bg-white shadow dark:bg-gray-700"
     >
         <div class="card-body flex-1 p-4">
@@ -20,6 +21,7 @@
                 <div class="flex gap-x-2">
                     <ShareModal :credential="credential" />
                     <pwdsafe-modal
+                        ref="modalRef"
                         v-on:modal-open="getPassword"
                         v-on:modal-close="resetData"
                     >
@@ -60,30 +62,60 @@
                                 />
                             </div>
                             <div class="mb-2">
-                                <div
-                                    class="mb-2 flex items-end justify-between"
-                                >
+                                <div class="mb-2 flex items-end justify-between">
                                     <pwdsafe-label for="password" class="mb-1">
                                         Password
                                     </pwdsafe-label>
                                     <pwdsafe-passwordgen
+                                        v-if="canUpdate"
                                         button-size="small"
-                                        @generated="
-                                            (event) => {
-                                                password = event
-                                            }
-                                        "
+                                        @generated="(event) => { password = event }"
                                     />
                                 </div>
-                                <textarea
-                                    v-model="password"
-                                    :disabled="!passwordLoaded"
-                                    :placeholder="
-                                        !passwordLoaded ? 'Loading...' : ''
-                                    "
-                                    rows="5"
-                                    class="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 leading-5 transition duration-150 ease-in-out placeholder:text-gray-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none focus:placeholder:text-gray-400 disabled:bg-gray-200 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:disabled:bg-gray-900"
-                                ></textarea>
+                                <div class="flex gap-x-2">
+                                    <!-- Masked input (default) -->
+                                    <input
+                                        v-if="!passwordVisible"
+                                        type="password"
+                                        :value="password"
+                                        :placeholder="!passwordLoaded ? 'Loading...' : ''"
+                                        readonly
+                                        class="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 leading-5 placeholder:text-gray-500 sm:text-sm transition duration-150 ease-in-out disabled:bg-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:disabled:bg-gray-900"
+                                    />
+                                    <!-- Visible textarea (for viewing/editing) -->
+                                    <textarea
+                                        v-else
+                                        v-model="password"
+                                        :disabled="!passwordLoaded"
+                                        :readonly="!canUpdate"
+                                        rows="4"
+                                        class="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 leading-5 placeholder:text-gray-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none sm:text-sm transition duration-150 ease-in-out disabled:bg-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:disabled:bg-gray-900"
+                                    ></textarea>
+                                    <!-- Copy + toggle buttons -->
+                                    <div class="flex flex-col gap-y-1 flex-shrink-0">
+                                        <pwdsafe-button
+                                            type="button"
+                                            theme="secondary"
+                                            size="small"
+                                            :disabled="!passwordLoaded"
+                                            @click="copyPasswordFromModal"
+                                            title="Copy password"
+                                        >
+                                            <ClipboardDocumentListIcon class="h-4 w-4" />
+                                        </pwdsafe-button>
+                                        <pwdsafe-button
+                                            type="button"
+                                            theme="secondary"
+                                            size="small"
+                                            :disabled="!passwordLoaded"
+                                            @click="passwordVisible = !passwordVisible"
+                                            :title="passwordVisible ? 'Hide password' : 'Show password'"
+                                        >
+                                            <EyeSlashIcon v-if="passwordVisible" class="h-4 w-4" />
+                                            <EyeIcon v-else class="h-4 w-4" />
+                                        </pwdsafe-button>
+                                    </div>
+                                </div>
                             </div>
                             <div class="mb-2">
                                 <pwdsafe-label for="notes" class="mb-1"
@@ -157,9 +189,11 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { toClipboard } from '@soerenmartius/vue3-clipboard'
-import { EyeIcon, ClipboardDocumentListIcon } from '@heroicons/vue/24/outline'
+import { EyeIcon, EyeSlashIcon, ClipboardDocumentListIcon } from '@heroicons/vue/24/outline'
 import ShareModal from './ShareModal.vue'
-import { loadPrivkey, decryptCredential, encryptCredentialV2 } from '../vault.js'
+import { decryptCredential, encryptCredentialV2 } from '../vault.js'
+import { showToast } from '../composables/useToast.js'
+import { ensurePrivkey } from '../composables/useVaultUnlock.js'
 
 const props = defineProps({
     credential: {
@@ -179,31 +213,55 @@ const props = defineProps({
     canUpdate: {
         type: Boolean,
     },
+    headless: {
+        type: Boolean,
+        default: false,
+    },
 })
+
+const modalRef = ref(null)
 const password = ref('')
 const passwordLoaded = ref(false)
+const passwordVisible = ref(false)
 const credentialint = reactive(props.credential)
 
 const getPassword = async function () {
-    const privkeyPem = loadPrivkey()
-    const response = await axios.get('/pwdfor/' + props.credential.id)
-    password.value = privkeyPem
-        ? await decryptCredential(response.data.data, privkeyPem)
-        : response.data.data
-    passwordLoaded.value = true
+    try {
+        const privkeyPem = await ensurePrivkey()
+        const response = await axios.get('/pwdfor/' + props.credential.id)
+        password.value = await decryptCredential(response.data.data, privkeyPem)
+        passwordLoaded.value = true
+    } catch {
+        modalRef.value?.closeModal()
+    }
 }
 const copyPwd = async function () {
-    const privkeyPem = loadPrivkey()
-    if (!privkeyPem) return
-    const response = await axios.get('/pwdfor/' + props.credential.id)
-    toClipboard(await decryptCredential(response.data.data, privkeyPem))
+    try {
+        const privkeyPem = await ensurePrivkey()
+        const response = await axios.get('/pwdfor/' + props.credential.id)
+        toClipboard(await decryptCredential(response.data.data, privkeyPem))
+        showToast('Copied!')
+    } catch {
+        // User cancelled unlock
+    }
+}
+const copyPasswordFromModal = function () {
+    if (password.value) {
+        toClipboard(password.value)
+        showToast('Copied!')
+    }
 }
 const resetData = function () {
     password.value = ''
     passwordLoaded.value = false
+    passwordVisible.value = false
 }
+defineExpose({
+    openModal: () => modalRef.value?.openModal(),
+    copyPwd,
+})
+
 const saveCredentials = async function () {
-    const privkeyPem = loadPrivkey()
     const groupId = credentialint.groupid
 
     const { data: pubkeysData } = await axios.get(`/api/groups/${groupId}/pubkeys`)

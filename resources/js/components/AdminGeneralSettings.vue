@@ -30,6 +30,34 @@
             </div>
         </div>
 
+        <div class="mb-6 max-w-2xl rounded bg-white p-4 shadow-md dark:bg-gray-700">
+            <h2 class="mb-4 font-semibold">Private groups</h2>
+            <div class="flex items-center gap-3">
+                <input
+                    type="hidden"
+                    name="private_groups_shareable"
+                    value="0"
+                />
+                <input
+                    id="private_groups_shareable"
+                    name="private_groups_shareable"
+                    type="checkbox"
+                    value="1"
+                    :checked="form.private_groups_shareable"
+                    class="h-4 w-4 rounded text-blue-600"
+                />
+                <div>
+                    <pwdsafe-label for="private_groups_shareable" class="mb-0">
+                        Allow sharing of private sub-groups
+                    </pwdsafe-label>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                        When enabled, sub-groups inside a user's private group can have their members managed.
+                        The primary private group itself is never shareable.
+                    </p>
+                </div>
+            </div>
+        </div>
+
         <div class="max-w-2xl">
             <pwdsafe-button type="submit">Save settings</pwdsafe-button>
         </div>
