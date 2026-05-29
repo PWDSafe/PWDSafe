@@ -19,6 +19,7 @@ use App\Http\Controllers\TwofaSettingsController;
 use App\Http\Controllers\Api\ExportController as ApiExportController;
 use App\Http\Controllers\Api\GroupMembersController as ApiGroupMembersController;
 use App\Http\Controllers\Api\SecurityCheckController as ApiSecurityCheckController;
+use App\Http\Controllers\Api\CredentialsController as ApiCredentialsController;
 use App\Http\Controllers\Api\SidebarController;
 use App\Http\Controllers\Api\VaultController;
 use App\Http\Controllers\VaultSetupController;
@@ -53,6 +54,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/vault/unlock', [VaultUnlockController::class, 'show'])->name('vault.unlock');
 
     Route::get('/api/sidebar', [SidebarController::class, 'index'])->name('api.sidebar');
+    Route::get('/api/groups/{group}/credentials', [ApiCredentialsController::class, 'index']);
     Route::get('/api/groups/{group}/pubkeys', [GroupController::class, 'pubkeys']);
     Route::get('/api/groups/{group}/export-data', [ApiExportController::class, 'show']);
     Route::post('/api/groups/{group}/members/prepare', [ApiGroupMembersController::class, 'prepare']);

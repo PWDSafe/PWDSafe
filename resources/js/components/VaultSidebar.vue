@@ -91,7 +91,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { ShieldCheckIcon } from '@heroicons/vue/24/outline'
 import { useCredentialDrop } from '../composables/useCredentialDrop.js'
 
@@ -112,7 +112,7 @@ const error = ref(false)
 const privateGroup = ref<SidebarNode | null>(null)
 const sharedGroups = ref<SidebarNode[]>([])
 
-onMounted(async () => {
+const loadSidebar = async () => {
     try {
         const response = await fetch('/api/sidebar', {
             headers: { 'X-Requested-With': 'XMLHttpRequest' },
@@ -126,6 +126,15 @@ onMounted(async () => {
     } finally {
         loading.value = false
     }
+}
+
+onMounted(() => {
+    loadSidebar()
+    window.addEventListener('credential-moved', loadSidebar)
+})
+
+onUnmounted(() => {
+    window.removeEventListener('credential-moved', loadSidebar)
 })
 
 const privateGroupId = computed(() => privateGroup.value?.id ?? 0)

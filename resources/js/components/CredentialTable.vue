@@ -1,6 +1,6 @@
 <template>
     <div>
-        <table v-if="credentials.length > 0" class="min-w-full">
+        <table v-if="localCredentials.length > 0" class="min-w-full">
             <thead>
                 <tr class="border-b border-gray-200 dark:border-gray-600">
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
@@ -22,7 +22,7 @@
             </thead>
             <tbody class="bg-white dark:bg-gray-700">
                 <tr
-                    v-for="(credential, index) in credentials"
+                    v-for="(credential, index) in localCredentials"
                     :key="credential.id"
                     draggable="true"
                     @dragstart="onDragStart(credential, $event)"
@@ -67,7 +67,7 @@
 
         <!-- Hidden CredentialCard instances for modal + copy access -->
         <credential-card
-            v-for="(credential, index) in credentials"
+            v-for="(credential, index) in localCredentials"
             :key="'cc-modal-' + credential.id"
             :ref="(el) => { if (el) credCardRefs[index] = el }"
             :credential="credential"
@@ -75,23 +75,39 @@
             :can-update="canUpdate"
             :headless="true"
             class="hidden"
+            @saved="refresh()"
         />
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+import axios from 'axios'
 import { EyeIcon } from '@heroicons/vue/24/outline'
 import ShareModal from './ShareModal.vue'
 
-defineProps<{
+const props = defineProps<{
     credentials: any[]
     groups: any[]
     canUpdate: boolean
     showGroupName?: boolean
+    groupId?: number
 }>()
 
+const localCredentials = ref([...props.credentials])
 const credCardRefs = ref<any[]>([])
+
+const refresh = async () => {
+    if (!props.groupId) { return }
+    credCardRefs.value = []
+    const { data } = await axios.get(`/api/groups/${props.groupId}/credentials`)
+    localCredentials.value = data
+}
+
+onMounted(() => window.addEventListener('credential-moved', refresh))
+onUnmounted(() => window.removeEventListener('credential-moved', refresh))
+
+defineExpose({ refresh })
 
 const editForRow = (index: number) => {
     credCardRefs.value[index]?.openModal()

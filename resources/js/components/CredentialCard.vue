@@ -195,6 +195,8 @@ import { decryptCredential, encryptCredentialV2 } from '../vault.js'
 import { showToast } from '../composables/useToast.js'
 import { ensurePrivkey } from '../composables/useVaultUnlock.js'
 
+const emit = defineEmits(['saved'])
+
 const props = defineProps({
     credential: {
         type: Object,
@@ -280,6 +282,7 @@ const saveCredentials = async function () {
         encrypted,
     })
 
-    window.location.reload()
+    modalRef.value?.closeModal()
+    emit('saved')
 }
 </script>

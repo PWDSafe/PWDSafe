@@ -69,7 +69,7 @@ export function useCredentialDrop(targetGroupId: MaybeRefOrGetter<number>) {
                 encrypted,
             })
 
-            window.location.reload()
+            window.dispatchEvent(new CustomEvent('credential-moved'))
         } catch (err: any) {
             if (err?.message !== 'cancelled') {
                 showToast('Failed to move credential')
