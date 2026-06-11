@@ -16,8 +16,11 @@ use App\Http\Controllers\ResetAccountController;
 use App\Http\Controllers\SecurityCheckController;
 use App\Http\Controllers\SharedCredentialController;
 use App\Http\Controllers\TwofaSettingsController;
+use App\Http\Controllers\Api\AuthController as ApiAuthController;
+use App\Http\Controllers\Api\CredentialSearchController;
 use App\Http\Controllers\Api\ExportController as ApiExportController;
 use App\Http\Controllers\Api\GroupMembersController as ApiGroupMembersController;
+use App\Http\Controllers\Api\GroupsController as ApiGroupsController;
 use App\Http\Controllers\Api\SecurityCheckController as ApiSecurityCheckController;
 use App\Http\Controllers\Api\CredentialsController as ApiCredentialsController;
 use App\Http\Controllers\Api\SidebarController;
@@ -42,25 +45,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
-    Route::prefix('api/vault')->group(function () {
-        Route::get('key-data', [VaultController::class, 'keyData']);
-        Route::post('recover', [VaultController::class, 'recover']);
-        Route::post('setup', [VaultController::class, 'setup']);
-        Route::post('confirm-unlock', [VaultController::class, 'confirmUnlock']);
-        Route::post('reset', [VaultController::class, 'reset']);
-    });
-
     Route::get('/vault/setup', [VaultSetupController::class, 'show'])->name('vault.setup');
     Route::get('/vault/unlock', [VaultUnlockController::class, 'show'])->name('vault.unlock');
-
-    Route::get('/api/sidebar', [SidebarController::class, 'index'])->name('api.sidebar');
-    Route::get('/api/groups/{group}/credentials', [ApiCredentialsController::class, 'index']);
-    Route::get('/api/groups/{group}/pubkeys', [GroupController::class, 'pubkeys']);
-    Route::get('/api/groups/{group}/export-data', [ApiExportController::class, 'show']);
-    Route::post('/api/groups/{group}/members/prepare', [ApiGroupMembersController::class, 'prepare']);
-    Route::post('/api/groups/{group}/members/confirm', [ApiGroupMembersController::class, 'confirm']);
-    Route::get('/api/securitycheck', [ApiSecurityCheckController::class, 'index']);
-    Route::get('/api/users/search', [UserSearchController::class, 'index']);
 
     Route::get('/', [PreLogonFirstPageCallback::class, 'index']);
     Route::get('/groups', [GroupController::class, 'index'])->name('groups');
@@ -124,6 +110,38 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::patch('/users/{user}/name', [AdminUsersController::class, 'updateName'])->name('admin.users.update-name');
     Route::delete('/users/{user}', [AdminUsersController::class, 'destroy'])->name('admin.users.destroy');
 });
+
+Route::middleware('auth:web,sanctum')->prefix('api')->group(function () {
+    Route::prefix('vault')->group(function () {
+        Route::get('key-data', [VaultController::class, 'keyData']);
+        Route::post('recover', [VaultController::class, 'recover']);
+        Route::post('setup', [VaultController::class, 'setup']);
+        Route::post('confirm-unlock', [VaultController::class, 'confirmUnlock']);
+        Route::post('reset', [VaultController::class, 'reset']);
+    });
+
+    Route::get('/sidebar', [SidebarController::class, 'index'])->name('api.sidebar');
+    Route::get('/groups', [ApiGroupsController::class, 'index']);
+    Route::post('/groups', [ApiGroupsController::class, 'store']);
+    Route::get('/groups/{group}/credentials', [ApiCredentialsController::class, 'index']);
+    Route::post('/groups/{group}/credentials', [ApiCredentialsController::class, 'store']);
+    Route::get('/groups/{group}/pubkeys', [GroupController::class, 'pubkeys']);
+    Route::get('/groups/{group}/export-data', [ApiExportController::class, 'show']);
+    Route::post('/groups/{group}/members/prepare', [ApiGroupMembersController::class, 'prepare']);
+    Route::post('/groups/{group}/members/confirm', [ApiGroupMembersController::class, 'confirm']);
+    Route::get('/securitycheck', [ApiSecurityCheckController::class, 'index']);
+    Route::get('/users/search', [UserSearchController::class, 'index']);
+
+    Route::get('/credentials/search', [CredentialSearchController::class, 'search']);
+    Route::get('/credentials/{credential}', [CredentialSearchController::class, 'show']);
+    Route::post('/credentials/{credential}/move', [ApiCredentialsController::class, 'move']);
+
+    Route::post('/auth/logout', [ApiAuthController::class, 'logout']);
+    Route::get('/auth/devices', [ApiAuthController::class, 'devices']);
+    Route::delete('/auth/devices/{tokenId}', [ApiAuthController::class, 'revokeDevice']);
+});
+
+Route::post('/api/auth/login', [ApiAuthController::class, 'login'])->middleware('throttle:10,1');
 
 Route::get('/api/vault/preflight', [VaultController::class, 'preflight']);
 

@@ -24,8 +24,11 @@ class Authenticate extends Middleware
 
     public function handle($request, Closure $next, ...$guards)
     {
-        if (auth()->check()) {
-            $user = auth()->user();
+        // These vault-state checks only apply to session-based (web) logins.
+        // Token-authenticated (Sanctum) clients manage their vault state entirely
+        // client-side and have no session to check.
+        if (auth('web')->check()) {
+            $user = auth('web')->user();
 
             if (!$user->isVaultConfigured()) {
                 if (!$request->expectsJson() && !$request->is('vault/setup') && !$request->is('api/vault/setup')) {
@@ -36,12 +39,11 @@ class Authenticate extends Middleware
                     return redirect()->route('vault.unlock');
                 }
             } elseif (!$user->hasSeparateVaultPassword() && !session()->has('vault_key') && !session()->has('password') && !session()->has('vault_unlocked')) {
-                auth()->logout();
+                auth('web')->logout();
                 return redirect('/');
             }
         }
 
-        // @phpstan-ignore-next-line
-        return parent::handle($request, $next, $guards);
+        return parent::handle($request, $next, ...$guards);
     }
 }

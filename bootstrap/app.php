@@ -19,6 +19,18 @@ return Application::configure()
             'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
         ]);
+
+        // Token-based clients (browser extension, CLI) authenticate with a
+        // Sanctum bearer token and carry no session cookie, so CSRF/origin
+        // verification does not apply to these routes.
+        $middleware->preventRequestForgery(except: [
+            'api/auth/login',
+            'api/auth/logout',
+            'api/auth/devices/*',
+            'api/groups',
+            'api/groups/*/credentials',
+            'api/credentials/*/move',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         Integration::handles($exceptions);
