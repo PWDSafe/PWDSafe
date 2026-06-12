@@ -1,0 +1,23 @@
+dn: cn=testuser,dc=pwsafe,dc=local
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: testuser
+sn: TestUser
+givenName: Test
+displayName: Test User
+mail: testuser@pwsafe.local
+userPassword: password123
+
+dn: cn=passworduser,dc=pwsafe,dc=local
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: passworduser
+sn: PasswordUser
+givenName: Password
+displayName: Password User
+mail: passworduser@pwsafe.local
+userPassword: testpassword

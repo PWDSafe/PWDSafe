@@ -23,6 +23,7 @@ services:
             - sail
         depends_on:
             - mysql
+            - ldap
     mysql:
         image: 'mysql/mysql-server:8.0'
         ports:
@@ -45,23 +46,45 @@ services:
             timeout: 5s
 
     pgsql:
-      image: 'postgres:14'
-      ports:
-        - '${FORWARD_DB_PORT:-5432}:5432'
-      environment:
-        PGPASSWORD: '${DB_PASSWORD:-secret}'
-        POSTGRES_DB: '${DB_DATABASE}'
-        POSTGRES_USER: '${DB_USERNAME}'
-        POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
-      volumes:
-        - 'sail-pgsql:/var/lib/postgresql/data'
-        - './vendor/laravel/sail/database/pgsql/create-testing-database.sql:/docker-entrypoint-initdb.d/10-create-testing-database.sql'
-      networks:
-        - sail
-      healthcheck:
-        test: [ "CMD", "pg_isready", "-q", "-d", "${DB_DATABASE}", "-U", "${DB_USERNAME}" ]
-        retries: 3
-        timeout: 5s
+        image: 'postgres:14'
+        ports:
+            - '${FORWARD_DB_PORT:-5432}:5432'
+        environment:
+            PGPASSWORD: '${DB_PASSWORD:-secret}'
+            POSTGRES_DB: '${DB_DATABASE}'
+            POSTGRES_USER: '${DB_USERNAME}'
+            POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
+        volumes:
+            - 'sail-pgsql:/var/lib/postgresql/data'
+            - './vendor/laravel/sail/database/pgsql/create-testing-database.sql:/docker-entrypoint-initdb.d/10-create-testing-database.sql'
+        networks:
+            - sail
+        healthcheck:
+            test: [ "CMD", "pg_isready", "-q", "-d", "${DB_DATABASE}", "-U", "${DB_USERNAME}" ]
+            retries: 3
+            timeout: 5s
+
+    ldap:
+        image: osixia/openldap:latest
+        container_name: openldap
+        environment:
+            LDAP_ORGANISATION: "PWDSafe"
+            LDAP_DOMAIN: "pwsafe.local"
+            LDAP_ADMIN_PASSWORD: "admin"
+            LDAP_TLS: "false"
+        ports:
+            - '1389:389'
+        volumes:
+            - 'sail-ldap:/var/lib/openldap/data'
+            # Uncomment to seed example users on first start. Only applied
+            # when the sail-ldap volume is empty, so if the container has
+            # already been started once, run `vendor/bin/sail down -v` first
+            # (this destroys all LDAP data, including any test data added
+            # afterwards).
+            # - './docker/ldap/init.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/init.ldif'
+        networks:
+            - sail
+        restart: unless-stopped
 networks:
     sail:
         driver: bridge
@@ -69,4 +92,6 @@ volumes:
     sail-mysql:
         driver: local
     sail-pgsql:
-      driver: local
+        driver: local
+    sail-ldap:
+        driver: local
