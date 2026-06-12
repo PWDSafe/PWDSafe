@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -169,23 +170,25 @@ class User extends Authenticatable
         string $privkeySalt,
         string $pubKey,
     ): void {
-        $group = new Group();
-        $group->name = $email;
-        $group->save();
+        DB::transaction(function () use ($email, $loginHash, $encryptedPrivKey, $privkeySalt, $pubKey) {
+            $group = new Group();
+            $group->name = $email;
+            $group->save();
 
-        $user = new User();
-        $user->email = $email;
-        $user->password = Hash::make($loginHash);
-        $user->pubkey = $pubKey;
-        $user->privkey = $encryptedPrivKey;
-        $user->privkey_salt = $privkeySalt;
-        $user->uses_login_hash = true;
-        $user->vault_configured = true;
-        $user->auth_source = 'local';
-        $user->primarygroup = $group->id;
-        $user->save();
+            $user = new User();
+            $user->email = $email;
+            $user->password = Hash::make($loginHash);
+            $user->pubkey = $pubKey;
+            $user->privkey = $encryptedPrivKey;
+            $user->privkey_salt = $privkeySalt;
+            $user->uses_login_hash = true;
+            $user->vault_configured = true;
+            $user->auth_source = 'local';
+            $user->primarygroup = $group->id;
+            $user->save();
 
-        $user->groups()->attach($group);
+            $user->groups()->attach($group);
+        });
     }
 
     public static function registerUser(string $username, string $password): void
@@ -197,21 +200,23 @@ class User extends Authenticatable
         $vaultKey = Encryption::deriveVaultKey($password, $salt);
         $encryptedPrivKey = $enc->encV2($privKey, $vaultKey);
 
-        $group = new Group();
-        $group->name = $username;
-        $group->save();
+        DB::transaction(function () use ($username, $password, $pubKey, $encryptedPrivKey, $salt) {
+            $group = new Group();
+            $group->name = $username;
+            $group->save();
 
-        $user = new User();
-        $user->email = $username;
-        $user->password = Hash::make($password);
-        $user->pubkey = $pubKey;
-        $user->privkey = $encryptedPrivKey;
-        $user->privkey_salt = $salt;
-        $user->vault_configured = true;
-        $user->primarygroup = $group->id;
-        $user->save();
+            $user = new User();
+            $user->email = $username;
+            $user->password = Hash::make($password);
+            $user->pubkey = $pubKey;
+            $user->privkey = $encryptedPrivKey;
+            $user->privkey_salt = $salt;
+            $user->vault_configured = true;
+            $user->primarygroup = $group->id;
+            $user->save();
 
-        $user->groups()->attach($group);
+            $user->groups()->attach($group);
+        });
     }
 
     /**
@@ -221,23 +226,25 @@ class User extends Authenticatable
      */
     public static function createPendingLocalUser(string $email, string $password, ?string $name = null): User
     {
-        $group = new Group();
-        $group->name = $email;
-        $group->save();
+        return DB::transaction(function () use ($email, $password, $name) {
+            $group = new Group();
+            $group->name = $email;
+            $group->save();
 
-        $user = new User();
-        $user->email = $email;
-        $user->name = $name;
-        $user->password = Hash::make($password);
-        $user->vault_configured = false;
-        $user->auth_source = 'local';
-        $user->uses_login_hash = false;
-        $user->primarygroup = $group->id;
-        $user->save();
+            $user = new User();
+            $user->email = $email;
+            $user->name = $name;
+            $user->password = Hash::make($password);
+            $user->vault_configured = false;
+            $user->auth_source = 'local';
+            $user->uses_login_hash = false;
+            $user->primarygroup = $group->id;
+            $user->save();
 
-        $user->groups()->attach($group);
+            $user->groups()->attach($group);
 
-        return $user;
+            return $user;
+        });
     }
 
     /** @return HasMany<SharedCredential, $this> */

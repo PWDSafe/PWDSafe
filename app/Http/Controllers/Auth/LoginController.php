@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use PragmaRX\Google2FAQRCode\Google2FA;
@@ -150,8 +151,12 @@ class LoginController extends Controller
 
             if (!$user) {
                 // Brand-new LDAP user: create without a vault (vault_configured stays false).
-                User::registerUser($credentials['email'], $credentials['password']);
-                $user = User::where('email', $credentials['email'])->first();
+                try {
+                    User::registerUser($credentials['email'], $credentials['password']);
+                } catch (UniqueConstraintViolationException) {
+                    $user = User::where('email', $credentials['email'])->first();
+                }
+                $user = $user ?? User::where('email', $credentials['email'])->first();
                 // Mark as not yet configured so middleware redirects to /vault/setup.
                 $user->vault_configured = false;
                 $user->auth_source = 'ldap';

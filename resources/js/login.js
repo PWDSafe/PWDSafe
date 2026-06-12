@@ -5,9 +5,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!form) return
 
     const errorEl = document.getElementById('js-login-error')
+    const submitBtn = document.getElementById('login-submit')
+    const spinner = document.getElementById('login-spinner')
+    const submitText = document.getElementById('login-submit-text')
+
+    const setLoading = (loading) => {
+        if (submitBtn) submitBtn.disabled = loading
+        if (spinner) spinner.classList.toggle('hidden', !loading)
+        if (submitText) submitText.textContent = loading ? 'Signing in…' : 'Sign in'
+    }
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault()
+
+        if (submitBtn?.disabled) return
+        setLoading(true)
 
         const email = form.querySelector('[name=email]').value
         const password = form.querySelector('[name=password]').value
@@ -80,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 input.style.borderColor = 'rgb(239, 68, 68)'
             }
             if (errorEl) errorEl.classList.remove('hidden')
+            setLoading(false)
             return
         }
 

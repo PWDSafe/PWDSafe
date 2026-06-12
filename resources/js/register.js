@@ -6,9 +6,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!form) return
 
     const statusEl = document.getElementById('register-status')
+    const spinner = document.getElementById('register-spinner')
+    const submitText = document.getElementById('register-submit-text')
 
     const setStatus = (msg) => {
         if (statusEl) statusEl.textContent = msg
+    }
+
+    const setLoading = (loading, submitBtn) => {
+        if (submitBtn) submitBtn.disabled = loading
+        if (spinner) spinner.classList.toggle('hidden', !loading)
+        if (submitText) submitText.textContent = loading ? 'Registering…' : 'Register'
     }
 
     form.addEventListener('submit', async (e) => {
@@ -39,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setStatus('Generating keys… this may take a few seconds.')
 
         const submitBtn = form.querySelector('[type=submit]')
-        if (submitBtn) submitBtn.disabled = true
+        setLoading(true, submitBtn)
 
         try {
             // Generate RSA 4096 key pair in the browser — server never sees the private key.
@@ -81,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
             form.submit()
         } catch (err) {
             setStatus('Key generation failed. Please try again.')
-            if (submitBtn) submitBtn.disabled = false
+            setLoading(false, submitBtn)
         }
     })
 })

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\User;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -70,13 +71,17 @@ class RegisterController extends Controller
      */
     protected function create(array $data): User
     {
-        User::registerFromClientData(
-            $data['email'],
-            $data['password'],
-            $data['encrypted_privkey'],
-            $data['privkey_salt'],
-            $data['pubkey'],
-        );
+        try {
+            User::registerFromClientData(
+                $data['email'],
+                $data['password'],
+                $data['encrypted_privkey'],
+                $data['privkey_salt'],
+                $data['pubkey'],
+            );
+        } catch (UniqueConstraintViolationException) {
+            // Another request beat us to registration — fetch existing user
+        }
 
         return User::where('email', $data['email'])->first();
     }
