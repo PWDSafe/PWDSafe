@@ -20,7 +20,7 @@ class GroupsController extends Controller
                 'id' => $group->id,
                 'name' => $group->name,
                 'parent_id' => $group->parent_id,
-                'permission' => $group->pivot->permission,
+                'permission' => $group->getRelationValue('pivot')->permission,
                 'is_primary' => $group->id === $user->primarygroup,
             ]);
 

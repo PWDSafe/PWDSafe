@@ -65,18 +65,14 @@ class AuthController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-        $token = $request->user()->currentAccessToken();
-
-        if ($token) {
-            $token->delete();
-        }
+        $request->user()->currentAccessToken()->delete();
 
         return response()->json(['status' => 'OK']);
     }
 
     public function devices(Request $request): JsonResponse
     {
-        $currentTokenId = $request->user()->currentAccessToken()?->id;
+        $currentTokenId = $request->user()->currentAccessToken()->id;
 
         $devices = $request->user()->tokens()
             ->orderByDesc('last_used_at')
