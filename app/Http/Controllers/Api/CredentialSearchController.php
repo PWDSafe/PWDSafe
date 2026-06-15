@@ -34,11 +34,12 @@ class CredentialSearchController extends Controller
         $credentials = Credential::with('group:id,name')
             ->whereIn('groupid', $groupIds)
             ->when($q !== '', fn ($query) => $query->where(function ($sub) use ($q) {
-                $sub->where('site', 'LIKE', "%{$q}%")
-                    ->orWhere('username', 'LIKE', "%{$q}%");
+                $sub->where('name', 'LIKE', "%{$q}%")
+                    ->orWhere('username', 'LIKE', "%{$q}%")
+                    ->orWhere('url', 'LIKE', "%{$q}%");
             }))
-            ->when($domain !== '', fn ($query) => $query->where('site', 'LIKE', "%{$domain}%"))
-            ->orderBy('site')
+            ->when($domain !== '', fn ($query) => $query->where('url', 'LIKE', "%{$domain}%"))
+            ->orderBy('name')
             ->limit(50)
             ->get();
 
@@ -55,7 +56,8 @@ class CredentialSearchController extends Controller
 
         return response()->json([
             'id' => $credential->id,
-            'site' => $credential->site,
+            'name' => $credential->name,
+            'url' => $credential->url,
             'username' => $credential->username,
             'notes' => $credential->notes,
             'groupid' => $credential->groupid,

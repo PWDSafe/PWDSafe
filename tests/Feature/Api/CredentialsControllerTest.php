@@ -28,20 +28,20 @@ class CredentialsControllerTest extends TestCase
         $group = Group::find($this->user->primarygroup);
 
         $response = $this->postJson("/api/groups/{$group->id}/credentials", [
-            'site' => 'GitHub',
+            'name' => 'GitHub',
             'user' => 'robin',
             'notes' => 'Work account',
             'encrypted' => $this->encryptedPayloadForUsers('secret', $this->user),
         ])->assertCreated();
 
-        $response->assertJsonStructure(['id', 'site', 'username', 'notes', 'groupid']);
-        $response->assertJsonPath('site', 'GitHub');
+        $response->assertJsonStructure(['id', 'name', 'url', 'username', 'notes', 'groupid']);
+        $response->assertJsonPath('name', 'GitHub');
         $response->assertJsonPath('username', 'robin');
         $response->assertJsonPath('groupid', $group->id);
 
-        $this->assertDatabaseHas('credentials', ['site' => 'GitHub', 'username' => 'robin', 'groupid' => $group->id]);
+        $this->assertDatabaseHas('credentials', ['name' => 'GitHub', 'username' => 'robin', 'groupid' => $group->id]);
 
-        $credential = Credential::where('site', 'GitHub')->firstOrFail();
+        $credential = Credential::where('name', 'GitHub')->firstOrFail();
         $this->assertDatabaseHas('encryptedcredentials', [
             'credentialid' => $credential->id,
             'userid' => $this->user->id,
@@ -53,13 +53,13 @@ class CredentialsControllerTest extends TestCase
         $group = Group::find($this->user->primarygroup);
 
         $response = $this->postJson("/api/groups/{$group->id}/credentials", [
-            'site' => 'GitHub',
+            'name' => 'GitHub',
             'user' => 'robin',
             'encrypted' => $this->encryptedPayloadForUsers('secret', $this->user),
         ])->assertCreated();
 
         $response->assertJsonPath('notes', null);
-        $this->assertDatabaseHas('credentials', ['site' => 'GitHub', 'notes' => null]);
+        $this->assertDatabaseHas('credentials', ['name' => 'GitHub', 'notes' => null]);
     }
 
     public function testStoreDeniedWithoutWritePermission(): void
@@ -68,13 +68,13 @@ class CredentialsControllerTest extends TestCase
         $this->user->groups()->attach($otherGroup, ['permission' => 'read']);
 
         $this->postJson("/api/groups/{$otherGroup->id}/credentials", [
-            'site' => 'GitLab',
+            'name' => 'GitLab',
             'user' => 'robin',
             'notes' => '',
             'encrypted' => $this->encryptedPayloadForUsers('secret', $this->user),
         ])->assertForbidden();
 
-        $this->assertDatabaseMissing('credentials', ['site' => 'GitLab']);
+        $this->assertDatabaseMissing('credentials', ['name' => 'GitLab']);
     }
 
     public function testStoreValidatesRequiredFields(): void
@@ -91,7 +91,7 @@ class CredentialsControllerTest extends TestCase
         $this->user->groups()->attach($destinationGroup, ['permission' => 'admin']);
 
         $response = $this->postJson("/api/groups/{$sourceGroup->id}/credentials", [
-            'site' => 'GitHub',
+            'name' => 'GitHub',
             'user' => 'robin',
             'notes' => 'Work account',
             'encrypted' => $this->encryptedPayloadForUsers('secret', $this->user),
@@ -104,8 +104,8 @@ class CredentialsControllerTest extends TestCase
             'encrypted' => $this->encryptedPayloadForUsers('secret', $this->user),
         ])->assertCreated();
 
-        $moveResponse->assertJsonStructure(['id', 'site', 'username', 'notes', 'groupid']);
-        $moveResponse->assertJsonPath('site', 'GitHub');
+        $moveResponse->assertJsonStructure(['id', 'name', 'url', 'username', 'notes', 'groupid']);
+        $moveResponse->assertJsonPath('name', 'GitHub');
         $moveResponse->assertJsonPath('username', 'robin');
         $moveResponse->assertJsonPath('notes', 'Work account');
         $moveResponse->assertJsonPath('groupid', $destinationGroup->id);
@@ -116,7 +116,7 @@ class CredentialsControllerTest extends TestCase
         $this->assertDatabaseMissing('encryptedcredentials', ['credentialid' => $credentialId]);
         $this->assertDatabaseHas('credentials', [
             'id' => $newCredentialId,
-            'site' => 'GitHub',
+            'name' => 'GitHub',
             'username' => 'robin',
             'groupid' => $destinationGroup->id,
         ]);
@@ -133,7 +133,7 @@ class CredentialsControllerTest extends TestCase
         $this->user->groups()->attach($destinationGroup, ['permission' => 'read']);
 
         $response = $this->postJson("/api/groups/{$sourceGroup->id}/credentials", [
-            'site' => 'GitHub',
+            'name' => 'GitHub',
             'user' => 'robin',
             'encrypted' => $this->encryptedPayloadForUsers('secret', $this->user),
         ])->assertCreated();
@@ -157,7 +157,7 @@ class CredentialsControllerTest extends TestCase
 
         $credential = Credential::create([
             'groupid' => $sourceGroup->id,
-            'site' => 'GitHub',
+            'name' => 'GitHub',
             'username' => 'robin',
         ]);
 
@@ -174,7 +174,7 @@ class CredentialsControllerTest extends TestCase
         $sourceGroup = Group::find($this->user->primarygroup);
 
         $response = $this->postJson("/api/groups/{$sourceGroup->id}/credentials", [
-            'site' => 'GitHub',
+            'name' => 'GitHub',
             'user' => 'robin',
             'encrypted' => $this->encryptedPayloadForUsers('secret', $this->user),
         ])->assertCreated();
@@ -194,7 +194,7 @@ class CredentialsControllerTest extends TestCase
         $sourceGroup = Group::find($this->user->primarygroup);
 
         $response = $this->postJson("/api/groups/{$sourceGroup->id}/credentials", [
-            'site' => 'GitHub',
+            'name' => 'GitHub',
             'user' => 'robin',
             'encrypted' => $this->encryptedPayloadForUsers('secret', $this->user),
         ])->assertCreated();

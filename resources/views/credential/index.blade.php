@@ -3,7 +3,7 @@
 @section('content')
     <div>
         <pwdsafe-alert theme="danger" classes="max-w-2xl mx-auto">
-            <p class="mb-4"><strong>Are you sure</strong> you wish to delete credential for "<strong>{{ $credential->site }}</strong>"?</p>
+            <p class="mb-4"><strong>Are you sure</strong> you wish to delete credential for "<strong>{{ $credential->name }}</strong>"?</p>
             <form method="post" action="{{ route('credential', $credential->id) }}">
                 @method('delete')
                 @csrf

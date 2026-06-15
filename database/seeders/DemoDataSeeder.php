@@ -76,7 +76,7 @@ class DemoDataSeeder extends Seeder
         DB::transaction(function () use ($enc, $users, $groupId, $site, $username, $password, $notes) {
             $credential = new Credential();
             $credential->groupid = $groupId;
-            $credential->site = $site;
+            $credential->name = $site;
             $credential->username = $username;
             $credential->notes = $notes;
             $credential->save();

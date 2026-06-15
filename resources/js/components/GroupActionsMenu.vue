@@ -153,7 +153,8 @@ const triggerExport = async () => {
 
         const rows = await Promise.all(
             credentials.map(async (cred: any) => ({
-                site: cred.site,
+                name: cred.name,
+                url: cred.url,
                 username: cred.username,
                 password: privkeyPem ? await decryptCredential(cred.data, privkeyPem) : cred.data,
                 notes: cred.notes,

@@ -48,7 +48,8 @@ class SharedCredentialController extends Controller
         $shared_credential = SharedCredential::create([
             'expire_at' => $attributes['expire_at'],
             'burn_after_read' => $attributes['burn_after_read'],
-            'site' => $credential->site,
+            'name' => $credential->name,
+            'url' => $credential->url,
             'username' => $credential->username,
             'notes' => $credential->notes,
             'secret' => $attributes['secret'],

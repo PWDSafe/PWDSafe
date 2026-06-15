@@ -33,12 +33,12 @@ class CredentialSearchTest extends TestCase
         $this->getJson('/api/credentials/search')->assertOk()->assertJson([]);
     }
 
-    public function testSearchFindsCredentialBySite(): void
+    public function testSearchFindsCredentialByName(): void
     {
         $this->loginTestUser();
 
         $this->post('/groups/' . $this->user->primarygroup . '/add', [
-            'site' => 'GitHub',
+            'name' => 'GitHub',
             'user' => 'robin',
             'notes' => '',
             'encrypted' => $this->encryptedPayloadForUsers('secret', $this->user),
@@ -47,15 +47,34 @@ class CredentialSearchTest extends TestCase
         $response = $this->getJson('/api/credentials/search?q=git')->assertOk();
 
         $response->assertJsonCount(1);
-        $response->assertJsonPath('0.site', 'GitHub');
+        $response->assertJsonPath('0.name', 'GitHub');
     }
 
-    public function testSearchByDomainMatchesSite(): void
+    public function testSearchFindsCredentialByUrl(): void
     {
         $this->loginTestUser();
 
         $this->post('/groups/' . $this->user->primarygroup . '/add', [
-            'site' => 'github.com',
+            'name' => 'Work GitHub',
+            'url' => 'github.com',
+            'user' => 'robin',
+            'notes' => '',
+            'encrypted' => $this->encryptedPayloadForUsers('secret', $this->user),
+        ]);
+
+        $response = $this->getJson('/api/credentials/search?q=github.com')->assertOk();
+
+        $response->assertJsonCount(1);
+        $response->assertJsonPath('0.name', 'Work GitHub');
+    }
+
+    public function testSearchByDomainMatchesUrlNotName(): void
+    {
+        $this->loginTestUser();
+
+        $this->post('/groups/' . $this->user->primarygroup . '/add', [
+            'name' => 'Work GitHub',
+            'url' => 'github.com',
             'user' => 'robin',
             'notes' => '',
             'encrypted' => $this->encryptedPayloadForUsers('secret', $this->user),
@@ -64,7 +83,10 @@ class CredentialSearchTest extends TestCase
         $response = $this->getJson('/api/credentials/search?domain=github.com')->assertOk();
 
         $response->assertJsonCount(1);
-        $response->assertJsonPath('0.site', 'github.com');
+        $response->assertJsonPath('0.name', 'Work GitHub');
+        $response->assertJsonPath('0.url', 'github.com');
+
+        $this->getJson('/api/credentials/search?domain=Work')->assertOk()->assertJson([]);
     }
 
     public function testSearchOnlyReturnsCredentialsFromAccessibleGroups(): void
@@ -81,7 +103,7 @@ class CredentialSearchTest extends TestCase
         $this->actingAs($otherUser);
         $this->setupVaultSessionForUser($otherUser, 'testing123');
         $this->post('/groups/' . $otherGroup->id . '/add', [
-            'site' => 'GitLab',
+            'name' => 'GitLab',
             'user' => 'other',
             'notes' => '',
             'encrypted' => $this->encryptedPayloadForUsers('secret', $otherUser),
@@ -97,7 +119,7 @@ class CredentialSearchTest extends TestCase
         $this->loginTestUser();
 
         $this->post('/groups/' . $this->user->primarygroup . '/add', [
-            'site' => 'GitHub',
+            'name' => 'GitHub',
             'user' => 'robin',
             'notes' => 'Work account',
             'encrypted' => $this->encryptedPayloadForUsers('secret', $this->user),
@@ -107,8 +129,8 @@ class CredentialSearchTest extends TestCase
 
         $response = $this->getJson('/api/credentials/' . $credentialId)->assertOk();
 
-        $response->assertJsonStructure(['id', 'site', 'username', 'notes', 'groupid', 'data']);
-        $response->assertJsonPath('site', 'GitHub');
+        $response->assertJsonStructure(['id', 'name', 'url', 'username', 'notes', 'groupid', 'data']);
+        $response->assertJsonPath('name', 'GitHub');
     }
 
     public function testShowDeniesAccessToCredentialInOtherGroup(): void
@@ -125,12 +147,12 @@ class CredentialSearchTest extends TestCase
         $this->actingAs($otherUser);
         $this->setupVaultSessionForUser($otherUser, 'testing123');
         $this->post('/groups/' . $otherGroup->id . '/add', [
-            'site' => 'GitLab',
+            'name' => 'GitLab',
             'user' => 'other',
             'notes' => '',
             'encrypted' => $this->encryptedPayloadForUsers('secret', $otherUser),
         ]);
-        $credentialId = \App\Credential::where('site', 'GitLab')->firstOrFail()->id;
+        $credentialId = \App\Credential::where('name', 'GitLab')->firstOrFail()->id;
 
         $this->loginTestUser();
 

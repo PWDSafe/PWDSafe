@@ -20,7 +20,8 @@ class PasswordForController extends Controller
             'status' => 'OK',
             'data' => $pwd->data,
             'user' => $credential->username,
-            'site' => $credential->site,
+            'name' => $credential->name,
+            'url' => $credential->url,
             'notes' => $credential->notes,
             'groupid' => $credential->groupid
         ]);

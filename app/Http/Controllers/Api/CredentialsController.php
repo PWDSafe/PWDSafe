@@ -19,7 +19,7 @@ class CredentialsController extends Controller
         return response()->json(
             Credential::with('group:id,name')
                 ->where('groupid', $group->id)
-                ->orderBy('site')
+                ->orderBy('name')
                 ->get()
         );
     }
@@ -30,7 +30,8 @@ class CredentialsController extends Controller
 
         $credential = Credential::create([
             'groupid' => $group->id,
-            'site' => $params['site'],
+            'name' => $params['name'],
+            'url' => $params['url'] ?? null,
             'username' => $params['user'],
             'notes' => $params['notes'] ?? null,
         ]);
@@ -55,7 +56,8 @@ class CredentialsController extends Controller
 
         $newCredential = Credential::create([
             'groupid' => $destination->id,
-            'site' => $credential->site,
+            'name' => $credential->name,
+            'url' => $credential->url,
             'username' => $credential->username,
             'notes' => $credential->notes,
         ]);

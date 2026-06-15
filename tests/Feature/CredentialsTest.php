@@ -27,7 +27,7 @@ class CredentialsTest extends TestCase
     {
         $this->get("/groups/{$this->user->primarygroup}/add")->assertSee('<add-credentials-form', false);
         $this->addTestCredential();
-        $this->assertDatabaseHas('credentials', ['site' => 'Some site']);
+        $this->assertDatabaseHas('credentials', ['name' => 'Some site']);
         $credential = Credential::first();
         $this->assertDatabaseHas('encryptedcredentials', ['credentialid' => $credential->id, 'userid' => $this->user->id]);
 
@@ -37,7 +37,7 @@ class CredentialsTest extends TestCase
     public function testUpdatingCredentials(): void
     {
         $this->addTestCredential();
-        $this->assertDatabaseHas('credentials', ['site' => 'Some site']);
+        $this->assertDatabaseHas('credentials', ['name' => 'Some site']);
         $credential = Credential::first();
         $this->assertDatabaseHas('encryptedcredentials', ['credentialid' => $credential->id, 'userid' => $this->user->id]);
 
@@ -50,7 +50,7 @@ class CredentialsTest extends TestCase
             'encrypted' => $this->encryptedPayloadForUsers($currentPassword, $this->user),
         ]);
 
-        $this->assertDatabaseHas('credentials', ['site' => 'New site']);
+        $this->assertDatabaseHas('credentials', ['name' => 'New site']);
         $this->assertCount(1, Credential::all());
 
         $newpassword = 'Some other password';
@@ -83,25 +83,25 @@ class CredentialsTest extends TestCase
         ])->assertOk();
         $credential = Credential::first();
         $this->assertEquals($group->id, $credential->groupid);
-        $this->assertEquals('New site', $credential->site);
+        $this->assertEquals('New site', $credential->name);
     }
 
     public function testRemovingCredentials(): void
     {
         $this->json('POST', "/groups/{$this->user->primarygroup}/add", [
-            'site' => 'Some site',
+            'name' => 'Some site',
             'user' => 'The username',
             'notes' => 'Notes',
             'encrypted' => $this->encryptedPayloadForUsers('The super secret password', $this->user),
         ]);
 
-        $this->assertDatabaseHas('credentials', ['site' => 'Some site']);
+        $this->assertDatabaseHas('credentials', ['name' => 'Some site']);
         $credential = Credential::first();
 
         $this->get('/credential/' . $credential->id)->assertSee('Are you sure');
 
         $this->delete('/credential/' . $credential->id);
-        $this->assertDatabaseMissing('credentials', ['site' => 'Some site']);
+        $this->assertDatabaseMissing('credentials', ['name' => 'Some site']);
     }
 
     private function getPassword(Credential $credential): string
@@ -119,7 +119,7 @@ class CredentialsTest extends TestCase
 
         $response = $this->getJson('/pwdfor/' . $credential->id)
             ->assertOk()
-            ->assertJsonStructure(['status', 'data', 'user', 'site', 'notes', 'groupid'])
+            ->assertJsonStructure(['status', 'data', 'user', 'name', 'url', 'notes', 'groupid'])
             ->assertJsonMissing(['pwd'])
             ->json();
 
@@ -131,7 +131,7 @@ class CredentialsTest extends TestCase
     private function addTestCredential(): void
     {
         $this->post('/groups/' . $this->user->primarygroup . '/add', [
-            'site' => 'Some site',
+            'name' => 'Some site',
             'user' => 'The username',
             'notes' => 'Notes',
             'encrypted' => $this->encryptedPayloadForUsers('The super secret password', $this->user),

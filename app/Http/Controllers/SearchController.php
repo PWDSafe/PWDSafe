@@ -19,8 +19,9 @@ class SearchController extends Eloquent
         $credentials = Credential::with('group:id,name')
             ->whereIn('groupid', $groups)
             ->where(function ($query) use ($search) {
-                $query->where('site', 'like', '%' . $search . '%')
+                $query->where('name', 'like', '%' . $search . '%')
                     ->orWhere('username', 'like', '%' . $search . '%')
+                    ->orWhere('url', 'like', '%' . $search . '%')
                     ->orWhere('notes', 'like', '%' . $search . '%');
             })
             ->get();

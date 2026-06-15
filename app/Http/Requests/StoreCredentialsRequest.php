@@ -24,7 +24,8 @@ class StoreCredentialsRequest extends FormRequest
     public function rules()
     {
         return [
-            'site' => 'required',
+            'name' => 'required',
+            'url' => 'nullable|string',
             'user' => 'required',
             'notes' => 'nullable',
             'encrypted' => 'required|array|min:1',

@@ -29,13 +29,14 @@ class ImportTest extends TestCase
             'group' => $this->user->primarygroup,
             'credentials' => [
                 [
-                    'site' => 'Some site',
+                    'name' => 'Some site',
+                    'url' => 'https://example.com',
                     'username' => 'A username',
                     'notes' => 'And some notes',
                     'encrypted' => $this->encryptedPayloadForUsers('A password', $this->user),
                 ],
                 [
-                    'site' => 'Second site',
+                    'name' => 'Second site',
                     'username' => 'the@user.com',
                     'notes' => '',
                     'encrypted' => $this->encryptedPayloadForUsers('StrangeP@ssW0rd!', $this->user),
@@ -46,6 +47,8 @@ class ImportTest extends TestCase
             ->assertJson(['count' => 2]);
 
         $this->assertCount(2, Credential::all());
+        $this->assertDatabaseHas('credentials', ['name' => 'Some site', 'url' => 'https://example.com']);
+        $this->assertDatabaseHas('credentials', ['name' => 'Second site', 'url' => null]);
     }
 
     public function testImportingSkipsMalformedRowsClientSide(): void
@@ -71,7 +74,7 @@ class ImportTest extends TestCase
             'group' => $otherUser->primarygroup,
             'credentials' => [
                 [
-                    'site' => 'Test',
+                    'name' => 'Test',
                     'username' => 'user',
                     'notes' => '',
                     'encrypted' => $this->encryptedPayloadForUsers('secret', $this->user),
@@ -85,7 +88,7 @@ class ImportTest extends TestCase
         $this->postJson('/import', [
             'group' => $this->user->primarygroup,
             'credentials' => [
-                ['site' => 'Missing username and encrypted'],
+                ['name' => 'Missing username and encrypted'],
             ],
         ])->assertUnprocessable();
     }

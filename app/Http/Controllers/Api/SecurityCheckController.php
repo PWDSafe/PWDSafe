@@ -17,7 +17,7 @@ class SecurityCheckController extends Controller
     {
         if (DB::connection()->getDriverName() === 'mysql') {
             $sql = "SELECT CASE WHEN `groups`.id = users.primarygroup THEN 'Private' ELSE `groups`.name END AS groupname,
-                        `groups`.id AS groupid, credentials.id, credentials.site, credentials.username, credentials.notes, encryptedcredentials.data FROM credentials
+                        `groups`.id AS groupid, credentials.id, credentials.name, credentials.username, credentials.notes, encryptedcredentials.data FROM credentials
                         INNER JOIN `groups` ON credentials.groupid = `groups`.id
                         INNER JOIN usergroups ON `groups`.id = usergroups.groupid
                         INNER JOIN users ON usergroups.userid = users.id
@@ -25,7 +25,7 @@ class SecurityCheckController extends Controller
                         WHERE users.id = :userid AND encryptedcredentials.userid = users.id";
         } else {
             $sql = "SELECT CASE WHEN \"groups\".id = users.primarygroup THEN 'Private' ELSE \"groups\".name END AS groupname,
-                        \"groups\".id AS groupid, credentials.id, credentials.site, credentials.username, credentials.notes, encryptedcredentials.data FROM credentials
+                        \"groups\".id AS groupid, credentials.id, credentials.name, credentials.username, credentials.notes, encryptedcredentials.data FROM credentials
                         INNER JOIN \"groups\" ON credentials.groupid = \"groups\".id
                         INNER JOIN usergroups ON \"groups\".id = usergroups.groupid
                         INNER JOIN users ON usergroups.userid = users.id
@@ -37,7 +37,7 @@ class SecurityCheckController extends Controller
 
         return response(array_map(fn ($row) => [
             'id' => $row->id,
-            'site' => $row->site,
+            'name' => $row->name,
             'username' => $row->username,
             'notes' => $row->notes,
             'groupname' => $row->groupname,

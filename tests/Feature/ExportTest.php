@@ -47,7 +47,7 @@ class ExportTest extends TestCase
             ->json();
 
         $this->assertCount(1, $response);
-        $this->assertEquals('a test site', $response[0]['site']);
+        $this->assertEquals('a test site', $response[0]['name']);
         $this->assertEquals('myusername', $response[0]['username']);
 
         $decrypted = $encryption->decWithPriv($response[0]['data'], $user->fresh()->decryptPrivkey());

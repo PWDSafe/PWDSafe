@@ -4,7 +4,7 @@
             <thead>
                 <tr class="border-b border-gray-200 dark:border-gray-600">
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                        Site
+                        Name
                     </th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
                         Username
@@ -30,7 +30,16 @@
                     @click="editForRow(index)"
                 >
                     <td class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">
-                        {{ credential.site }}
+                        {{ credential.name }}
+                        <div v-if="credential.url" class="text-xs font-normal">
+                            <a
+                                :href="normalizeUrl(credential.url)"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="text-gray-500 hover:text-indigo-500 hover:underline dark:text-gray-400 dark:hover:text-indigo-300"
+                                @click.stop
+                            >{{ credential.url }}</a>
+                        </div>
                     </td>
                     <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
                         {{ credential.username }}
@@ -85,6 +94,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import axios from 'axios'
 import { EyeIcon } from '@heroicons/vue/24/outline'
 import ShareModal from './ShareModal.vue'
+import { normalizeUrl } from '../utils/url.js'
 
 const props = defineProps<{
     credentials: any[]
@@ -122,7 +132,8 @@ const onDragStart = (credential: any, event: DragEvent) => {
     event.dataTransfer!.setData('application/json', JSON.stringify({
         credentialId: credential.id,
         sourceGroupId: credential.groupid,
-        site: credential.site,
+        name: credential.name,
+        url: credential.url,
         username: credential.username,
         notes: credential.notes ?? '',
     }))

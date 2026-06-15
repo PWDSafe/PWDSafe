@@ -24,7 +24,8 @@ class Credential extends Eloquent
     {
         $credential = new Credential();
         $credential->groupid = $params['currentgroupid'];
-        $credential->site = $params['creds'];
+        $credential->name = $params['creds'];
+        $credential->url = $params['credurl'] ?? null;
         $credential->username = $params['credu'];
         $credential->notes = $params['credn'];
         $credential->save();
@@ -43,7 +44,8 @@ class Credential extends Eloquent
      */
     public static function updateCredentials(Credential $credential, array $params): void
     {
-        $credential->site = $params['creds'];
+        $credential->name = $params['creds'];
+        $credential->url = $params['credurl'] ?? null;
         $credential->username = $params['credu'];
         $credential->notes = $params['credn'] ?? null;
         $credential->save();

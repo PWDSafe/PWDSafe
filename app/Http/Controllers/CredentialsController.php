@@ -27,6 +27,7 @@ class CredentialsController extends Controller
         $this->authorize('update', $credential);
         $params = $request->validate([
             'creds' => 'required',
+            'credurl' => 'nullable|string',
             'credu' => 'required',
             'currentgroupid' => 'required',
             'credn' => 'nullable',

@@ -17,10 +17,18 @@
                 <div class='flex flex-col gap-4'>
                     <div>
                         <pwdsafe-label>
-                            Site
+                            Name
                         </pwdsafe-label>
-                        <pwdsafe-input value='{{ $credential->site }}' readonly></pwdsafe-input>
+                        <pwdsafe-input value='{{ $credential->name }}' readonly></pwdsafe-input>
                     </div>
+                    @if ($credential->url)
+                        <div>
+                            <pwdsafe-label>
+                                URL
+                            </pwdsafe-label>
+                            <pwdsafe-input value='{{ $credential->url }}' readonly></pwdsafe-input>
+                        </div>
+                    @endif
                     <div>
                         <pwdsafe-label>
                             Username

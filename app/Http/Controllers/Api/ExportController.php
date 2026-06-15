@@ -23,7 +23,8 @@ class ExportController extends Controller
 
         return response($credentials->map(fn ($credential) => [
             'id' => $credential->id,
-            'site' => $credential->site,
+            'name' => $credential->name,
+            'url' => $credential->url,
             'username' => $credential->username,
             'notes' => $credential->notes,
             'data' => $credential->encryptedcredentials[0]->data,

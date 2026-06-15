@@ -36,14 +36,14 @@ class SearchTest extends TestCase
     public function testSearchingOneItem(): void
     {
         $this->post("/groups/{$this->user->primarygroup}/add", [
-            'site' => 'Site1',
+            'name' => 'Site1',
             'user' => 'The username',
             'notes' => 'Some notes here',
             'encrypted' => $this->encryptedPayloadForUsers('The super secret password', $this->user),
         ]);
 
         $this->post("/groups/{$this->user->primarygroup}/add", [
-            'site' => 'Site2',
+            'name' => 'Site2',
             'user' => 'The username',
             'notes' => 'No notes here',
             'encrypted' => $this->encryptedPayloadForUsers('The super secret password', $this->user),

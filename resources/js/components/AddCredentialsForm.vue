@@ -4,14 +4,23 @@
             <h3 class="mb-4 text-2xl">Add credentials</h3>
             <div class="mb-4">
                 <div class="mb-2">
-                    <pwdsafe-label class="mb-1" for="site">Site</pwdsafe-label>
+                    <pwdsafe-label class="mb-1" for="name">Name</pwdsafe-label>
                     <pwdsafe-input
                         type="text"
-                        v-model="site"
-                        id="site"
+                        v-model="name"
+                        id="name"
                         autocomplete="off"
                         required
                         autofocus
+                    ></pwdsafe-input>
+                </div>
+                <div class="mb-2">
+                    <pwdsafe-label class="mb-1" for="url">URL</pwdsafe-label>
+                    <pwdsafe-input
+                        type="text"
+                        v-model="url"
+                        id="url"
+                        autocomplete="off"
                     ></pwdsafe-input>
                 </div>
                 <div class="mb-2">
@@ -61,7 +70,8 @@ const props = defineProps({
     },
 })
 
-const site = ref('')
+const name = ref('')
+const url = ref('')
 const user = ref('')
 const password = ref('')
 const notes = ref('')
@@ -83,7 +93,8 @@ const handleSubmit = async () => {
         )
 
         await axios.post(`/groups/${props.groupid}/add`, {
-            site: site.value,
+            name: name.value,
+            url: url.value || null,
             user: user.value,
             notes: notes.value,
             encrypted,

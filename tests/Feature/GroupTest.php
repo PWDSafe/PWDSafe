@@ -286,7 +286,7 @@ class GroupTest extends TestCase
         $group = \App\Group::orderBy('id', 'desc')->first();
 
         $this->post("/groups/{$group->id}/add", [
-            'site' => 'Some site',
+            'name' => 'Some site',
             'user' => 'The username',
             'notes' => 'Notes',
             'encrypted' => $this->encryptedPayloadForUsers('The super secret password', $this->user),

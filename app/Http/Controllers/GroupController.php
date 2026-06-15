@@ -28,7 +28,7 @@ class GroupController extends Controller
 
         $credentials = Credential::with('group:id,name')
             ->where('groupid', $group->id)
-            ->orderBy('site')
+            ->orderBy('name')
             ->get();
 
         $subGroups = $group->children()->withCount(['users', 'credentials', 'children'])->orderBy('name')->get();
@@ -58,7 +58,8 @@ class GroupController extends Controller
 
         $credential = Credential::create([
             'groupid' => $group->id,
-            'site' => $params['site'],
+            'name' => $params['name'],
+            'url' => $params['url'] ?? null,
             'username' => $params['user'],
             'notes' => $params['notes'],
         ]);

@@ -36,14 +36,14 @@ class SecurityCheckTest extends TestCase
     public function testApiReturnsCredentialsForDecryption(): void
     {
         $this->post("/groups/{$this->user->primarygroup}/add", [
-            'site' => 'Site1',
+            'name' => 'Site1',
             'user' => 'The username',
             'notes' => '',
             'encrypted' => $this->encryptedPayloadForUsers('password123', $this->user),
         ]);
 
         $this->post("/groups/{$this->user->primarygroup}/add", [
-            'site' => 'Site2',
+            'name' => 'Site2',
             'user' => 'The username',
             'notes' => '',
             'encrypted' => $this->encryptedPayloadForUsers('different_password', $this->user),
@@ -68,14 +68,14 @@ class SecurityCheckTest extends TestCase
     public function testApiReturnsBothCredentialsWithSamePassword(): void
     {
         $this->post("/groups/{$this->user->primarygroup}/add", [
-            'site' => 'Site1',
+            'name' => 'Site1',
             'user' => 'The username',
             'notes' => '',
             'encrypted' => $this->encryptedPayloadForUsers('shared_password', $this->user),
         ]);
 
         $this->post("/groups/{$this->user->primarygroup}/add", [
-            'site' => 'Site2',
+            'name' => 'Site2',
             'user' => 'The username',
             'notes' => '',
             'encrypted' => $this->encryptedPayloadForUsers('shared_password', $this->user),

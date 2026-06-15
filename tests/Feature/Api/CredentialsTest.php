@@ -36,7 +36,7 @@ class CredentialsTest extends TestCase
         $this->loginTestUser();
 
         $this->post('/groups/' . $this->user->primarygroup . '/add', [
-            'site' => 'GitHub',
+            'name' => 'GitHub',
             'user' => 'robin',
             'notes' => 'Work account',
             'encrypted' => $this->encryptedPayloadForUsers('secret', $this->user),
@@ -45,10 +45,10 @@ class CredentialsTest extends TestCase
         $response = $this->getJson('/api/groups/' . $this->user->primarygroup . '/credentials')->assertOk();
 
         $response->assertJsonCount(1);
-        $response->assertJsonPath('0.site', 'GitHub');
+        $response->assertJsonPath('0.name', 'GitHub');
         $response->assertJsonPath('0.username', 'robin');
         $response->assertJsonPath('0.groupid', $this->user->primarygroup);
-        $response->assertJsonStructure([['id', 'site', 'username', 'notes', 'groupid', 'group' => ['id', 'name']]]);
+        $response->assertJsonStructure([['id', 'name', 'url', 'username', 'notes', 'groupid', 'group' => ['id', 'name']]]);
     }
 
     public function testReturnsEmptyArrayForGroupWithNoCredentials(): void
@@ -72,13 +72,13 @@ class CredentialsTest extends TestCase
         $this->getJson('/api/groups/' . $otherGroup->id . '/credentials')->assertForbidden();
     }
 
-    public function testCredentialsAreOrderedBySite(): void
+    public function testCredentialsAreOrderedByName(): void
     {
         $this->loginTestUser();
 
         foreach (['Zebra', 'Apple', 'Mango'] as $site) {
             $this->post('/groups/' . $this->user->primarygroup . '/add', [
-                'site' => $site,
+                'name' => $site,
                 'user' => 'user',
                 'notes' => '',
                 'encrypted' => $this->encryptedPayloadForUsers('secret', $this->user),
@@ -87,7 +87,7 @@ class CredentialsTest extends TestCase
 
         $response = $this->getJson('/api/groups/' . $this->user->primarygroup . '/credentials')->assertOk();
 
-        $sites = array_column($response->json(), 'site');
-        $this->assertEquals(['Apple', 'Mango', 'Zebra'], $sites);
+        $names = array_column($response->json(), 'name');
+        $this->assertEquals(['Apple', 'Mango', 'Zebra'], $names);
     }
 }

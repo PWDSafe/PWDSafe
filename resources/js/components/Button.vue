@@ -2,7 +2,7 @@
     <component
         :is="attrs['href'] ? 'a' : 'button'"
         :class="[
-            'rounded border transition duration-200',
+            'rounded border transition duration-200 disabled:pointer-events-none disabled:opacity-50',
             colors[props.theme],
             props.classes,
             sizeclasses[props.size],

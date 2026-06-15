@@ -10,9 +10,10 @@
         <h3 class="text-2xl mb-4">Import credentials</h3>
         <p>Import a JSON file containing an array with the following fields:</p>
         <ul class="ml-10 list-disc my-2">
-            <li>site</li>
+            <li>name</li>
             <li>username</li>
             <li>password</li>
+            <li>url <em>(optional)</em></li>
             <li>notes <em>(optional)</em></li>
         </ul>
         <p class="text-red-500 mb-4">Warning: Malformed rows will be skipped.</p>
@@ -80,14 +81,15 @@ const handleImport = async () => {
             return
         }
 
-        const valid = rows.filter((r) => r.site && r.username && r.password)
+        const valid = rows.filter((r) => r.name && r.username && r.password)
         const skipped = rows.length - valid.length
 
         const { data: pubkeysData } = await axios.get(`/api/groups/${props.groupid}/pubkeys`)
 
         const credentials = await Promise.all(
             valid.map(async (row) => ({
-                site: row.site,
+                name: row.name,
+                url: row.url ?? null,
                 username: row.username,
                 notes: row.notes ?? '',
                 encrypted: await Promise.all(

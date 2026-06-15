@@ -13,7 +13,8 @@ class ImportController extends Controller
         $validated = $request->validate([
             'group' => 'required|integer',
             'credentials' => 'present|array',
-            'credentials.*.site' => 'required|string',
+            'credentials.*.name' => 'required|string',
+            'credentials.*.url' => 'nullable|string',
             'credentials.*.username' => 'required|string',
             'credentials.*.notes' => 'nullable|string',
             'credentials.*.encrypted' => 'required|array',
@@ -27,7 +28,8 @@ class ImportController extends Controller
 
         foreach ($validated['credentials'] as $row) {
             Credential::addCredentials([
-                'creds' => $row['site'],
+                'creds' => $row['name'],
+                'credurl' => $row['url'] ?? null,
                 'credu' => $row['username'],
                 'credn' => $row['notes'] ?? '',
                 'encrypted' => $row['encrypted'],

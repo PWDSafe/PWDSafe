@@ -12,7 +12,7 @@
         >
             <h2 class="text-xl">Share credential</h2>
             <div class="mt-4 rounded bg-gray-600 px-4 py-2 shadow">
-                <h5 class="text-lg">{{ credential.site }}</h5>
+                <h5 class="text-lg">{{ credential.name }}</h5>
                 <h6 class="mb-2 text-gray-700 dark:text-gray-300">
                     {{ credential.username }}
                 </h6>

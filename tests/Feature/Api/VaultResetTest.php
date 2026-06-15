@@ -21,7 +21,7 @@ class VaultResetTest extends TestCase
         $user = $this->createAndLoginUser();
         $user = $user->fresh();
 
-        Credential::create(['groupid' => $user->primarygroup, 'site' => 'example.com', 'username' => 'u', 'notes' => '']);
+        Credential::create(['groupid' => $user->primarygroup, 'name' => 'example.com', 'url' => 'example.com', 'username' => 'u', 'notes' => '']);
 
         $this->assertNotNull($user->privkey);
         $this->assertNotNull($user->privkey_salt);

@@ -33,7 +33,7 @@ class ChangePasswordTest extends TestCase
 
         $user = \App\User::firstOrFail();
         $this->post("/groups/{$user->primarygroup}/add", [
-            'site' => 'Site1',
+            'name' => 'Site1',
             'user' => 'The username',
             'notes' => 'Some notes here',
             'encrypted' => $this->encryptedPayloadForUsers('The super secret password', $user),

@@ -4,7 +4,7 @@
         class="card space-between flex w-full max-w-lg flex-col overflow-hidden rounded-md bg-white shadow dark:bg-gray-700"
     >
         <div class="card-body flex-1 p-4">
-            <h5 class="text-xl">{{ credential.site }}</h5>
+            <h5 class="text-xl">{{ credential.name }}</h5>
             <h6 class="mb-2 text-gray-700 dark:text-gray-300">
                 {{ credential.username }}
             </h6>
@@ -19,6 +19,16 @@
                     <span v-else>&nbsp;</span>
                 </div>
                 <div class="flex gap-x-2">
+                    <pwdsafe-button
+                        v-if="visitUrl"
+                        theme="secondary"
+                        :href="visitUrl"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Visit site"
+                    >
+                        <ArrowTopRightOnSquareIcon class="h-5 w-5"></ArrowTopRightOnSquareIcon>
+                    </pwdsafe-button>
                     <ShareModal :credential="credential" />
                     <pwdsafe-modal
                         ref="modalRef"
@@ -42,14 +52,36 @@
                         >
                             <input type="hidden" name="_method" value="put" />
                             <div class="mb-2">
-                                <pwdsafe-label for="site" class="mb-1"
-                                    >Site</pwdsafe-label
+                                <pwdsafe-label for="name" class="mb-1"
+                                    >Name</pwdsafe-label
                                 >
                                 <pwdsafe-input
-                                    name="site"
-                                    id="site"
-                                    v-model="credentialint.site"
+                                    name="name"
+                                    id="name"
+                                    v-model="credentialint.name"
                                 />
+                            </div>
+                            <div class="mb-2">
+                                <pwdsafe-label for="url" class="mb-1"
+                                    >URL</pwdsafe-label
+                                >
+                                <div class="flex gap-x-2">
+                                    <pwdsafe-input
+                                        name="url"
+                                        id="url"
+                                        v-model="credentialint.url"
+                                    />
+                                    <pwdsafe-button
+                                        v-if="visitUrl"
+                                        theme="secondary"
+                                        :href="visitUrl"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        title="Visit site"
+                                    >
+                                        <ArrowTopRightOnSquareIcon class="h-5 w-5"></ArrowTopRightOnSquareIcon>
+                                    </pwdsafe-button>
+                                </div>
                             </div>
                             <div class="mb-2">
                                 <pwdsafe-label for="username" class="mb-1"
@@ -187,13 +219,14 @@
     </div>
 </template>
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { toClipboard } from '@soerenmartius/vue3-clipboard'
-import { EyeIcon, EyeSlashIcon, ClipboardDocumentListIcon } from '@heroicons/vue/24/outline'
+import { EyeIcon, EyeSlashIcon, ClipboardDocumentListIcon, ArrowTopRightOnSquareIcon } from '@heroicons/vue/24/outline'
 import ShareModal from './ShareModal.vue'
 import { decryptCredential, encryptCredentialV2 } from '../vault.js'
 import { showToast } from '../composables/useToast.js'
 import { ensurePrivkey } from '../composables/useVaultUnlock.js'
+import { normalizeUrl } from '../utils/url.js'
 
 const emit = defineEmits(['saved'])
 
@@ -226,6 +259,8 @@ const password = ref('')
 const passwordLoaded = ref(false)
 const passwordVisible = ref(false)
 const credentialint = reactive(props.credential)
+
+const visitUrl = computed(() => normalizeUrl(credentialint.url))
 
 const getPassword = async function () {
     try {
@@ -275,7 +310,8 @@ const saveCredentials = async function () {
     )
 
     await axios.put('/credential/' + props.credential.id, {
-        creds: credentialint.site,
+        creds: credentialint.name,
+        credurl: credentialint.url,
         credu: credentialint.username,
         credn: credentialint.notes,
         currentgroupid: groupId,

@@ -7,7 +7,8 @@ import { showToast } from './useToast.js'
 interface DropPayload {
     credentialId: number
     sourceGroupId: number
-    site: string
+    name: string
+    url: string | null
     username: string
     notes: string
 }
@@ -62,7 +63,8 @@ export function useCredentialDrop(targetGroupId: MaybeRefOrGetter<number>) {
             )
 
             await axios.put(`/credential/${data.credentialId}`, {
-                creds: data.site,
+                creds: data.name,
+                credurl: data.url,
                 credu: data.username,
                 credn: data.notes,
                 currentgroupid: groupId,
