@@ -46,6 +46,23 @@ class AuthControllerTest extends TestCase
         ])->assertStatus(401);
     }
 
+    public function testLoginAcceptsNonEmailUsername(): void
+    {
+        User::registerUser('robin', 'password');
+
+        $response = $this->postJson('/api/auth/login', [
+            'email' => 'robin',
+            'password' => 'password',
+            'device_name' => 'CLI on workstation',
+        ])->assertOk();
+
+        $response->assertJsonStructure([
+            'token',
+            'user' => ['id', 'email', 'primarygroup', 'uses_login_hash', 'separate_vault_password'],
+            'vault_data' => ['encrypted_privkey', 'salt', 'pubkey'],
+        ]);
+    }
+
     public function testLoginFailsForUnknownEmail(): void
     {
         $this->postJson('/api/auth/login', [
