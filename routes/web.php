@@ -59,6 +59,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/groups/{group}/add', [GroupController::class, 'addCredential'])->name('addCredentials');
     Route::post('/groups/{group}/add', [GroupController::class, 'storeCredential']);
     Route::get('/groups/{group}/members', [ManageGroupMembersController::class, 'index'])->name('groupManageMembers');
+    Route::get('/groups/{group}/members/{user}/delete', [ManageGroupMembersController::class, 'confirmRemove'])->name('memberDeleteConfirm');
     Route::post('/groups/{group}/members', [ManageGroupMembersController::class, 'store']);
     Route::delete('/groups/{group}/members', [ManageGroupMembersController::class, 'destroy']);
     Route::patch('/groups/{group}/members/{user}', [ManageGroupMembersController::class, 'update']);

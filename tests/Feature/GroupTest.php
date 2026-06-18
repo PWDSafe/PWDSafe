@@ -351,6 +351,23 @@ class GroupTest extends TestCase
         ])->assertStatus(422);
     }
 
+    public function testMemberRemovalConfirmation(): void
+    {
+        $this->post('/groups/create', ['groupname' => 'testgroup']);
+
+        $group = \App\Group::orderBy('id', 'desc')->first();
+        $user2 = \App\User::registerUser('second@email.com', 'password');
+
+        $group->users()->attach($user2, ['permission' => 'read']);
+        $response = $this->get('/groups/' . $group->id . '/members/' . $user2->id . '/delete');
+
+        $response->assertOk();
+        $response->assertSee('Are you sure');
+
+        $this->delete('/groups/' . $group->id . '/members', ['userid' => $user2->id]);
+        $this->assertFalse($group->fresh()->users->contains($user2));
+    }
+
     public function testUnsharingGroup(): void
     {
         $this->post('/groups/create', [

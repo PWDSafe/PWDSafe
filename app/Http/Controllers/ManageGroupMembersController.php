@@ -16,6 +16,12 @@ use Illuminate\Validation\Rule;
 
 class ManageGroupMembersController extends Controller
 {
+    public function confirmRemove(Group $group, User $user)
+    {
+        $this->authorize('administer', $group);
+        return view('group.member-delete', compact('group', 'user'));
+    }
+
     public function index(Group $group): Factory|View|Application
     {
         $this->authorize('administer', $group);
@@ -33,7 +39,7 @@ class ManageGroupMembersController extends Controller
         Encryptedcredential::whereIn('credentialid', $group->credentials()->pluck('id'))->where('userid', $data['userid'])->delete();
         User::find($data['userid'])->groups()->detach($group);
 
-        return redirect()->back();
+        return redirect()->route('groupManageMembers', ['group' => $group])->with('success', 'Group member successfully removed.');
     }
 
     public function update(Request $request, Group $group, User $user): Response|Application|ResponseFactory

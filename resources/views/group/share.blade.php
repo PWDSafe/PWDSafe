@@ -44,12 +44,9 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">
                                             @if (!auth()->user()->is($user))
-                                                <form method="post">
-                                                    @csrf
-                                                    @method('delete')
-                                                    <input type="hidden" name="userid" value="{{ $user->id }}">
-                                                    <pwdsafe-button theme="danger" type="submit">Remove</pwdsafe-button>
-                                                </form>
+                                                <a href="{{ route('memberDeleteConfirm', ['group' => $group, 'user' => $user]) }}" class="inline-block">
+                                                    <pwdsafe-button theme="danger" type="button">Remove</pwdsafe-button>
+                                                </a>
                                             @endif
                                         </td>
                                     </tr>
