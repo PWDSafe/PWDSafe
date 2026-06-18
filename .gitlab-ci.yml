@@ -22,17 +22,34 @@ composer:
     paths:
       - vendor/
 
+npm:
+  image: $BUILDIMAGE
+  variables:
+    npm_config_cache: .npm
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - .npm/
+  script:
+    - npm ci --no-audit --no-fund --prefer-offline --loglevel=error
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - node_modules/
+
 test:
   image: $BUILDIMAGE
   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
   script:
     - cp -n .env.example .env
-    - npm ci --prefer-offline --no-audit --progress=false --no-fund
     - npm run build
     - php artisan key:generate
     - XDEBUG_MODE=coverage php artisan test --parallel --coverage-text --log-junit junit-report.xml --coverage-cobertura cobertura-report.xml
   needs:
     - composer
+    - npm
   artifacts:
     when: always
     expire_in: 1month
@@ -46,38 +63,36 @@ test:
         coverage_format: cobertura
         path: cobertura-report.xml
 
-security-check-composer:
+.analysis:
   image: $BUILDIMAGE
   stage: analysis
   needs:
     - composer
+
+security-check-composer:
+  extends: .analysis
   variables:
     GIT_DEPTH: 1
   script:
     - COMPOSER_AUDIT_ABANDONED=ignore composer audit
 
 static analysis:
-  image: $BUILDIMAGE
-  stage: analysis
-  needs:
-    - composer
+  extends: .analysis
   script:
     - ./vendor/bin/phpstan analyse
 
 code style:
-  image: $BUILDIMAGE
-  stage: analysis
+  extends: .analysis
   needs:
     - composer
+    - npm
   script:
     - ./vendor/bin/pint --test
-    - npm run lint
+    - npm run format:check
 
-build docker:
+.docker:
   image: docker:29.0
   stage: docker
-  needs:
-    - test
   cache: []
   services:
     - name: docker:29.0-dind
@@ -87,32 +102,55 @@ build docker:
     DOCKER_HOST: "tcp://docker:2375"
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ''
-  script:
+    DOCKER_BUILDKIT: 1
+  before_script:
     - if [ "$CI_COMMIT_REF_NAME" = "master" ]; then TAGNAME="latest"; else TAGNAME="$CI_COMMIT_REF_NAME-latest"; fi
     - if [ $CI_COMMIT_TAG ]; then TAGNAME=$CI_COMMIT_TAG ; fi
     - echo $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
-    - docker build -f Dockerfile -t $CI_REGISTRY_IMAGE:$TAGNAME .
-    - docker push $CI_REGISTRY_IMAGE:$TAGNAME
 
-deploy docker:
-  image: docker:29.0
-  stage: deploy
+# Builds a single-arch image with a registry-backed BuildKit layer cache.
+# Each arch keeps its own shared `buildcache-$ARCH` tag so unchanged layers are
+# pulled instead of rebuilt across pipelines. $ARCH is set by the concrete jobs.
+.build_docker:
+  extends: .docker
+  needs:
+    - test
+  script:
+    - docker build -f Dockerfile
+        --build-arg BUILDKIT_INLINE_CACHE=1
+        --cache-from $CI_REGISTRY_IMAGE:buildcache-$ARCH
+        -t $CI_REGISTRY_IMAGE:$TAGNAME-$ARCH
+        -t $CI_REGISTRY_IMAGE:buildcache-$ARCH .
+    - docker push $CI_REGISTRY_IMAGE:$TAGNAME-$ARCH
+    - docker push $CI_REGISTRY_IMAGE:buildcache-$ARCH
+
+build docker:
+  extends: .build_docker
+  variables:
+    ARCH: amd64
+
+build docker arm:
+  extends: .build_docker
+  tags:
+    - arm
+  variables:
+    ARCH: arm64
+
+manifest docker:
+  extends: .docker
   needs:
     - build docker
+    - build docker arm
+  script:
+    - docker buildx imagetools create -t $CI_REGISTRY_IMAGE:$TAGNAME $CI_REGISTRY_IMAGE:$TAGNAME-amd64 $CI_REGISTRY_IMAGE:$TAGNAME-arm64
+
+deploy docker:
+  extends: .docker
+  stage: deploy
+  needs:
+    - manifest docker
   only:
     - tags
-  cache: []
-  services:
-    - name: docker:29.0-dind
-      alias: docker
-      command: ["--tls=false"]
-  variables:
-    DOCKER_HOST: "tcp://docker:2375"
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ''
   script:
-    - echo $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
-    - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
     - echo $DOCKER_ACCESS_TOKEN | docker login -u $DOCKER_USERNAME --password-stdin
-    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG pwdsafe/pwdsafe:$CI_COMMIT_TAG
-    - docker push pwdsafe/pwdsafe:$CI_COMMIT_TAG
+    - docker buildx imagetools create -t pwdsafe/pwdsafe:$CI_COMMIT_TAG $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
