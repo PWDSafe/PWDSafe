@@ -356,7 +356,8 @@ class GroupTest extends TestCase
         $this->post('/groups/create', ['groupname' => 'testgroup']);
 
         $group = \App\Group::orderBy('id', 'desc')->first();
-        $user2 = \App\User::registerUser('second@email.com', 'password');
+        \App\User::registerUser('second@email.com', 'password');
+        $user2 = \App\User::where('email', 'second@email.com')->first();
 
         $group->users()->attach($user2, ['permission' => 'read']);
         $response = $this->get('/groups/' . $group->id . '/members/' . $user2->id . '/delete');
