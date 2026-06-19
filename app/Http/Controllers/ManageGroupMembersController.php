@@ -12,13 +12,18 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class ManageGroupMembersController extends Controller
 {
-    public function confirmRemove(Group $group, User $user)
+    public function confirmRemove(Group $group, User $user): RedirectResponse|View
     {
         $this->authorize('administer', $group);
+        if (Auth::user()->is($user)) {
+            abort(403, 'You cannot remove yourself from this group.');
+        }
+
         return view('group.member-delete', compact('group', 'user'));
     }
 
@@ -39,7 +44,7 @@ class ManageGroupMembersController extends Controller
         Encryptedcredential::whereIn('credentialid', $group->credentials()->pluck('id'))->where('userid', $data['userid'])->delete();
         User::find($data['userid'])->groups()->detach($group);
 
-        return redirect()->route('groupManageMembers', ['group' => $group])->with('success', 'Group member successfully removed.');
+        return redirect()->route('groupManageMembers', ['group' => $group]);
     }
 
     public function update(Request $request, Group $group, User $user): Response|Application|ResponseFactory

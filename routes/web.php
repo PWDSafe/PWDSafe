@@ -61,7 +61,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/groups/{group}/members', [ManageGroupMembersController::class, 'index'])->name('groupManageMembers');
     Route::get('/groups/{group}/members/{user}/delete', [ManageGroupMembersController::class, 'confirmRemove'])->name('memberDeleteConfirm');
     Route::post('/groups/{group}/members', [ManageGroupMembersController::class, 'store']);
-    Route::delete('/groups/{group}/members', [ManageGroupMembersController::class, 'destroy']);
+    Route::delete('/groups/{group}/members', [ManageGroupMembersController::class, 'destroy'])->name('groupMemberDelete');
     Route::patch('/groups/{group}/members/{user}', [ManageGroupMembersController::class, 'update']);
     Route::get('/groups/{group}/delete', [GroupDeleteController::class, 'index']);
     Route::get('/groups/{group}/name', [GroupChangeNameController::class, 'index']);
