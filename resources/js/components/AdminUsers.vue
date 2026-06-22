@@ -1,7 +1,7 @@
 <template>
     <div>
         <!-- Create user panel -->
-        <div class="mb-4 flex justify-end">
+        <div class="mb-4 flex md:justify-end">
             <pwdsafe-button type="button" @click="toggleCreateForm">
                 {{ showCreateForm ? 'Cancel' : 'Create user' }}
             </pwdsafe-button>

@@ -6,7 +6,7 @@
     <div class="container mx-auto">
         <h3 class="text-2xl mb-6">Settings</h3>
 
-        <div class="flex gap-10 items-start">
+        <div class="flex flex-col md:flex-row gap-10 md:items-start">
             {{-- Sidebar nav --}}
             <aside class="w-44 flex-shrink-0">
                 <nav class="flex flex-col border-l border-gray-200 dark:border-gray-700">

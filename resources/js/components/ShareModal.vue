@@ -12,8 +12,8 @@
         >
             <h2 class="text-xl">Share credential</h2>
             <div class="mt-4 rounded bg-gray-600 px-4 py-2 shadow">
-                <h5 class="text-lg">{{ credential.name }}</h5>
-                <h6 class="mb-2 text-gray-700 dark:text-gray-300">
+                <h5 class="overflow-hidden truncate text-lg">{{ credential.name }}</h5>
+                <h6 class="overflow-hidden truncate mb-2 text-gray-700 dark:text-gray-300">
                     {{ credential.username }}
                 </h6>
                 <p class="line-clamp-3 text-sm">{{ credential.notes }}</p>

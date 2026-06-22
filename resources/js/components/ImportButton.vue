@@ -42,6 +42,7 @@
                 accept=".json,application/json"
                 required
                 ref="fileInput"
+                class="border rounded px-2 md:px-4 py-1"
                 :disabled="importing"
             />
             <div class="mt-8 flex justify-end">

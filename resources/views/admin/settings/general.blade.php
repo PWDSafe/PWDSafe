@@ -3,7 +3,7 @@
     <div class="container mx-auto">
         <h3 class="text-2xl mb-6">Administration</h3>
 
-        <div class="flex gap-10 items-start">
+        <div class="flex flex-col md:flex-row gap-10 md:items-start">
             {{-- Sidebar nav --}}
             @include('admin._sidebar')
 

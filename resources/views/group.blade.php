@@ -13,17 +13,17 @@
                 @if (!$loop->first || !$isPrivateSubTree)
                     <heroicons-chevron-right-icon class="w-4 h-4 flex-shrink-0"></heroicons-chevron-right-icon>
                 @endif
-                <a href="{{ route('group', $ancestor) }}" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition duration-150">{{ $ancestor->id === auth()->user()->primarygroup ? 'Private' : $ancestor->name }}</a>
+                <a href="{{ route('group', $ancestor) }}" class="max-w-24 md:max-w-48 block truncate hover:text-indigo-600 dark:hover:text-indigo-400 transition duration-150">{{ $ancestor->id === auth()->user()->primarygroup ? 'Private' : $ancestor->name }}</a>
             @endforeach
             <heroicons-chevron-right-icon class="w-4 h-4 flex-shrink-0"></heroicons-chevron-right-icon>
-            <span class="text-gray-700 dark:text-gray-200">{{ $group->name }}</span>
+            <span class="max-w-24 md:max-w-48 block truncate text-gray-700 dark:text-gray-200">{{ $group->name }}</span>
         </nav>
     @endif
 
     <div class="flex justify-between mb-5 gap-x-2 items-start">
         <h3 class="text-2xl flex items-center gap-x-2 text-gray-900 dark:text-gray-100">
             @if ($group->id !== auth()->user()->primarygroup)
-                {{ $group->name }}
+                <span class="max-w-42 md:max-w-2xl block truncate">{{ $group->name }}</span>
             @else
                 Private
             @endif

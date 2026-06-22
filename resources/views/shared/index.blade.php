@@ -5,8 +5,8 @@
     @forelse ($sharedcredentials as $sharedcredential)
         <div class='mb-4 bg-gray-700 p-4 rounded'>
             <div class='mb-2'>
-                <span class='block text-xl'>{{ $sharedcredential->name }}</span>
-                {{ $sharedcredential->username }}
+                <span class='block text-xl truncate'>{{ $sharedcredential->name }}</span>
+                <span class="block truncate">{{ $sharedcredential->username }}</span>
             </div>
             <div class='flex justify-between items-center'>
                 <div>

@@ -36,24 +36,25 @@
                     @click="editForRow(index)"
                 >
                     <td
-                        class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100"
+                        class="max-w-0 px-2 py-3 text-sm font-medium text-gray-900 md:px-4 dark:text-gray-100"
                     >
-                        {{ credential.name }}
+                        <span class="block truncate">{{ credential.name }}</span>
+
                         <div v-if="credential.url" class="text-xs font-normal">
                             <a
                                 :href="normalizeUrl(credential.url)"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                class="text-gray-500 hover:text-indigo-500 hover:underline dark:text-gray-400 dark:hover:text-indigo-300"
+                                class="block truncate text-gray-500 hover:text-indigo-500 hover:underline dark:text-gray-400 dark:hover:text-indigo-300"
                                 @click.stop
                                 >{{ credential.url }}</a
                             >
                         </div>
                     </td>
                     <td
-                        class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+                        class="max-w-0 px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
                     >
-                        {{ credential.username }}
+                        <span class="block truncate">{{ credential.username }}</span>
                     </td>
                     <td
                         v-if="showGroupName"
@@ -64,7 +65,7 @@
                             credential.group?.name
                         }}
                     </td>
-                    <td class="w-px px-4 py-3" @click.stop>
+                    <td class="w-px px-2 py-3 md:px-4" @click.stop>
                         <div class="flex items-center gap-x-1">
                             <pwdsafe-button
                                 theme="secondary"

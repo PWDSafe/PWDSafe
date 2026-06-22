@@ -2,7 +2,7 @@
 @extends('layouts.vault')
 @section('content')
     <div class="container">
-        <h3 class="text-2xl mb-5">{{ $group->name }}</h3>
+        <h3 class="max-w-xs md:max-w-2xl block truncate text-2xl mb-5">{{ $group->name }}</h3>
         @if ($group->userCountWithoutCurrentUser() > 0)
             <div class="flex flex-col">
                 <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
