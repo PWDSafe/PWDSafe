@@ -125,7 +125,7 @@
                                     <input
                                         v-if="!passwordVisible"
                                         type="password"
-                                        :value="password"
+                                        value="****************"
                                         :placeholder="
                                             !passwordLoaded ? 'Loading...' : ''
                                         "
