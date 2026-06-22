@@ -23,7 +23,7 @@
     <div class="flex justify-between mb-5 gap-x-2 items-start">
         <h3 class="text-2xl flex items-center gap-x-2 text-gray-900 dark:text-gray-100">
             @if ($group->id !== auth()->user()->primarygroup)
-                <span class="max-w-42 md:max-w-2xl block truncate">{{ $group->name }}</span>
+                <span class="max-w-36 md:max-w-2xl block truncate">{{ $group->name }}</span>
             @else
                 Private
             @endif
