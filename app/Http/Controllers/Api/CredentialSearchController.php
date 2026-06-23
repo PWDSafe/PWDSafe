@@ -61,7 +61,9 @@ class CredentialSearchController extends Controller
             'username' => $credential->username,
             'notes' => $credential->notes,
             'groupid' => $credential->groupid,
+            'has_totp' => $credential->has_totp,
             'data' => $pwd->data,
+            'totp_secret' => $pwd->totp_secret,
         ]);
     }
 }
