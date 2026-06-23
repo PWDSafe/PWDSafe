@@ -88,7 +88,6 @@ import PasswordGenerator from './components/PasswordGenerator.vue'
 import AddCredentialsForm from './components/AddCredentialsForm.vue'
 import SecurityCheck from './components/SecurityCheck.vue'
 import AddGroupMember from './components/AddGroupMember.vue'
-import ExportButton from './components/ExportButton.vue'
 import ImportButton from './components/ImportButton.vue'
 import AdminAuthSettings from './components/AdminAuthSettings.vue'
 import AdminGeneralSettings from './components/AdminGeneralSettings.vue'
@@ -117,7 +116,6 @@ app.component('pwdsafe-passwordgen', PasswordGenerator)
 app.component('add-credentials-form', AddCredentialsForm)
 app.component('security-check', SecurityCheck)
 app.component('add-group-member', AddGroupMember)
-app.component('export-button', ExportButton)
 app.component('import-button', ImportButton)
 app.component('admin-auth-settings', AdminAuthSettings)
 app.component('admin-general-settings', AdminGeneralSettings)

@@ -11,6 +11,14 @@ class Credential extends Eloquent
     public $timestamps = false;
     protected $guarded = [];
 
+    /** @return array<string, mixed> */
+    protected function casts(): array
+    {
+        return [
+            'has_totp' => 'boolean',
+        ];
+    }
+
     /** @return BelongsTo<Group, $this> */
     public function group(): BelongsTo
     {
@@ -28,6 +36,7 @@ class Credential extends Eloquent
         $credential->url = $params['credurl'] ?? null;
         $credential->username = $params['credu'];
         $credential->notes = $params['credn'];
+        $credential->has_totp = $params['has_totp'] ?? false;
         $credential->save();
 
         foreach ($params['encrypted'] as $entry) {
@@ -35,6 +44,7 @@ class Credential extends Eloquent
             $encrypted->credentialid = $credential->id;
             $encrypted->userid = $entry['userid'];
             $encrypted->data = $entry['data'];
+            $encrypted->totp_secret = $entry['totp_secret'] ?? null;
             $encrypted->save();
         }
     }
@@ -48,12 +58,16 @@ class Credential extends Eloquent
         $credential->url = $params['credurl'] ?? null;
         $credential->username = $params['credu'];
         $credential->notes = $params['credn'] ?? null;
+        $credential->has_totp = $params['has_totp'] ?? false;
         $credential->save();
 
         foreach ($params['encrypted'] as $entry) {
             Encryptedcredential::where('credentialid', $credential->id)
                 ->where('userid', $entry['userid'])
-                ->update(['data' => $entry['data']]);
+                ->update([
+                    'data' => $entry['data'],
+                    'totp_secret' => $entry['totp_secret'] ?? null,
+                ]);
         }
     }
 

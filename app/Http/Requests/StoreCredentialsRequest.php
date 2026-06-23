@@ -28,9 +28,11 @@ class StoreCredentialsRequest extends FormRequest
             'url' => 'nullable|string',
             'user' => 'required',
             'notes' => 'nullable',
+            'has_totp' => 'nullable|boolean',
             'encrypted' => 'required|array|min:1',
             'encrypted.*.userid' => 'required|integer|exists:users,id',
             'encrypted.*.data' => 'required|string',
+            'encrypted.*.totp_secret' => 'nullable|string',
         ];
     }
 }

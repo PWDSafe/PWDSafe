@@ -19,11 +19,13 @@ class PasswordForController extends Controller
         return response([
             'status' => 'OK',
             'data' => $pwd->data,
+            'totp_secret' => $pwd->totp_secret,
+            'has_totp' => $credential->has_totp,
             'user' => $credential->username,
             'name' => $credential->name,
             'url' => $credential->url,
             'notes' => $credential->notes,
-            'groupid' => $credential->groupid
+            'groupid' => $credential->groupid,
         ]);
     }
 }

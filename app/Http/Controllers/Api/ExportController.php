@@ -21,13 +21,19 @@ class ExportController extends Controller
             $query->where('userid', auth()->user()->id);
         })->get();
 
-        return response($credentials->map(fn ($credential) => [
-            'id' => $credential->id,
-            'name' => $credential->name,
-            'url' => $credential->url,
-            'username' => $credential->username,
-            'notes' => $credential->notes,
-            'data' => $credential->encryptedcredentials[0]->data,
-        ]));
+        return response($credentials->map(function ($credential) {
+            $enc = $credential->encryptedcredentials->first();
+
+            return [
+                'id' => $credential->id,
+                'name' => $credential->name,
+                'url' => $credential->url,
+                'username' => $credential->username,
+                'notes' => $credential->notes,
+                'has_totp' => $credential->has_totp,
+                'data' => $enc->data,
+                'totp_secret' => $enc->totp_secret,
+            ];
+        }));
     }
 }

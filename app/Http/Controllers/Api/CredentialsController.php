@@ -34,6 +34,7 @@ class CredentialsController extends Controller
             'url' => $params['url'] ?? null,
             'username' => $params['user'],
             'notes' => $params['notes'] ?? null,
+            'has_totp' => $params['has_totp'] ?? false,
         ]);
 
         foreach ($params['encrypted'] as $entry) {
@@ -41,6 +42,7 @@ class CredentialsController extends Controller
                 'credentialid' => $credential->id,
                 'userid' => $entry['userid'],
                 'data' => $entry['data'],
+                'totp_secret' => $entry['totp_secret'] ?? null,
             ]);
         }
 
@@ -60,6 +62,7 @@ class CredentialsController extends Controller
             'url' => $credential->url,
             'username' => $credential->username,
             'notes' => $credential->notes,
+            'has_totp' => $credential->has_totp,
         ]);
 
         foreach ($params['encrypted'] as $entry) {
@@ -67,6 +70,7 @@ class CredentialsController extends Controller
                 'credentialid' => $newCredential->id,
                 'userid' => $entry['userid'],
                 'data' => $entry['data'],
+                'totp_secret' => $entry['totp_secret'] ?? null,
             ]);
         }
 

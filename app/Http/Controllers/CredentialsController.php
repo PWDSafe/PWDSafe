@@ -31,9 +31,11 @@ class CredentialsController extends Controller
             'credu' => 'required',
             'currentgroupid' => 'required',
             'credn' => 'nullable',
+            'has_totp' => 'nullable|boolean',
             'encrypted' => 'required|array|min:1',
             'encrypted.*.userid' => 'required|integer|exists:users,id',
             'encrypted.*.data' => 'required|string',
+            'encrypted.*.totp_secret' => 'nullable|string',
         ]);
 
         if ($credential->groupid != $params['currentgroupid']) {

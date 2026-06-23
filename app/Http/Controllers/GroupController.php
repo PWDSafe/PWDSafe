@@ -62,6 +62,7 @@ class GroupController extends Controller
             'url' => $params['url'] ?? null,
             'username' => $params['user'],
             'notes' => $params['notes'],
+            'has_totp' => $params['has_totp'] ?? false,
         ]);
 
         foreach ($params['encrypted'] as $entry) {
@@ -69,6 +70,7 @@ class GroupController extends Controller
                 'credentialid' => $credential->id,
                 'userid' => $entry['userid'],
                 'data' => $entry['data'],
+                'totp_secret' => $entry['totp_secret'] ?? null,
             ]);
         }
 

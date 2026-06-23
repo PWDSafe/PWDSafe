@@ -21,6 +21,7 @@
             <li>password</li>
             <li>url <em>(optional)</em></li>
             <li>notes <em>(optional)</em></li>
+            <li>totp_secret <em>(optional — base32 TOTP secret)</em></li>
         </ul>
         <p class="mb-4 text-red-500">
             Warning: Malformed rows will be skipped.
@@ -42,7 +43,7 @@
                 accept=".json,application/json"
                 required
                 ref="fileInput"
-                class="border rounded px-2 md:px-4 py-1"
+                class="rounded border px-2 py-1 md:px-4"
                 :disabled="importing"
             />
             <div class="mt-8 flex justify-end">
@@ -111,21 +112,33 @@ const handleImport = async () => {
         )
 
         const credentials = await Promise.all(
-            valid.map(async (row) => ({
-                name: row.name,
-                url: row.url ?? null,
-                username: row.username,
-                notes: row.notes ?? '',
-                encrypted: await Promise.all(
-                    pubkeysData.users.map(async ({ id, pubkey }) => ({
-                        userid: id,
-                        data: await encryptCredentialV2(
-                            String(row.password),
-                            pubkey,
-                        ),
-                    })),
-                ),
-            })),
+            valid.map(async (row) => {
+                const hasTotpSecret =
+                    typeof row.totp_secret === 'string' &&
+                    row.totp_secret.trim() !== ''
+                return {
+                    name: row.name,
+                    url: row.url ?? null,
+                    username: row.username,
+                    notes: row.notes ?? '',
+                    has_totp: hasTotpSecret,
+                    encrypted: await Promise.all(
+                        pubkeysData.users.map(async ({ id, pubkey }) => ({
+                            userid: id,
+                            data: await encryptCredentialV2(
+                                String(row.password),
+                                pubkey,
+                            ),
+                            totp_secret: hasTotpSecret
+                                ? await encryptCredentialV2(
+                                      row.totp_secret.trim(),
+                                      pubkey,
+                                  )
+                                : null,
+                        })),
+                    ),
+                }
+            }),
         )
 
         const { data } = await axios.post('/import', {

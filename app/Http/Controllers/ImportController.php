@@ -17,9 +17,11 @@ class ImportController extends Controller
             'credentials.*.url' => 'nullable|string',
             'credentials.*.username' => 'required|string',
             'credentials.*.notes' => 'nullable|string',
+            'credentials.*.has_totp' => 'nullable|boolean',
             'credentials.*.encrypted' => 'required|array',
             'credentials.*.encrypted.*.userid' => 'required|integer',
             'credentials.*.encrypted.*.data' => 'required|string',
+            'credentials.*.encrypted.*.totp_secret' => 'nullable|string',
         ]);
 
         $group = auth()->user()->groups->find($validated['group']);
@@ -32,6 +34,7 @@ class ImportController extends Controller
                 'credurl' => $row['url'] ?? null,
                 'credu' => $row['username'],
                 'credn' => $row['notes'] ?? '',
+                'has_totp' => $row['has_totp'] ?? false,
                 'encrypted' => $row['encrypted'],
                 'currentgroupid' => $validated['group'],
             ]);

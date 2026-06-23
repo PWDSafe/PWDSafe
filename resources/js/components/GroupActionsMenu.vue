@@ -124,7 +124,8 @@
 <script setup lang="ts">
 import { ref, PropType } from 'vue'
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
-import { loadPrivkey, decryptCredential } from '../vault.js'
+import { decryptCredential } from '../vault.js'
+import { ensurePrivkey } from '../composables/useVaultUnlock.js'
 
 const props = defineProps({
     groupid: {
@@ -175,21 +176,45 @@ const menuItemClass = (active: boolean) =>
 const triggerExport = async () => {
     exporting.value = true
     try {
-        const privkeyPem = loadPrivkey()
+        const privkeyPem = await ensurePrivkey()
         const { data: credentials } = await axios.get(
             `/api/groups/${props.groupid}/export-data`,
         )
 
         const rows = await Promise.all(
-            credentials.map(async (cred: any) => ({
-                name: cred.name,
-                url: cred.url,
-                username: cred.username,
-                password: privkeyPem
+            credentials.map(async (cred: any) => {
+                const password = privkeyPem
                     ? await decryptCredential(cred.data, privkeyPem)
-                    : cred.data,
-                notes: cred.notes,
-            })),
+                    : cred.data
+
+                let totp_secret = null
+                if (cred.has_totp && cred.totp_secret && privkeyPem) {
+                    try {
+                        totp_secret = await decryptCredential(
+                            cred.totp_secret,
+                            privkeyPem,
+                        )
+                    } catch (e) {
+                        console.error(
+                            'Failed to decrypt TOTP secret for',
+                            cred.name,
+                            e,
+                        )
+                    }
+                }
+
+                const row: any = {
+                    name: cred.name,
+                    url: cred.url,
+                    username: cred.username,
+                    password,
+                    notes: cred.notes,
+                }
+                if (totp_secret !== null) {
+                    row.totp_secret = totp_secret
+                }
+                return row
+            }),
         )
 
         const sanitized = props.groupname

@@ -38,7 +38,9 @@
                     <td
                         class="max-w-0 px-2 py-3 text-sm font-medium text-gray-900 md:px-4 dark:text-gray-100"
                     >
-                        <span class="block truncate">{{ credential.name }}</span>
+                        <span class="block truncate">{{
+                            credential.name
+                        }}</span>
 
                         <div v-if="credential.url" class="text-xs font-normal">
                             <a
@@ -54,7 +56,9 @@
                     <td
                         class="max-w-0 px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
                     >
-                        <span class="block truncate">{{ credential.username }}</span>
+                        <span class="block truncate">{{
+                            credential.username
+                        }}</span>
                     </td>
                     <td
                         v-if="showGroupName"

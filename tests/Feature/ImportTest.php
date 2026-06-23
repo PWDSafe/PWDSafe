@@ -51,6 +51,59 @@ class ImportTest extends TestCase
         $this->assertDatabaseHas('credentials', ['name' => 'Second site', 'url' => null]);
     }
 
+    public function testImportingCredentialWithTotpSecret(): void
+    {
+        $encryption = app(\App\Helpers\Encryption::class);
+        $totpPlaintext = 'JBSWY3DPEHPK3PXP';
+
+        $this->postJson('/import', [
+            'group' => $this->user->primarygroup,
+            'credentials' => [
+                [
+                    'name' => 'TOTP site',
+                    'username' => 'myuser',
+                    'notes' => '',
+                    'has_totp' => true,
+                    'encrypted' => [
+                        [
+                            'userid' => $this->user->id,
+                            'data' => $encryption->encWithPub('password', $this->user->pubkey),
+                            'totp_secret' => $encryption->encWithPub($totpPlaintext, $this->user->pubkey),
+                        ],
+                    ],
+                ],
+            ],
+        ])->assertOk()->assertJson(['count' => 1]);
+
+        $this->assertDatabaseHas('credentials', ['name' => 'TOTP site', 'has_totp' => true]);
+
+        $credential = \App\Credential::first();
+        $encryptedRow = \App\Encryptedcredential::where('credentialid', $credential->id)
+            ->where('userid', $this->user->id)
+            ->first();
+
+        $this->assertNotNull($encryptedRow->totp_secret);
+        $decrypted = $encryption->decWithPriv($encryptedRow->totp_secret, $this->user->fresh()->decryptPrivkey());
+        $this->assertEquals($totpPlaintext, $decrypted);
+    }
+
+    public function testImportingCredentialWithoutTotpSecretHasHasTotpFalse(): void
+    {
+        $this->postJson('/import', [
+            'group' => $this->user->primarygroup,
+            'credentials' => [
+                [
+                    'name' => 'Plain site',
+                    'username' => 'myuser',
+                    'notes' => '',
+                    'encrypted' => $this->encryptedPayloadForUsers('password', $this->user),
+                ],
+            ],
+        ])->assertOk();
+
+        $this->assertDatabaseHas('credentials', ['name' => 'Plain site', 'has_totp' => false]);
+    }
+
     public function testImportingSkipsMalformedRowsClientSide(): void
     {
         // The client filters malformed rows before posting, so the server
