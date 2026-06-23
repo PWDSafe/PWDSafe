@@ -17,6 +17,7 @@
             :credentials="{{ $credentialsWithGroupNames }}"
             :groups="{{ auth()->user()->groupsWithWriteAccess->map(fn ($g) => ['id' => $g->id, 'name' => $g->id === auth()->user()->primarygroup ? 'Private' : $g->name]) }}"
             :can-update="false"
+            :can-administer="false"
             :show-group-name="true"
         ></credential-table>
     @else

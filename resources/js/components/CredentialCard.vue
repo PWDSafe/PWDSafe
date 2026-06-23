@@ -196,6 +196,7 @@
                                 >
                                     <pwdsafe-label>TOTP Code</pwdsafe-label>
                                     <Menu
+                                        v-if="canAdminister"
                                         as="div"
                                         class="relative"
                                         :class="{
@@ -475,6 +476,9 @@ const props = defineProps({
         default: '',
     },
     canUpdate: {
+        type: Boolean,
+    },
+    canAdminister: {
         type: Boolean,
     },
     headless: {

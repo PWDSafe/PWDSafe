@@ -71,6 +71,7 @@
         :group-id="{{ $group->id }}"
         :groups="{{ auth()->user()->groupsWithWriteAccess->map(fn ($g) => ['id' => $g->id, 'name' => $g->id === auth()->user()->primarygroup ? 'Private' : $g->name]) }}"
         :can-update="{{ auth()->user()->can('update', $group) ? 'true' : 'false' }}"
+        :can-administer="{{ auth()->user()->can('administer', $group) ? 'true' : 'false' }}"
     ></credential-table>
 </div>
 @endsection('content')

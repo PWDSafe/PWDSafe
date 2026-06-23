@@ -113,6 +113,7 @@
             :credential="credential"
             :groups="groups"
             :can-update="canUpdate"
+            :can-administer="canAdminister"
             :headless="true"
             class="hidden"
             @saved="refresh()"
@@ -131,6 +132,7 @@ const props = defineProps<{
     credentials: any[]
     groups: any[]
     canUpdate: boolean
+    canAdminister: boolean
     showGroupName?: boolean
     groupId?: number
 }>()
