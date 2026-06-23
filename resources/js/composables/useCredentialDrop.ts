@@ -63,6 +63,13 @@ export function useCredentialDrop(targetGroupId: MaybeRefOrGetter<number>) {
                 privkeyPem,
             )
 
+            const hasTotp = Boolean(
+                pwdResp.data.has_totp && pwdResp.data.totp_secret,
+            )
+            const decryptedTotpSecret = hasTotp
+                ? await decryptCredential(pwdResp.data.totp_secret, privkeyPem)
+                : null
+
             const pubkeysResp = await axios.get(
                 `/api/groups/${groupId}/pubkeys`,
             )
@@ -74,6 +81,12 @@ export function useCredentialDrop(targetGroupId: MaybeRefOrGetter<number>) {
                             decryptedPassword,
                             pubkey,
                         ),
+                        totp_secret: decryptedTotpSecret
+                            ? await encryptCredentialV2(
+                                  decryptedTotpSecret,
+                                  pubkey,
+                              )
+                            : null,
                     }),
                 ),
             )
@@ -84,6 +97,7 @@ export function useCredentialDrop(targetGroupId: MaybeRefOrGetter<number>) {
                 credu: data.username,
                 credn: data.notes,
                 currentgroupid: groupId,
+                has_totp: hasTotp,
                 encrypted,
             })
 

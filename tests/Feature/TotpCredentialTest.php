@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Credential;
 use App\Encryptedcredential;
+use App\Group;
 use App\Helpers\Encryption;
 use App\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -140,6 +141,37 @@ class TotpCredentialTest extends TestCase
             ->where('userid', $this->user->id)
             ->first();
         $this->assertNull($encryptedRow->totp_secret);
+    }
+
+    public function testMovingCredentialToAnotherGroupPreservesTotpSecret(): void
+    {
+        $totpPlaintext = 'JBSWY3DPEHPK3PXP';
+        $this->postCredentialWithTotp($totpPlaintext);
+        $credential = Credential::first();
+
+        $destinationGroup = Group::factory()->create();
+        $this->user->groups()->attach($destinationGroup, ['permission' => 'admin']);
+
+        $currentPassword = $this->getDecryptedPassword($credential);
+        $this->user->unsetRelation('groups');
+
+        $this->put('/credential/' . $credential->id, [
+            'creds' => $credential->name,
+            'credu' => $credential->username,
+            'credn' => $credential->notes,
+            'currentgroupid' => $destinationGroup->id,
+            'has_totp' => true,
+            'encrypted' => $this->encryptedPayloadForUsersWithTotp($currentPassword, $totpPlaintext, $this->user),
+        ])->assertStatus(302)->assertSessionHasNoErrors();
+
+        $movedCredential = Credential::where('groupid', $destinationGroup->id)->first();
+        $this->assertNotNull($movedCredential);
+        $this->assertTrue($movedCredential->has_totp);
+
+        $response = $this->getJson('/pwdfor/' . $movedCredential->id)->json();
+        $encryption = app(Encryption::class);
+        $decryptedTotp = $encryption->decWithPriv($response['totp_secret'], $this->user->fresh()->decryptPrivkey());
+        $this->assertEquals($totpPlaintext, $decryptedTotp);
     }
 
     public function testUnauthorizedUserCannotViewTotpData(): void
