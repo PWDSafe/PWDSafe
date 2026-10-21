@@ -18,7 +18,7 @@ COPY resources/ /app/resources/
 COPY package.json package-lock.json vite.config.js /app/
 RUN npm ci --no-audit --no-fund --prefer-offline --loglevel=error && npm run build
 
-FROM php:8.5-apache-trixie
+FROM php:8.5.12-apache-trixie
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /var/www/html
 
