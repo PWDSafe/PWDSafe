@@ -185,8 +185,7 @@
                         rows="6"
                         placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----"
                         class="block w-full rounded border border-gray-300 bg-white px-3 py-2 font-mono text-xs text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
-                        >{{ form.ldap_certificate }}</textarea
-                    >
+                        >{{ form.ldap_certificate }}</textarea>
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                         Optional. Paste a PEM-encoded CA certificate to verify
                         the LDAP server's TLS certificate.
